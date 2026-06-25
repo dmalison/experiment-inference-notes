@@ -30,9 +30,6 @@ format:
             border-left: 2px solid #ddd;
           }
         </style>
-  gfm:
-    filters:
-      - ../strip-eq-spans.lua
 crossref:
   ref-hyperlink: true
 ---

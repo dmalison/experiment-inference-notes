@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Malison">
+<meta name="dcterms.date" content="2026-06-25">
+
+<title>Uniform Inference on Treatment Group Means</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="index_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<style>
+  table td { vertical-align: middle; }
+  h1.title { font-size: 2.75rem; text-align: center; }
+  .quarto-title-meta {
+    display: flex !important;
+    justify-content: center;
+    gap: 5rem;
+    text-align: center;
+  }
+  .assumption, .theorem, .lemma {
+    margin: 0.75em 0 0.75em 1.5em;
+    padding: 0.25em 0.75em;
+    border-left: 3px solid #ccc;
+  }
+  .proof-block {
+    margin: 0.75em 0 0.75em 1.5em;
+    padding: 0.25em 0.75em;
+    border-left: 2px solid #ddd;
+  }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.md"><i class="bi bi-file-code"></i>Github (GFM)</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Uniform Inference on Treatment Group Means</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Malison </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Last modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 25, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This note develops confidence intervals for linear combinations of treatment group means in randomized experiments. We use a fixed potential-outcomes framework, impose a limited set of explicit and interpretable assumptions on the data-generating process, and establish uniform coverage properties over the parameter space. We then illustrate the behavior of the intervals in a Monte Carlo simulation.</p>
+<section id="model" class="level1">
+<h1>Model</h1>
+<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote a treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise. Let <span class="math inline">\(y_{i,d}\)</span> denote the <strong>potential outcome</strong> for unit <span class="math inline">\(i\)</span> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We condition on the full potential-outcome sequences <span class="math inline">\(\{y_{i,0}\}_{i \geq 1}\)</span> and <span class="math inline">\(\{y_{i,1}\}_{i \geq 1}\)</span>, so probabilities are computed only over the randomized treatment assignments. The potential-outcome sequences may be generated by a broad class of processes; in particular, we do not assume they were generated independently across units or independently across treatment groups for a given unit.</p>
+<p>Collect the model primitives into the parameter vector</p>
+<p><span class="math display">\[
+\theta =
+\left(
+p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
+\right)
+\]</span></p>
+<p>and let <span class="math inline">\(\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}\)</span> denote the set of parameters under consideration. We impose the following assumptions on <span class="math inline">\(\Theta\)</span>.</p>
+<div id="asm-random" class="assumption">
+<p><strong>Assumption 1 (Random assignment with uniformly bounded propensity).</strong> <span class="math inline">\(D_1, D_2, \ldots\)</span> are independent Bernoulli random variables with common treatment probability <span class="math inline">\(p\)</span>, and there exists <span class="math inline">\(\underline p&gt;0\)</span> such that <span class="math inline">\(\underline p\leq p\leq1-\underline p\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
+</div>
+<p>In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups. In this case, Assumption 1 holds by taking <span class="math inline">\(\underline p\)</span> to be the smallest permitted bucket fraction.</p>
+<p>Let</p>
+<p><span class="math display">\[
+  \overline{y}_{0,n} = \frac{1}{n}\sum_{i=1}^n y_{i,0}, \qquad \overline{y}_{1,n} = \frac{1}{n}\sum_{i=1}^n y_{i,1}, \qquad \overline{\mathbf{y}}_n = \begin{pmatrix} \overline{y}_{0,n} \\[1ex] \overline{y}_{1,n}\end{pmatrix}.
+\]</span></p>
+<p>Define the centered potential-outcome vector</p>
+<p><span class="math display">\[
+\mathbf{u}_{i, n} =
+\begin{pmatrix}
+y_{i,0} - \overline{y}_{0,n} \\
+y_{i,1} - \overline{y}_{1,n}
+\end{pmatrix}
+\]</span></p>
+<p>and the covariance matrix</p>
+<p><span id="eq-Vn-def"><span class="math display">\[
+\mathbf{V}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i, n} \mathbf{u}_{i, n}'.
+\tag{1}\]</span></span></p>
+<p>We impose the following regularity conditions on these objects:</p>
+<div id="asm-no-dominant-units" class="assumption">
+<p><strong>Assumption 2 (Uniform covariance regularity).</strong> Let <span class="math inline">\(\lambda_{\min}(\mathbf{V})\)</span> and <span class="math inline">\(\lambda_{\max}(\mathbf{V})\)</span> denote the smallest and largest eigenvalues of a symmetric matrix <span class="math inline">\(\mathbf{V}\)</span>. There exists a finite constant <span class="math inline">\(K\)</span> for which</p>
+<p><span class="math display">\[
+\limsup_{n\to \infty}
+\sup_{\theta\in\Theta}
+\frac{\lambda_{\max}(\mathbf{V}_n)}
+{\lambda_{\min}(\mathbf{V}_n)}
+\leq K
+\]</span></p>
+</div>
+<div id="asm-nondegenerate" class="assumption">
+<p><strong>Assumption 3 (Uniform Berry–Esseen condition).</strong> <span class="math inline">\(\mathbf{V}_n\)</span> and <span class="math inline">\(\mathbf{u}_{i,n}\)</span> satisfy</p>
+<p><span id="eq-vector-be-condition"><span class="math display">\[
+\lim_{n \to \infty}
+\sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\left\|
+\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
+\right\|^3 = 0.
+\tag{2}\]</span></span></p>
+</div>
+<p>Assumption 2 uniformly controls the condition numbers of the covariance matrices, while Assumption 3 ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential-outcome paths are modeled as realizations of a stationary ergodic process, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential-outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumptions 2 and 3 hold after restricting <span class="math inline">\(\Theta\)</span> to that set.</p>
+<p>Finally, we impose the following <a href="https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption">stable unit treatment value assumption</a> (SUTVA):</p>
+<div id="asm-sutva" class="assumption">
+<p><strong>Assumption 4 (SUTVA).</strong> The observed outcome is determined by</p>
+<p><span id="eq-observed-outcome"><span class="math display">\[Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}. \tag{3}\]</span></span></p>
+</div>
+<p>Assumption 4 requires unit <span class="math inline">\(i\)</span>’s observed outcome to depend only on unit <span class="math inline">\(i\)</span>’s treatment assignment and not on the treatment assignments of other units. This assumption can be restrictive in some experimental settings. For example, if <span class="math inline">\(i\)</span> indexes user sessions, then Assumption 4 rules out treatment in one session changing potential outcomes in subsequent sessions. In practice, such spillovers can often be handled by randomizing at a coarser level.</p>
+<p>We observe a finite sample <span class="math inline">\(\{(D_i, Y_i)\}_{i=1}^n\)</span>. For <span class="math inline">\(\theta\in\Theta\)</span>, we let <span class="math inline">\(\mathbb{P}_\theta\)</span> denote probability under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 4. We let <span class="math inline">\(\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}\)</span> denote the set of possible probability measures.</p>
+</section>
+<section id="inference" class="level1">
+<h1>Inference</h1>
+<section id="uniform-asymptotics" class="level2">
+<h2 class="anchored" data-anchor-id="uniform-asymptotics">Uniform asymptotics</h2>
+<p>Throughout this note, asymptotic statements are uniform over the family of distributions <span class="math inline">\(\mathcal{P}\)</span> induced by the parameters in <span class="math inline">\(\Theta\)</span>. We first define the corresponding modes of convergence and stochastic-order notation, then record asymptotic results used in subsequent proofs.</p>
+<p>We say <span class="math inline">\(X_n\)</span> converges in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(X\)</span>, written as <span class="math inline">\(X_n \stackrel{\mathcal{P}}{\to} X\)</span>, if for every <span class="math inline">\(\epsilon &gt; 0\)</span>, <span class="math display">\[
+\lim_{n \to \infty} \sup_{\theta \in \Theta} \mathbb{P}_\theta(\|X_n - X\| &gt; \epsilon) = 0.
+\]</span></p>
+<p>Suppose <span class="math inline">\(X\)</span> has distribution function <span class="math inline">\(F\)</span> that does not depend on <span class="math inline">\(\theta\)</span>. We say <span class="math inline">\(X_n\)</span> converges weakly in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(X\)</span>, written as <span class="math inline">\(X_n \stackrel{\mathcal{P}}{\rightsquigarrow} X\)</span>, if for every continuity point <span class="math inline">\(t\)</span> of <span class="math inline">\(F\)</span>, we have <span class="math display">\[
+\lim_{n \to \infty} \sup_{\theta \in \Theta} \left|\mathbb{P}_\theta(X_n \leq t) - F(t)\right| = 0.
+\]</span> For finite-dimensional vector-valued random variables, we use the analogous definition with joint distribution functions. For a positive deterministic sequence <span class="math inline">\(r_n\)</span>, we write <span class="math inline">\(X_n=o_{\mathcal{P}}(r_n)\)</span> if <span class="math inline">\(X_n/r_n \stackrel{\mathcal{P}}{\to} 0\)</span>. We write <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n)\)</span> if, for every <span class="math inline">\(\epsilon &gt; 0\)</span>, there exist finite constants <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that <span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\|X_n\|&gt;Mr_n\right)
+&lt;\epsilon
+\]</span> for all <span class="math inline">\(n\geq N\)</span>.</p>
+<p>We will use the following stochastic-order relationships:</p>
+<div id="stochastic-order-thm" class="theorem">
+<p><strong>Proposition 1 (Stochastic order).</strong> For positive deterministic sequences <span class="math inline">\(r_n\)</span> and <span class="math inline">\(s_n\)</span>, the following relationships hold:</p>
+<p><span class="math display">\[
+\begin{aligned}
+X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n)
+&amp;\quad\Rightarrow\quad
+X_n+Y_n=O_{\mathcal{P}}(r_n+s_n), \\[1ex]
+X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n)
+&amp;\quad\Rightarrow\quad
+X_nY_n=O_{\mathcal{P}}(r_ns_n), \\[1ex]
+X_n=o_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n)
+&amp;\quad\Rightarrow\quad
+X_nY_n=o_{\mathcal{P}}(r_ns_n), \\[1ex]
+X_n=O_{\mathcal{P}}(r_n),\ r_n\to 0
+&amp;\quad\Rightarrow\quad
+X_n=o_{\mathcal{P}}(1), \\
+X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X
+&amp;\quad\Rightarrow\quad
+X_n=O_{\mathcal{P}}(1).
+\end{aligned}
+\]</span></p>
+</div>
+<p>We will also use a uniform analogue of the <a href="https://en.wikipedia.org/wiki/Continuous_mapping_theorem">continuous mapping theorem</a>:</p>
+<div id="continuous-mapping-thm" class="theorem">
+<p><strong>Proposition 2 (Continuous mapping).</strong> Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}c\)</span> for a constant <span class="math inline">\(c\)</span>. If <span class="math inline">\(g\)</span> is continuous at <span class="math inline">\(c\)</span>, then</p>
+<p><span class="math display">\[
+g(X_n)\stackrel{\mathcal{P}}{\to}g(c).
+\]</span></p>
+<p>If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X\)</span> and <span class="math inline">\(g\)</span> is continuous, then</p>
+<p><span class="math display">\[
+g(X_n)\stackrel{\mathcal{P}}{\rightsquigarrow}g(X).
+\]</span></p>
+</div>
+<p>The next result records useful joint-convergence rules:</p>
+<div id="joint-convergence-thm" class="theorem">
+<p><strong>Proposition 3 (Joint convergence).</strong> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>, then</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+\]</span></p>
+<p>If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}c\)</span> for a real constant <span class="math inline">\(c\)</span>, then</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\rightsquigarrow}(X,c).
+\]</span></p>
+</div>
+<p>Propositions 2 and 3 imply a uniform version of <a href="https://en.wikipedia.org/wiki/Slutsky%27s_theorem">Slutsky’s theorem</a>:</p>
+<div id="slutsky-thm" class="theorem">
+<p><strong>Proposition 4 (Slutsky).</strong> Suppose <span class="math inline">\(X_n \stackrel{\mathcal{P}}{\rightsquigarrow} X\)</span> and <span class="math inline">\(Y_n \stackrel{\mathcal{P}}{\to} c\)</span> for a real constant <span class="math inline">\(c\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+X_n + Y_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} X + c, \\
+X_nY_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} cX, \\
+\frac{X_n}{Y_n} &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} X/c,\qquad c\neq0.
+\end{aligned}
+\]</span></p>
+</div>
+<p>Proofs of these propositions can be found in the <a href="#sec-proposition-proofs">Appendix</a>.</p>
+</section>
+<section id="target" class="level2">
+<h2 class="anchored" data-anchor-id="target">Target</h2>
+<p>We target a linear combination of the potential-outcome means. Define</p>
+<p><span class="math display">\[\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n\]</span></p>
+<p>for a nonzero coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the <strong>average treatment effect (ATE)</strong>. We allow the coefficient vector to change with <span class="math inline">\(n\)</span>, which will be useful in subsequent applications.</p>
+<p>For <span class="math inline">\(\alpha \in (0, 1)\)</span>, let</p>
+<p><span id="eq-ci-form"><span class="math display">\[C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n) \tag{4}\]</span></span></p>
+<p>denote a confidence set for <span class="math inline">\(\psi_n\)</span> with nominal coverage level <span class="math inline">\(1-\alpha\)</span>. The sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>finite-sample valid</strong> for <span class="math inline">\(\{\psi_n\}_{n \geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if, at each sample size, it covers the target with probability at least <span class="math inline">\(1 - \alpha\)</span> for every parameter value:</p>
+<p><span id="eq-fixed-horizon-p"><span class="math display">\[\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right) \geq 1 - \alpha \quad \text{ for all } n \geq 1 \text{ and } \theta \in \Theta. \tag{5}\]</span></span></p>
+<p>This finite-sample condition is typically too demanding, so we use the following asymptotic criterion instead. We say the sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>asymptotically valid</strong> for <span class="math inline">\(\{\psi_n\}_{n\geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if</p>
+<p><span id="eq-asymptotic-p"><span class="math display">\[
+\liminf_{n \to \infty}
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right)
+\geq 1 - \alpha.
+\tag{6}\]</span></span></p>
+<p>If (<a href="#eq-asymptotic-p" class="quarto-xref">6</a>) holds, then for any <span class="math inline">\(\epsilon &gt; 0\)</span>, there exists an index <span class="math inline">\(N\)</span> such that <span class="math inline">\(C_{1-\alpha,n}\)</span> contains <span class="math inline">\(\psi_n\)</span> with probability at least <span class="math inline">\(1-\alpha-\epsilon\)</span> for every <span class="math inline">\(n\geq N\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
+</section>
+<section id="estimator" class="level2">
+<h2 class="anchored" data-anchor-id="estimator">Estimator</h2>
+<p>We estimate <span class="math inline">\(\psi_n\)</span> by replacing the potential-outcome means with the realized control and treatment sample means. Define</p>
+<p><span id="eq-estimators"><span class="math display">\[
+\begin{gathered}
+\widehat{y}_{0,n} = \frac{\overline{Y(1 - D)}_n}{1 - \overline{D}_n}, \qquad \widehat{y}_{1,n} = \frac{\overline{YD}_n}{\overline{D}_n}
+\end{gathered}
+\tag{7}\]</span></span></p>
+<p>and set</p>
+<p><span class="math display">\[
+\widehat{\mathbf{y}}_n = \begin{pmatrix} \widehat{y}_{0,n} \\ \widehat{y}_{1,n} \end{pmatrix}, \qquad
+\widehat{\psi}_n = \mathbf{a}_n'\widehat{\mathbf{y}}_n.
+\]</span></p>
+<p>We estimate the sampling variance of <span class="math inline">\(\widehat{\psi}_n\)</span> using</p>
+<p><span id="eq-sigma-hat"><span class="math display">\[
+\widehat{\sigma}_n^2
+=
+\overline{D}_n(1-\overline{D}_n)
+\left(
+\frac{|a_{0,n}|\widehat{S}_{0,n}}{1-\overline{D}_n}
++
+\frac{|a_{1,n}|\widehat{S}_{1,n}}{\overline{D}_n}
+\right)^2,
+\tag{8}\]</span></span></p>
+<p>where</p>
+<p><span id="eq-S-hat"><span class="math display">\[
+\begin{aligned}
+\widehat{S}_{0,n}^2 &amp;= \frac{1}{n(1-\overline{D}_n)} \sum_{i=1}^n (1-D_i)\left(Y_i - \widehat{y}_{0,n}\right)^2, \\
+\widehat{S}_{1,n}^2 &amp;= \frac{1}{n\overline{D}_n} \sum_{i=1}^n D_i\left(Y_i - \widehat{y}_{1,n}\right)^2
+\end{aligned}
+\tag{9}\]</span></span></p>
+<p>denote the observed within-group variances.</p>
+<p>The key asymptotic expansion is derived in the <a href="#sec-residual-appendix">Appendix</a>:</p>
+<p><span id="eq-means-asymptotic-linearization"><span class="math display">\[
+\sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
+= \frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}\frac{\sigma_n}{\widehat{\sigma}_n} + o_{\mathcal{P}}(1),
+\tag{10}\]</span></span></p>
+<p>where</p>
+<p><span class="math display">\[
+X_{i,n} = \frac{D_i - p}{\sqrt{n}}
+\mathbf{b}_n'\mathbf{u}_{i,n}, \qquad
+\mathbf{b}_n
+=
+\begin{pmatrix}
+-\dfrac{a_{0,n}}{1-p} \\[2ex]
+\dfrac{a_{1,n}}{p}
+\end{pmatrix}
+\]</span> <span id="eq-sigma"><span class="math display">\[
+\sigma_n^2 = \sum_{i=1}^n \mathbb{V}(X_{i,n}) = p(1-p)\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n.
+\tag{11}\]</span></span></p>
+<p>We will use this expansion to derive asymptotically an valid confidence interval for <span class="math inline">\(\{\psi_n\}_{n \geq 1}\)</span>.</p>
+</section>
+<section id="variance-bound" class="level2">
+<h2 class="anchored" data-anchor-id="variance-bound">Variance bound</h2>
+<p>We first show that <span class="math inline">\(\widehat{\sigma}_n^2\)</span> is uniformly consistent for a population counterpart, then show this counterpart is an upper bound for the variance <span class="math inline">\(\sigma_n^2\)</span> defined in (<a href="#eq-sigma" class="quarto-xref">11</a>). Let <span id="eq-sigma-tilde"><span class="math display">\[
+\widetilde{\sigma}_n^2 = p(1-p)
+\left(
+\frac{|a_{0,n}|S_{0,n}}{1-p}
++
+\frac{|a_{1,n}|S_{1,n}}{p}
+\right)^2
+\tag{12}\]</span></span></p>
+<p>where</p>
+<p><span id="eq-within-arm-variance"><span class="math display">\[
+\begin{aligned}
+S_{0,n}^2 &amp;= \frac{1}{n}\sum_{i=1}^n (y_{i,0} - \overline{y}_{0,n})^2, \\
+S_{1,n}^2 &amp;= \frac{1}{n}\sum_{i=1}^n (y_{i,1} - \overline{y}_{1,n})^2.
+\end{aligned}
+\tag{13}\]</span></span></p>
+<p><span class="math inline">\(\widetilde{\sigma}_n^2\)</span> replaces the realized treatment share with the assignment probability and replaces the observed within-group variances with the corresponding population variances. In the <a href="#sec-variance-ratio-consistency">Appendix</a>, we show <span id="eq-variance-ratio-consistency"><span class="math display">\[
+\frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2} \stackrel{\mathcal{P}}{\to} 1
+\tag{14}\]</span></span></p>
+<p>Using Cauchy–Schwarz to bound the cross term, we also have <span id="eq-conservative-variance"><span class="math display">\[
+\begin{aligned}
+\sigma_n^2
+&amp;=
+a_{0,n}^2\frac{p}{1-p}S_{0,n}^2
++
+a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 \\
+&amp;\quad
+- 2a_{0,n}a_{1,n}\frac{1}{n}\sum_{i=1}^n
+(y_{i,0}-\overline{y}_{0,n})(y_{i,1}-\overline{y}_{1,n})\\
+&amp;\leq
+a_{0,n}^2\frac{p}{1-p}S_{0,n}^2
++
+a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
+&amp;= \widetilde{\sigma}_n^2.
+\end{aligned}
+\tag{15}\]</span></span></p>
+</section>
+<section id="normal-approximation" class="level2">
+<h2 class="anchored" data-anchor-id="normal-approximation">Normal approximation</h2>
+<p>We next establish a uniform normal approximation for the leading sum in (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">10</a>). Under Assumption 1, the summands <span class="math inline">\(X_{i,n}\)</span> form a triangular array of row-wise independent, mean-zero random variables. For each <span class="math inline">\(i\)</span>, the absolute third moment of the standardized summand is <span class="math display">\[
+\begin{aligned}
+\mathbb{E}_\theta\left|\frac{X_{i,n}}{\sigma_n}\right|^3
+&amp;=
+\frac{\mathbb{E}_\theta|D_i-p|^3}{\{p(1-p)\}^{3/2}}\frac{1}{n^{3/2}}
+\frac{|\mathbf{b}_n'\mathbf{u}_{i,n}|^3}{(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}} \\[1ex]
+&amp;=
+\frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
+\frac{1}{n^{3/2}}
+\frac{|\mathbf{b}_n'\mathbf{u}_{i,n}|^3}{(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}.
+\end{aligned}
+\]</span></p>
+<p>By the Cauchy–Schwarz inequality,</p>
+<p><span class="math display">\[
+|\mathbf{b}_n'\mathbf{u}_{i,n}|
+=
+\left|(\mathbf{V}_n^{1/2}\mathbf{b}_n)'\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right|
+\leq
+(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{1/2}
+\left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|.
+\]</span></p>
+<p>Therefore</p>
+<p><span class="math display">\[
+\mathbb{E}_\theta\left|\frac{X_{i,n}}{\sigma_n}\right|^3
+\leq
+\frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
+\frac{1}{n^{3/2}}
+\left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|^3.
+\]</span></p>
+<p>Summing over <span class="math inline">\(i\)</span>, taking the supremum over <span class="math inline">\(\theta\in\Theta\)</span>, and using the lower bound on the assignment probabilities in Assumption 1, we have</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\sum_{i=1}^n
+\mathbb{E}_\theta\left|\frac{X_{i,n}}{\sigma_n}\right|^3
+&amp;\leq
+\frac{1}{\sqrt{\underline p(1-\underline p)}}
+\sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}\sum_{i=1}^n\left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|^3.
+\end{aligned}
+\]</span></p>
+<p>The Berry–Esseen theorem for independent, non-identically distributed summands therefore gives the uniform bound</p>
+<p><span id="eq-dim-clt"><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\sup_{t\in\mathbb{R}}
+\left|
+\mathbb{P}_\theta\left(
+\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}
+\leq t
+\right)
+-
+\Phi(t)
+\right|
+&amp;\leq
+C\sup_{\theta\in\Theta}
+\sum_{i=1}^n\mathbb{E}_\theta\left|\frac{X_{i,n}}{\sigma_n}\right|^3 \\
+&amp;\leq
+\frac{C}{\sqrt{\underline p(1-\underline p)}}
+\sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}\sum_{i=1}^n\left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|^3,
+\end{aligned}
+\tag{16}\]</span></span></p>
+<p>where <span class="math inline">\(C\)</span> is a finite universal constant. Therefore, by Assumption 3,</p>
+<p><span id="eq-normal-approx"><span class="math display">\[
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta\left(
+\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}
+\leq t
+\right)
+-
+\Phi(t)
+\right|
+=0
+\tag{17}\]</span></span> for every <span class="math inline">\(t\in\mathbb{R}\)</span>. Thus <span class="math display">\[
+\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n} \stackrel{\mathcal{P}}{\rightsquigarrow} N(0, 1).
+\]</span></p>
+</section>
+<section id="confidence-interval" class="level2">
+<h2 class="anchored" data-anchor-id="confidence-interval">Confidence interval</h2>
+<p>We now form the confidence interval</p>
+<p><span id="eq-wald-ci"><span class="math display">\[
+C_{1-\alpha,n}
+=
+\left[
+\widehat{\psi}_n - z_{1-\alpha/2}\sqrt{\frac{\widehat{\sigma}_n^2}{n}},
+\widehat{\psi}_n + z_{1-\alpha/2}\sqrt{\frac{\widehat{\sigma}_n^2}{n}}
+\right],
+\tag{18}\]</span></span></p>
+<p>where <span class="math inline">\(z_{1-\alpha/2}\)</span> is the <span class="math inline">\((1-\alpha/2)\)</span> quantile of the standard normal distribution. The event that this interval covers <span class="math inline">\(\psi_n\)</span> can be expressed as</p>
+<p><span class="math display">\[
+\sqrt{n}\left|\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right|\leq z_{1-\alpha/2}.
+\]</span></p>
+<p>Fix <span class="math inline">\(\epsilon\in(0,z_{1-\alpha/2})\)</span> and define</p>
+<p><span class="math display">\[
+r_n =
+\sqrt{n}\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}
+-
+\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}\frac{\sigma_n}{\widehat{\sigma}_n}.
+\]</span></p>
+<p>By the triangle inequality and (<a href="#eq-conservative-variance" class="quarto-xref">15</a>), we have</p>
+<p><span class="math display">\[
+\sqrt{n}\left|\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right|
+\leq
+\left|\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}\right|
+\frac{\tilde{\sigma}_n}{\widehat{\sigma}_n}
++
+\left|r_n\right|.
+\]</span></p>
+<p>Therefore</p>
+<p><span class="math display">\[
+\left\{
+\left|\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}\right|
+\leq
+\frac{z_{1-\alpha/2}-\epsilon}{1+\epsilon}
+\right\}
+\cap
+\left\{
+\frac{\widetilde{\sigma}_n}{\widehat{\sigma}_n}
+\leq1+\epsilon
+\right\}
+\cap
+\left\{
+\left|r_n\right|
+\leq\epsilon
+\right\}
+\subseteq
+\bigl\{\psi_n\in C_{1-\alpha,n}\bigr\},
+\]</span></p>
+<p>which implies</p>
+<p><span id="eq-conservative-clt"><span class="math display">\[
+\begin{aligned}
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha, n}\right)
+&amp;\geq
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}\right|
+\leq
+\frac{z_{1-\alpha/2}-\epsilon}{1+\epsilon}
+\right) \\
+&amp;\quad -
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\frac{\widetilde{\sigma}_n}{\widehat{\sigma}_n}
+&gt;1+\epsilon
+\right)
+-
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\left|r_n\right|&gt;\epsilon\right).
+\end{aligned}
+\tag{19}\]</span></span></p>
+<p>The second term tends to zero because of (<a href="#eq-variance-ratio-consistency" class="quarto-xref">14</a>). The third term tends to zero by (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">10</a>). For the first term, (<a href="#eq-normal-approx" class="quarto-xref">17</a>) gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+\liminf_{n\to\infty}
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha, n}\right)
+&amp;\geq
+\Phi\left(\frac{z_{1-\alpha/2}-\epsilon}{1+\epsilon}\right)-\Phi\left(-\frac{z_{1-\alpha/2}-\epsilon}{1+\epsilon}\right).
+\end{aligned}
+\]</span></p>
+<p>Letting <span class="math inline">\(\epsilon \downarrow 0\)</span>, we obtain</p>
+<p><span id="eq-asymptotic-conservative"><span class="math display">\[
+\liminf_{n\to\infty}
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right)
+\geq
+\Phi(z_{1-\alpha/2}) - \Phi(-z_{1-\alpha/2}) = 1-\alpha.
+\tag{20}\]</span></span></p>
+<p>Therefore <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is asymptotically valid for <span class="math inline">\(\{\psi_n\}_{n \geq 1}\)</span> over <span class="math inline">\(\Theta\)</span>.</p>
+</section>
+</section>
+<section id="illustration" class="level1">
+<h1>Illustration</h1>
+<p>The animations below illustrate the sampling behavior of the confidence interval in (<a href="#eq-wald-ci" class="quarto-xref">18</a>). The left panel in each figure displays a fixed set of potential outcomes. In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown. The potential outcomes do not change; all variation in the estimator and confidence interval comes from the randomized assignment. The right panel displays the resulting estimator for <span class="math inline">\(\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}\)</span> and its corresponding <span class="math inline">\(95\%\)</span> confidence interval, colored green when the interval contains <span class="math inline">\(\psi_n\)</span> and red otherwise.</p>
+<p>In the first animation, <span class="math inline">\(y_{i,1} = y_{i,0} + 1\)</span> for every <span class="math inline">\(i\)</span>. The conservative bound in (<a href="#eq-conservative-variance" class="quarto-xref">15</a>) coincides with the true variance, and the empirical coverage is close to the nominal <span class="math inline">\(95\%\)</span> level.</p>
+<p><img src="homogeneous_coverage_animation.gif" class="img-fluid"></p>
+<p>The second animation uses <span class="math inline">\(y_{i,1} = -y_{i,0} + 1\)</span>. Here the two potential-outcome sequences are negatively correlated, making the conservative variance bound in (<a href="#eq-conservative-variance" class="quarto-xref">15</a>) loose. The estimator variance is much lower than the bound, and the displayed intervals cover <span class="math inline">\(\psi_n\)</span> in all realizations.</p>
+<p><img src="heterogeneous_coverage_animation.gif" class="img-fluid"></p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="sec-stationary-ergodic-conditions" class="level2">
+<h2 class="anchored" data-anchor-id="sec-stationary-ergodic-conditions">A stationary ergodic motivation for the regularity assumptions</h2>
+<p>Suppose <span class="math inline">\(\mathbf{Y}_i = (Y_{i,0}, Y_{i,1})'\)</span> is a stationary ergodic process. Let <span class="math inline">\(\mathbb{P}_\mathbf{Y}\)</span> denote the process law for <span class="math inline">\(\mathbf{Y}\)</span>. Write</p>
+<p><span class="math display">\[
+\boldsymbol{\mu}=\mathbb{E}_\mathbf{Y}[\mathbf{Y}_1],
+\qquad
+\mathbf{M}=\mathbb{E}_\mathbf{Y}[\mathbf{Y}_1\mathbf{Y}_1'],
+\qquad
+\mathbf{V}=\mathbf{M}-\boldsymbol{\mu}\boldsymbol{\mu}'.
+\]</span></p>
+<p>Assume</p>
+<p><span class="math display">\[
+\mathbb{E}_\mathbf{Y}\|\mathbf{Y}_1\|^3&lt;\infty
+\]</span></p>
+<p>and that <span class="math inline">\(\mathbf{V}\)</span> is positive definite. By the ergodic theorem,</p>
+<p><span class="math display">\[
+\begin{gathered}
+\frac{1}{n}\sum_{i=1}^n\mathbf{Y}_i
+\to
+\boldsymbol{\mu},
+\\[1ex]
+\frac{1}{n}\sum_{i=1}^n\mathbf{Y}_i\mathbf{Y}_i'
+\to
+\mathbf{M},
+\\[1ex]
+\frac{1}{n}\sum_{i=1}^n\|\mathbf{Y}_i\|^3
+\to
+\mathbb{E}_\mathbf{Y}\|\mathbf{Y}_1\|^3
+\end{gathered}
+\]</span></p>
+<p>with <span class="math inline">\(\mathbb{P}_\mathbf{Y}\)</span>-probability one.</p>
+<p>Fix <span class="math inline">\(\epsilon &gt; 0\)</span>. By <a href="https://en.wikipedia.org/wiki/Egorov%27s_theorem">Egorov’s theorem</a>, there exists a set <span class="math inline">\(E\)</span> of paths with <span class="math inline">\(\mathbb{P}_\mathbf{Y}(E)&gt;1-\epsilon\)</span> such that these convergences hold uniformly on <span class="math inline">\(E\)</span>. Let <span class="math inline">\(\Theta\)</span> be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential-outcome path lies in <span class="math inline">\(E\)</span>. The uniform convergence of the first and second empirical moments implies</p>
+<p><span class="math display">\[
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left\|
+\mathbf{V}_n-\mathbf{V}
+\right\|
+=0.
+\]</span></p>
+<p>Since <span class="math inline">\(\mathbf{V}\)</span> is positive definite, it follows that, for all sufficiently large <span class="math inline">\(n\)</span>,</p>
+<p><span id="eq-eigenvalue-bounds"><span class="math display">\[
+\inf_{\theta\in\Theta}
+\lambda_{\min}(\mathbf{V}_n)
+\geq
+\frac{1}{2}\lambda_{\min}(\mathbf{V}),
+\qquad
+\sup_{\theta\in\Theta}
+\lambda_{\max}(\mathbf{V}_n)
+\leq
+2\lambda_{\max}(\mathbf{V}).
+\tag{21}\]</span></span></p>
+<p>Thus there exists a finite constant <span class="math inline">\(K_1\)</span> and an index <span class="math inline">\(N_1\)</span> such that, for all <span class="math inline">\(n\geq N_1\)</span>,</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\frac{\lambda_{\max}(\mathbf{V}_n)}
+{\lambda_{\min}(\mathbf{V}_n)}
+\leq K_1.
+\]</span></p>
+<p>It remains to check the Berry–Esseen condition. Using submultiplicativity of the operator norm together with the triangle inequality and Jensen’s inequality, we have</p>
+<p><span id="eq-be-bound"><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\left\|
+\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
+\right\|^3
+&amp;\leq
+\frac{1}{\sqrt n}
+\sup_{\theta\in\Theta}\left\|\mathbf{V}_n^{-1/2}\right\|^3
+\sup_{\theta\in\Theta}
+\frac{1}{n}
+\sum_{i=1}^n
+\left\|
+\mathbf{u}_{i,n}
+\right\|^3 \\
+&amp;\leq
+\frac{C}{\sqrt n}
+\sup_{\theta\in\Theta}\left\|\mathbf{V}_n^{-1/2}\right\|^3
+\left[
+\sup_{\theta\in\Theta}
+\frac{1}{n}
+\sum_{i=1}^n
+\left\|
+\mathbf{y}_i
+\right\|^3
++
+\sup_{\theta\in\Theta}
+\left\|
+\overline{\mathbf{y}}_n
+\right\|^3
+\right].
+\end{aligned}
+\tag{22}\]</span></span></p>
+<p>The uniform lower eigenvalue bound in (<a href="#eq-eigenvalue-bounds" class="quarto-xref">21</a>) implies</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\left\|\mathbf{V}_n^{-1/2}\right\|
+\leq
+\left(\frac{2}{\lambda_{\min}(\mathbf{V})}\right)^{1/2}
+\]</span></p>
+<p>for all sufficiently large <span class="math inline">\(n\)</span>. The bracketed term in (<a href="#eq-be-bound" class="quarto-xref">22</a>) is also bounded uniformly for all sufficiently large <span class="math inline">\(n\)</span> by the uniform convergence of the first and third empirical moments. Therefore, there is a finite constant <span class="math inline">\(K_2\)</span> and an index <span class="math inline">\(N_2\)</span> such that, for all <span class="math inline">\(n\geq N_2\)</span>,</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\left\|
+\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
+\right\|^3
+\leq \frac{K_2}{\sqrt n}.
+\]</span></p>
+<p>Take <span class="math inline">\(K=\max\{K_1,K_2\}\)</span> and <span class="math inline">\(N=\max\{N_1,N_2\}\)</span>. Then, for all <span class="math inline">\(n\geq N\)</span>,</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\frac{\lambda_{\max}(\mathbf{V}_n)}
+{\lambda_{\min}(\mathbf{V}_n)}
+\leq K,
+\qquad
+\sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\left\|
+\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
+\right\|^3
+\leq \frac{K}{\sqrt n}.
+\]</span></p>
+<p>Therefore, after restricting <span class="math inline">\(\Theta\)</span> to paths in <span class="math inline">\(E\)</span>,</p>
+<p><span class="math display">\[
+\limsup_{n\to \infty} \sup_{\theta\in\Theta}
+\frac{\lambda_{\max}(\mathbf{V}_n)}
+{\lambda_{\min}(\mathbf{V}_n)}
+\leq K,
+\qquad
+\lim_{n\to \infty} \sup_{\theta\in\Theta}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\left\|
+\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
+\right\|^3
+= 0.
+\]</span></p>
+</section>
+<section id="sec-proposition-proofs" class="level2">
+<h2 class="anchored" data-anchor-id="sec-proposition-proofs">Proofs of the asymptotic propositions</h2>
+<section id="proposition-1-stochastic-order" class="level3">
+<h3 class="anchored" data-anchor-id="proposition-1-stochastic-order"><a href="#stochastic-order-thm">Proposition 1 (Stochastic order)</a></h3>
+<p>For <span class="math inline">\(M&gt;0\)</span>, write <span class="math inline">\(A_n^M=\{\|X_n\|&gt;Mr_n\}\)</span> and <span class="math inline">\(B_n^M=\{\|Y_n\|&gt;Ms_n\}\)</span>.</p>
+<p><strong>Sum.</strong> Fix <span class="math inline">\(\epsilon&gt;0\)</span>. By the two stochastic-order assumptions, we can choose finite constants <span class="math inline">\(M_X\)</span> and <span class="math inline">\(M_Y\)</span> and an index <span class="math inline">\(N\)</span> so that</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M_X}\right)&lt;\epsilon/2,
+\qquad
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M_Y}\right)&lt;\epsilon/2
+\]</span></p>
+<p>for all <span class="math inline">\(n\geq N\)</span>. Taking <span class="math inline">\(M=\max\{M_X,M_Y\}\)</span>, the same bounds hold with <span class="math inline">\(M\)</span> in place of <span class="math inline">\(M_X\)</span> and <span class="math inline">\(M_Y\)</span>. On <span class="math inline">\(\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c\)</span> we have <span class="math inline">\(\|X_n+Y_n\|\leq\|X_n\|+\|Y_n\|\leq M(r_n+s_n)\)</span>, so</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\bigl(\|X_n+Y_n\|&gt;M(r_n+s_n)\bigr)
+\leq
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)
++
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M}\right)
+&lt;\epsilon
+\]</span></p>
+<p>for <span class="math inline">\(n\geq N\)</span>. Hence <span class="math inline">\(X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)\)</span>.</p>
+<p><strong>Product.</strong> With the same <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span>, on <span class="math inline">\(\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c\)</span> we have <span class="math inline">\(\|X_nY_n\|\leq\|X_n\|\,\|Y_n\|\leq M^2 r_ns_n\)</span>, so <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_nY_n\|&gt;M^2 r_ns_n)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq N\)</span>. Hence <span class="math inline">\(X_nY_n=O_{\mathcal{P}}(r_ns_n)\)</span>.</p>
+<p><strong>Product with a vanishing factor.</strong> Suppose <span class="math inline">\(X_n=o_{\mathcal{P}}(r_n)\)</span>, and fix <span class="math inline">\(\epsilon&gt;0\)</span> and <span class="math inline">\(\delta&gt;0\)</span>. Since <span class="math inline">\(Y_n=O_{\mathcal{P}}(s_n)\)</span>, we can choose <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(B_n^{M}\right)&lt;\delta
+\]</span></p>
+<p>for all <span class="math inline">\(n\geq N\)</span>. On <span class="math inline">\(\left(B_n^{M}\right)^c\)</span>, the event <span class="math inline">\(\|X_nY_n\|&gt;\epsilon r_ns_n\)</span> implies <span class="math inline">\(\|X_n\|&gt;(\epsilon/M)r_n\)</span>, so</p>
+<p><span class="math display">\[
+\mathbb{P}_\theta(\|X_nY_n\|&gt;\epsilon r_ns_n)
+\leq
+\mathbb{P}_\theta\bigl(\|X_n\|&gt;(\epsilon/M)r_n\bigr)
++\mathbb{P}_\theta\left(B_n^{M}\right).
+\]</span></p>
+<p>Taking the supremum over <span class="math inline">\(\theta\)</span> and the limit superior gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(\|X_nY_n\|&gt;\epsilon r_ns_n) \\
+&amp;\qquad\leq
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\bigl(\|X_n\|&gt;(\epsilon/M)r_n\bigr)
++
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(B_n^{M}\right)
+\leq \delta.
+\end{aligned}
+\]</span></p>
+<p>Taking <span class="math inline">\(\delta\downarrow0\)</span>, we can conclude <span class="math inline">\(X_nY_n=o_{\mathcal{P}}(r_ns_n)\)</span>.</p>
+<p><strong>Vanishing rate.</strong> Suppose <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n)\)</span> with <span class="math inline">\(r_n\to 0\)</span>, and fix <span class="math inline">\(\delta&gt;0\)</span> and <span class="math inline">\(\epsilon&gt;0\)</span>. Choose <span class="math inline">\(M\)</span> and <span class="math inline">\(N_0\)</span> with <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq N_0\)</span>. Since <span class="math inline">\(r_n\to 0\)</span>, there is <span class="math inline">\(N_1\)</span> with <span class="math inline">\(Mr_n&lt;\delta\)</span> for <span class="math inline">\(n\geq N_1\)</span>. Therefore <span class="math inline">\(\{\|X_n\|&gt;\delta\}\subseteq A_n^{M}\)</span> and <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_n\|&gt;\delta)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq\max(N_0,N_1)\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(X_n=o_{\mathcal{P}}(1)\)</span>.</p>
+<p><strong>Weak convergence implies boundedness.</strong> Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X\)</span>. Fix <span class="math inline">\(\epsilon&gt;0\)</span> and let <span class="math inline">\(F\)</span> denote the distribution function of <span class="math inline">\(X\)</span>. Choose a finite constant <span class="math inline">\(K\)</span> such that <span class="math inline">\(-K\)</span> and <span class="math inline">\(K\)</span> are continuity points of <span class="math inline">\(F\)</span> and</p>
+<p><span class="math display">\[
+F(-K)+1-F(K)&lt;\epsilon/2.
+\]</span></p>
+<p>Since</p>
+<p><span class="math display">\[
+\mathbb{P}_\theta(|X_n|&gt;K)
+\leq
+\mathbb{P}_\theta(X_n\leq -K)
++
+1-\mathbb{P}_\theta(X_n\leq K),
+\]</span></p>
+<p><span class="math inline">\(X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X\)</span> implies</p>
+<p><span class="math display">\[
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(|X_n|&gt;K)
+\leq
+F(-K)+1-F(K)
+&lt;\epsilon/2.
+\]</span></p>
+<p>Thus, for all sufficiently large <span class="math inline">\(n\)</span>,</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(|X_n|&gt;K)&lt;\epsilon.
+\]</span></p>
+<p>Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(X_n=O_{\mathcal{P}}(1)\)</span>.</p>
+</section>
+<section id="proposition-2-continuous-mapping" class="level3">
+<h3 class="anchored" data-anchor-id="proposition-2-continuous-mapping"><a href="#continuous-mapping-thm">Proposition 2 (Continuous mapping)</a></h3>
+<p>Fix <span class="math inline">\(\epsilon&gt;0\)</span>. Since <span class="math inline">\(g\)</span> is continuous at <span class="math inline">\(c\)</span>, there exists <span class="math inline">\(\delta&gt;0\)</span> such that</p>
+<p><span class="math display">\[
+\|z-c\|&lt;\delta
+\quad\Rightarrow\quad
+\|g(z)-g(c)\|&lt;\epsilon.
+\]</span></p>
+<p>Therefore</p>
+<p><span class="math display">\[
+\left\{
+\|g(X_n)-g(c)\|&gt;\epsilon
+\right\}
+\subseteq
+\left\{
+\|X_n-c\|&gt;\delta/2
+\right\}.
+\]</span></p>
+<p>Taking probabilities and then the supremum over <span class="math inline">\(\theta\in\Theta\)</span> gives</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta
+\left(
+\|g(X_n)-g(c)\|&gt;\epsilon
+\right)
+\leq
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta
+\left(
+\|X_n-c\|&gt;\delta/2
+\right).
+\]</span></p>
+<p>The right-hand side tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}c\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(g(X_n)\stackrel{\mathcal{P}}{\to}g(c)\)</span>.</p>
+<p>For the weak-convergence statement, we will make use of the following lemma:</p>
+<div id="lem-uniform-continuity-sets" class="lemma theorem">
+<p><span class="theorem-title"><strong>Lemma 1</strong></span> <strong>(Uniform convergence on continuity sets).</strong> Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X\)</span>, where <span class="math inline">\(X_n\)</span> and <span class="math inline">\(X\)</span> take values in <span class="math inline">\(\mathbb{R}^k\)</span>. If <span class="math inline">\(A\)</span> is a Borel set with <span class="math inline">\(\mathbb{P}(X\in\partial A)=0\)</span>, then</p>
+<p><span class="math display">\[
+\lim_{n\to \infty}\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\in A)-\mathbb{P}(X\in A)
+\right|
+= 0.
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> Let <span class="math inline">\(F\)</span> denote the joint distribution function of <span class="math inline">\(X\)</span> and fix <span class="math inline">\(\gamma&gt;0\)</span>. Because probability measures on <span class="math inline">\(\mathbb{R}^k\)</span> are <a href="https://en.wikipedia.org/wiki/Regular_measure">regular</a> and the boundary of <span class="math inline">\(A\)</span> has zero probability under the distribution of <span class="math inline">\(X\)</span>, we can find finite unions of disjoint half-open rectangles <span class="math inline">\(A_-\)</span> and <span class="math inline">\(A_+\)</span>, with all corners at continuity points of <span class="math inline">\(F\)</span>, such that</p>
+<p><span class="math display">\[
+A_-\subseteq A\subseteq A_+,
+\qquad
+\mathbb{P}(X\in A_+\setminus A_-)&lt;\gamma.
+\]</span></p>
+<p>Write <span class="math display">\[
+A_+=\bigcup_{j=1}^{J_+} R_{+,j},
+\qquad
+R_{+,j}=\prod_{\ell=1}^k(a_{j\ell},b_{j\ell}],
+\]</span></p>
+<p>where the rectangles are disjoint and all corners of all <span class="math inline">\(R_{+,j}\)</span> are continuity points of <span class="math inline">\(F\)</span>. For any such rectangle, <span class="math inline">\(\mathbb{P}_\theta(X_n\in R_{+,j})\)</span> and <span class="math inline">\(\mathbb{P}(X\in R_{+,j})\)</span> can be written by inclusion-exclusion as finite sums of joint distribution-function values at the corners of <span class="math inline">\(R_{+,j}\)</span>. Uniform convergence of the joint distribution functions at those corners therefore implies</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\in R_{+,j})-\mathbb{P}(X\in R_{+,j})
+\right|
+\to 0
+\]</span></p>
+<p>for each <span class="math inline">\(j\)</span>. Summing over the finitely many rectangles yields</p>
+<p><span id="eq-upper-bracketing-set-convergence"><span class="math display">\[
+\begin{gathered}
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\in A_+)-\mathbb{P}(X\in A_+)
+\right|
+\to 0.
+\end{gathered}
+\tag{23}\]</span></span></p>
+<p>The same argument applied to <span class="math inline">\(A_-\)</span> gives</p>
+<p><span id="eq-lower-bracketing-set-convergence"><span class="math display">\[
+\begin{gathered}
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\in A_-)-\mathbb{P}(X\in A_-)
+\right|
+\to 0.
+\end{gathered}
+\tag{24}\]</span></span></p>
+<p>Since <span class="math inline">\(A\subseteq A_+\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{P}_\theta(X_n\in A)-\mathbb{P}(X\in A)
+&amp;\leq
+\left\{\mathbb{P}_\theta(X_n\in A_+)-\mathbb{P}(X\in A_+)\right\} \\[1ex]
+&amp;\quad+
+\left\{\mathbb{P}(X\in A_+)-\mathbb{P}(X\in A)\right\}\\[1ex]
+&amp;&lt;\left\{\mathbb{P}_\theta(X_n\in A_+)-\mathbb{P}(X\in A_+)\right\} + \gamma.
+\end{aligned}
+\]</span></p>
+<p>Taking the supremum over <span class="math inline">\(\theta\)</span> and using (<a href="#eq-upper-bracketing-set-convergence" class="quarto-xref">23</a>), we can conclude</p>
+<p><span class="math display">\[
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left\{
+\mathbb{P}_\theta(X_n\in A)-\mathbb{P}(X\in A)
+\right\}
+\leq \gamma.
+\]</span></p>
+<p>Similarly, since <span class="math inline">\(A_-\subseteq A\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{P}(X\in A)-\mathbb{P}_\theta(X_n\in A)
+&amp;\leq
+\left\{\mathbb{P}(X\in A_-)-\mathbb{P}_\theta(X_n\in A_-)\right\} \\[1ex]
+&amp;\quad+
+\left\{\mathbb{P}(X\in A)-\mathbb{P}(X\in A_-)\right\} \\[1ex]
+&amp;&lt;
+\left\{\mathbb{P}(X\in A_-)-\mathbb{P}_\theta(X_n\in A_-)\right\}+\gamma.
+\end{aligned}
+\]</span></p>
+<p>Using (<a href="#eq-lower-bracketing-set-convergence" class="quarto-xref">24</a>) gives</p>
+<p><span class="math display">\[
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left\{
+\mathbb{P}(X\in A)-\mathbb{P}_\theta(X_n\in A)
+\right\}
+\leq \gamma.
+\]</span></p>
+<p>Therefore</p>
+<p><span class="math display">\[
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left|\mathbb{P}(X\in A)-\mathbb{P}_\theta(X_n\in A)\right|
+\leq \gamma.
+\]</span></p>
+<p>The desired convergence follows by taking <span class="math inline">\(\gamma \downarrow 0\)</span>. <span class="math inline">\(\square\)</span></p>
+</div>
+<p>Returning to the weak-convergence statement, let <span class="math inline">\(H\)</span> denote the distribution function of <span class="math inline">\(g(X)\)</span>. Fix a continuity point <span class="math inline">\(t\)</span> of <span class="math inline">\(H\)</span> and let</p>
+<p><span class="math display">\[
+A_t=\{z:g(z)\leq t\}.
+\]</span></p>
+<p>The inequality is componentwise if <span class="math inline">\(g\)</span> is vector-valued. Since <span class="math inline">\(g\)</span> is continuous, <span class="math inline">\(\partial A_t\)</span> is contained in <span class="math inline">\(\{z:g(z)\in\partial(-\infty,t]\}\)</span>. Since <span class="math inline">\(t\)</span> is a continuity point of <span class="math inline">\(H\)</span>,</p>
+<p><span class="math display">\[
+\mathbb{P}(X\in\partial A_t)
+\leq
+\mathbb{P}\left(g(X)\in\partial(-\infty,t]\right)
+=0.
+\]</span></p>
+<p>Applying the lemma to <span class="math inline">\(A_t\)</span> gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(g(X_n)\leq t)-H(t)
+\right|
+&amp;=
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\in A_t)-\mathbb{P}(X\in A_t)
+\right| \\
+&amp;\to 0.
+\end{aligned}
+\]</span></p>
+<p>Thus <span class="math inline">\(g(X_n)\stackrel{\mathcal{P}}{\rightsquigarrow}g(X)\)</span>.</p>
+</section>
+<section id="proposition-3-joint-convergence" class="level3">
+<h3 class="anchored" data-anchor-id="proposition-3-joint-convergence"><a href="#joint-convergence-thm">Proposition 3 (Joint convergence)</a></h3>
+<p>First suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>. For every <span class="math inline">\(\epsilon&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\left\{
+\|(X_n,Y_n)-(X,Y)\|&gt;\epsilon
+\right\}
+\subseteq
+\left\{
+\|X_n-X\|&gt;\epsilon/2
+\right\}
+\cup
+\left\{
+\|Y_n-Y\|&gt;\epsilon/2
+\right\}.
+\]</span></p>
+<p>Taking probabilities, taking the supremum over <span class="math inline">\(\theta\in\Theta\)</span>, and using the two marginal convergences proves</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+\]</span></p>
+<p>Now suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\rightsquigarrow}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}c\)</span> for a real constant <span class="math inline">\(c\)</span>. Let <span class="math inline">\(F\)</span> denote the joint distribution function of <span class="math inline">\(X\)</span> and let <span class="math inline">\(H\)</span> denote the joint distribution function of <span class="math inline">\((X,c)\)</span>, so</p>
+<p><span class="math display">\[
+H(s,t)=F(s)\mathbf{1}\{c\leq t\}.
+\]</span></p>
+<p>Fix a continuity point <span class="math inline">\((s,t)\)</span> of <span class="math inline">\(H\)</span>. If <span class="math inline">\(t&lt;c\)</span>, then <span class="math inline">\(H(s,t)=0\)</span> and</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(X_n\leq s,Y_n\leq t)
+\leq
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(|Y_n-c|&gt;\frac{c-t}{2}\right)
+\to 0.
+\]</span></p>
+<p>If <span class="math inline">\(t=c\)</span>, then continuity of <span class="math inline">\(H\)</span> at <span class="math inline">\((s,c)\)</span> implies <span class="math inline">\(F(s)=0\)</span> and that <span class="math inline">\(s\)</span> is a continuity point of <span class="math inline">\(F\)</span>. Thus <span class="math inline">\(H(s,c)=0\)</span> and</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(X_n\leq s,Y_n\leq c)
+\leq
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(X_n\leq s)
+\to 0.
+\]</span></p>
+<p>If <span class="math inline">\(t&gt;c\)</span>, then continuity of <span class="math inline">\(H\)</span> implies that <span class="math inline">\(s\)</span> is a continuity point of <span class="math inline">\(F\)</span>. Since <span class="math inline">\(H(s,t)=F(s)\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\leq s,Y_n\leq t)-F(s)
+\right| \\
+&amp;\qquad\leq
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\leq s)-F(s)
+\right|
++
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(|Y_n-c|&gt;t-c)
+\to 0.
+\end{aligned}
+\]</span></p>
+<p>Thus the joint distribution functions converge uniformly at every continuity point of <span class="math inline">\(H\)</span>, so</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\rightsquigarrow}(X,c).
+\]</span></p>
+</section>
+<section id="proposition-4-slutsky" class="level3">
+<h3 class="anchored" data-anchor-id="proposition-4-slutsky"><a href="#slutsky-thm">Proposition 4 (Slutsky)</a></h3>
+<p>By Proposition 3,</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\rightsquigarrow}(X,c).
+\]</span></p>
+<p>The first two convergence statements then follow from Proposition 2 applied to the continuous maps <span class="math inline">\((x,y)\mapsto x+y\)</span> and <span class="math inline">\((x,y)\mapsto xy\)</span>. For the quotient statement, assume <span class="math inline">\(c\neq0\)</span>. The map <span class="math inline">\(y\mapsto 1/y\)</span> is continuous at <span class="math inline">\(c\)</span>. Thus Proposition 2 gives <span class="math inline">\(1/Y_n\stackrel{\mathcal{P}}{\to}1/c\)</span>. Applying Proposition 3 to <span class="math inline">\(X_n\)</span> and <span class="math inline">\(1/Y_n\)</span> gives</p>
+<p><span class="math display">\[
+\left(X_n,\frac{1}{Y_n}\right)
+\stackrel{\mathcal{P}}{\rightsquigarrow}
+\left(X,\frac{1}{c}\right),
+\]</span></p>
+<p>and Proposition 2 applied to <span class="math inline">\((x,y)\mapsto xy\)</span> gives</p>
+<p><span class="math display">\[
+\frac{X_n}{Y_n}\stackrel{\mathcal{P}}{\rightsquigarrow}\frac{X}{c}.
+\]</span></p>
+</section>
+</section>
+<section id="estimator-asymptotics" class="level2">
+<h2 class="anchored" data-anchor-id="estimator-asymptotics">Estimator asymptotics</h2>
+<section id="notation-and-auxiliary-lemmas" class="level3">
+<h3 class="anchored" data-anchor-id="notation-and-auxiliary-lemmas">Notation and auxiliary lemmas</h3>
+<p>For <span class="math inline">\(d\in\{0,1\}\)</span>, let</p>
+<p><span class="math display">\[
+u_{i,d,n} = y_{i,d} - \overline{y}_{d,n}
+\]</span></p>
+<p>and let <span class="math inline">\(D_{i,1}=D_i\)</span>, <span class="math inline">\(D_{i,0}=1-D_i\)</span>, <span class="math inline">\(p_1=p\)</span>, <span class="math inline">\(p_0=1-p\)</span>, and</p>
+<p><span class="math display">\[
+\overline{D}_{d,n}=\frac{1}{n}\sum_{i=1}^n D_{i,d}.
+\]</span></p>
+<p>Also define</p>
+<p><span class="math display">\[
+b_{0,n}=\frac{|a_{0,n}|S_{0,n}}{1-p},
+\qquad
+b_{1,n}=\frac{|a_{1,n}|S_{1,n}}{p},
+\qquad
+B_n=b_{0,n}+b_{1,n}.
+\]</span></p>
+<div id="lem-treatment-share-convergence" class="lemma theorem">
+<p><span class="theorem-title"><strong>Lemma 2</strong></span> <strong>(Treatment-share convergence).</strong> For each <span class="math inline">\(d\in\{0,1\}\)</span>,</p>
+<p><span class="math display">\[
+\overline{D}_{d,n}\stackrel{\mathcal{P}}{\to}p_d,
+\qquad
+\sqrt n(\overline{D}_{d,n}-p_d)=O_{\mathcal{P}}(1).
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> Under Assumption 1, <span class="math inline">\(D_{1,d},\ldots,D_{n,d}\)</span> are independent Bernoulli random variables with probability <span class="math inline">\(p_d\)</span>. Hence</p>
+<p><span class="math display">\[
+\mathbb{E}_\theta(\overline{D}_{d,n})=p_d,
+\qquad
+\mathbb{V}_\theta(\overline{D}_{d,n})=\frac{p_d(1-p_d)}{n}.
+\]</span></p>
+<p>For every <span class="math inline">\(\epsilon&gt;0\)</span>, Chebyshev’s inequality gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|\overline{D}_{d,n}-p_d\right|&gt;\epsilon
+\right)
+&amp;\leq
+\frac{1}{\epsilon^2}
+\sup_{\theta\in\Theta}
+\frac{p_d(1-p_d)}{n} \\
+&amp;\leq
+\frac{1}{4\epsilon^2 n} \\[2ex]
+&amp;\to 0.
+\end{aligned}
+\]</span></p>
+<p>Thus <span class="math inline">\(\overline{D}_{d,n}\stackrel{\mathcal{P}}{\to}p_d\)</span>. Also, for every <span class="math inline">\(M&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|\sqrt n(\overline{D}_{d,n}-p_d)\right|&gt;M
+\right)
+&amp;\leq
+\frac{1}{M^2}
+\sup_{\theta\in\Theta}p_d(1-p_d) \\
+&amp;\leq
+\frac{1}{4M^2}.
+\end{aligned}
+\]</span></p>
+<p>Therefore <span class="math inline">\(\sqrt n(\overline{D}_{d,n}-p_d)=O_{\mathcal{P}}(1)\)</span>. <span class="math inline">\(\square\)</span></p>
+</div>
+<div id="lem-marginal-leverage-bound" class="lemma theorem">
+<p><span class="theorem-title"><strong>Lemma 3</strong></span> <strong>(Marginal leverage bound).</strong> For each <span class="math inline">\(d\in\{0,1\}\)</span>,</p>
+<p><span id="eq-marginal-leverage-bound"><span class="math display">\[
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+=0.
+\tag{25}\]</span></span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> Let <span class="math inline">\(\mathbf{e}_d\)</span> denote the coordinate vector corresponding to treatment state <span class="math inline">\(d\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+|u_{i,d,n}|
+&amp;=
+\left|\mathbf{e}_d'\mathbf{u}_{i,n}\right| \\
+&amp;=
+\left|
+\left(\mathbf{V}_n^{1/2}\mathbf{e}_d\right)'
+\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
+\right| \\
+&amp;\leq
+\left\|\mathbf{V}_n^{1/2}\mathbf{e}_d\right\|
+\left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\| \\
+&amp;= S_{d,n} \left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|
+\end{aligned}
+\]</span></p>
+<p>Therefore <span class="math display">\[
+\begin{aligned}
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+&amp;\leq
+\max_{1\leq i\leq n}
+\frac{\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\|}{\sqrt n}
+\\
+&amp;\leq
+\left(
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\|^3
+\right)^{1/3}.
+\end{aligned}
+\]</span> The result then follows from Assumption 3. <span class="math inline">\(\square\)</span></p>
+</div>
+</section>
+<section id="sec-residual-appendix" class="level3">
+<h3 class="anchored" data-anchor-id="sec-residual-appendix">Derivation of (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">10</a>)</h3>
+<p>Define <span class="math display">\[
+U_{d,n}
+=
+\frac{1}{n}\sum_{i=1}^n (D_i-p)(y_{i,d}-\overline{y}_{d,n}),
+\qquad d\in\{0,1\}.
+\]</span></p>
+<p>Using <span class="math inline">\(\sum_{i=1}^n (y_{i,d} - \overline{y}_{d,n}) = 0\)</span>, we can write</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y}_{0,n} - \overline{y}_{0,n}
+&amp;= -\frac{1}{n(1-\overline{D}_n)}\sum_{i=1}^n (D_i - p)(y_{i,0} - \overline{y}_{0,n})\\[2ex]
+&amp;= -\dfrac{U_{0,n}}{1-\overline{D}_n}, \\[2ex]
+\widehat{y}_{1,n} - \overline{y}_{1,n}
+&amp;= \frac{1}{n\,\overline{D}_n}\sum_{i=1}^n (D_i - p)(y_{i,1} - \overline{y}_{1,n}) \\[2ex]
+&amp;= \dfrac{U_{1,n}}{\overline{D}_n}
+\end{aligned}
+\]</span></p>
+<p>We therefore have</p>
+<p><span id="eq-exact-decomposition"><span class="math display">\[
+\begin{aligned}
+\sqrt{n}\left(\widehat{\psi}_n-\psi_n\right)
+&amp;= \sqrt{n}\left(a_{0,n}\left(\widehat{y}_{0,n}-\overline{y}_{0,n}\right) + a_{1,n}\left(\widehat{y}_{1,n}-\overline{y}_{1,n}\right)\right) \\[2ex]
+&amp;= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-\overline{D}_n} + \frac{a_{1,n} U_{1,n}}{\overline{D}_n}\right) \\[2ex]
+&amp;= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right)
++ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{1-\overline{D}_n} + \frac{a_{1,n} U_{1,n}}{\overline{D}_n} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
+&amp;= \sum_{i=1}^n X_{i,n} + R_n,
+\end{aligned}
+\tag{26}\]</span></span></p>
+<p>where</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sum_{i = 1}^n X_{i,n}
+&amp;=
+\sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right), \\[2ex]
+R_n
+&amp;= -\sqrt{n}\left(\overline{D}_n-p\right)
+\left[
+\frac{a_{0,n}}{(1-\overline{D}_n)(1-p)}U_{0,n}
++
+\frac{a_{1,n}}{\overline{D}_n\,p}U_{1,n}
+\right].
+\end{aligned}
+\]</span></p>
+<p>Dividing (<a href="#eq-exact-decomposition" class="quarto-xref">26</a>) by <span class="math inline">\(\widehat{\sigma}_n\)</span> gives</p>
+<p><span id="eq-standardized-decomposition"><span class="math display">\[
+\begin{aligned}
+\sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
+&amp;=
+\frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}
+\frac{\sigma_n}{\widehat{\sigma}_n}
++\frac{R_n}{\widehat{\sigma}_n} \\
+&amp;= \frac{\sum_{i=1}^n X_{i,n}}{\sigma_n}
+\frac{\sigma_n}{\widehat{\sigma}_n} + \frac{R_n}{\widetilde{\sigma}_n}
+\frac{\widetilde{\sigma}_n}{\widehat{\sigma}_n}.
+\end{aligned}
+\tag{27}\]</span></span></p>
+<p>Since (<a href="#eq-variance-ratio-consistency" class="quarto-xref">14</a>) implies <span class="math inline">\(\widetilde{\sigma}_n/\widehat{\sigma}_n\stackrel{\mathcal{P}}{\to}1\)</span>, it suffices by Propositions 2 and 3 to show <span class="math inline">\(R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0\)</span>.</p>
+<p>First observe that <span class="math display">\[
+\begin{aligned}
+\frac{|R_n|}{\widetilde{\sigma}_n}
+&amp;=
+\frac{\left|\sqrt n(\overline{D}_n-p)\right|}{\sqrt{p(1-p)}B_n}
+\left|
+\frac{a_{0,n}}{(1-\overline{D}_n)(1-p)}U_{0,n}
++
+\frac{a_{1,n}}{\overline{D}_n p}U_{1,n}
+\right| \\[2ex]
+&amp;\leq
+\frac{\left|\sqrt n(\overline{D}_n-p)\right|}{\sqrt{p(1-p)}}
+\left[
+\frac{b_{0,n}}{B_n}
+\frac{1}{1-\overline{D}_n}
+\left|\frac{U_{0,n}}{S_{0,n}}\right|
++
+\frac{b_{1,n}}{B_n}
+\frac{1}{\overline{D}_n}
+\left|\frac{U_{1,n}}{S_{1,n}}\right|
+\right].
+\end{aligned}
+\]</span></p>
+<p>On the event <span class="math inline">\(\left\{|\overline{D}_n-p|\leq\underline p/2\right\}\)</span>, <span class="math inline">\(1 - \overline{D}_n \geq \underline p/2\)</span> and <span class="math inline">\(\overline{D}_n \geq \underline p/2\)</span> so that <span id="eq-Rn-bound"><span class="math display">\[
+\begin{aligned}
+\frac{|R_n|}{\widetilde{\sigma}_n}
+&amp;\leq
+C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
+\left[
+\frac{b_{0,n}}{B_n}
+\left|\frac{U_{0,n}}{S_{0,n}}\right|
++
+\frac{b_{1,n}}{B_n}
+\left|\frac{U_{1,n}}{S_{1,n}}\right|
+\right],
+\end{aligned}
+\tag{28}\]</span></span></p>
+<p>where</p>
+<p><span class="math display">\[
+C_{\underline p}
+=
+\frac{2}{\sqrt{\underline p(1-\underline p)}\,\underline p}.
+\]</span></p>
+<p>Therefore, for every <span class="math inline">\(\epsilon&gt;0\)</span>, <span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(
+\frac{|R_n|}{\widetilde{\sigma}_n} &gt; \epsilon
+\right)
+&amp;\leq
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(
+C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
+\left[
+\frac{b_{0,n}}{B_n}
+\left|\frac{U_{0,n}}{S_{0,n}}\right|
++
+\frac{b_{1,n}}{B_n}
+\left|\frac{U_{1,n}}{S_{1,n}}\right|
+\right]
+&gt; \epsilon
+\right) \\
+&amp;\quad+
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline{D}_n-p|&gt;\underline p/2\right).
+\end{aligned}
+\]</span></p>
+<p>The second term on the right-hand side converges to zero by Lemma 2. For the first term, observe that for each <span class="math inline">\(d \in \{0,1\}\)</span>,</p>
+<p><span class="math display">\[
+\mathbb{E}_\theta\left[\frac{U_{d,n}}{S_{d,n}}\right]=0,
+\qquad
+\mathbb{V}_\theta\left(\frac{U_{d,n}}{S_{d,n}}\right)
+=
+\frac{p(1-p)}{n}.
+\]</span></p>
+<p>Thus <span class="math inline">\(U_{d,n}/S_{d,n}=o_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. The weights <span class="math inline">\(b_{0,n}/B_n\)</span> and <span class="math inline">\(b_{1,n}/B_n\)</span> lie in <span class="math inline">\([0,1]\)</span>, so the bracketed term in (<a href="#eq-Rn-bound" class="quarto-xref">28</a>) is also <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. By Lemma 2, <span class="math inline">\(\sqrt n(\overline{D}_n-p)=O_{\mathcal{P}}(1)\)</span>. Therefore, by Proposition 1, the product inside the first probability on the right-hand side is <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. Thus</p>
+<p><span class="math display">\[
+\frac{R_n}{\widetilde{\sigma}_n}=o_{\mathcal{P}}(1),
+\]</span></p>
+<p>which by (<a href="#eq-standardized-decomposition" class="quarto-xref">27</a>) proves (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">10</a>).</p>
+</section>
+<section id="sec-variance-ratio-consistency" class="level3">
+<h3 class="anchored" data-anchor-id="sec-variance-ratio-consistency">Derivation of (<a href="#eq-variance-ratio-consistency" class="quarto-xref">14</a>)</h3>
+<p>We now show that</p>
+<p><span id="eq-Shat-consistency"><span class="math display">\[
+\frac{\widehat{S}_{d,n}^2}{S_{d,n}^2}
+\stackrel{\mathcal{P}}{\to}1.
+\tag{29}\]</span></span></p>
+<p>for <span class="math inline">\(d \in \{0,1\}\)</span>. Observe that</p>
+<p><span id="eq-Shat-decomposition"><span class="math display">\[
+\begin{aligned}
+\widehat{S}_{d,n}^2
+&amp;=
+\frac{\overline{(D_d u_{d,n}^2)}_n}{\overline{D}_{d,n}}
+- \left(\frac{\overline{(D_d u_{d,n})}_n}{\overline{D}_{d,n}}\right)^2 \\
+&amp;= \frac{\overline{(D_d u_{d,n}^2)}_n - p_d\,S_{d,n}^2}{\overline{D}_{d,n}}
++ \frac{p_d\,S_{d,n}^2}{\overline{D}_{d,n}}
+- \left(\frac{\overline{(D_d u_{d,n})}_n}{\overline{D}_{d,n}}\right)^2.
+\end{aligned}
+\tag{30}\]</span></span></p>
+<p>By Assumption 2, <span class="math inline">\(S_{d,n}^2&gt;0\)</span> for all sufficiently large <span class="math inline">\(n\)</span> uniformly over <span class="math inline">\(\theta\in\Theta\)</span>. Together with Lemma 2, (<a href="#eq-Shat-decomposition" class="quarto-xref">30</a>), and Propositions 2 and 3, (<a href="#eq-Shat-consistency" class="quarto-xref">29</a>) will follow if we can show <span id="eq-Shat-remainder-bounds"><span class="math display">\[
+\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\stackrel{\mathcal{P}}{\to} 0,
+\qquad
+\frac{\overline{(D_d u_{d,n})}_n}{S_{d,n}}
+\stackrel{\mathcal{P}}{\to} 0.
+\tag{31}\]</span></span></p>
+<p>The first term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">31</a>) has mean zero and variance</p>
+<p><span class="math display">\[
+\frac{p_d(1-p_d)}{n^2 S_{d,n}^4}\sum_{i=1}^n u_{i,d,n}^4
+\leq
+\frac{p_d(1-p_d)}{n^2 S_{d,n}^4}
+\max_{1 \leq i \leq n} u_{i,d,n}^2
+\sum_{i=1}^n u_{i,d,n}^2.
+\]</span></p>
+<p>Since <span class="math inline">\(\sum_{i=1}^n u_{i,d,n}^2=nS_{d,n}^2\)</span>, the right-hand side is</p>
+<p><span class="math display">\[
+\frac{p_d(1-p_d)}{n}
+\left(\frac{\max_{1 \leq i \leq n} u_{i,d,n}^2}{S_{d,n}^2}\right)
+=
+p_d(1-p_d)
+\left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} S_{d,n}}\right)^2.
+\]</span></p>
+<p>Thus, for every <span class="math inline">\(\epsilon&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|
+\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\right|&gt;
+\epsilon
+\right)
+&amp;\leq
+\frac{1}{\epsilon^2}
+\sup_{\theta\in\Theta}
+\mathbb{V}_\theta\left(
+\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\right)
+\\
+&amp;\leq
+\frac{1}{4\epsilon^2}
+\sup_{\theta\in\Theta}
+\left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} S_{d,n}}\right)^2
+\end{aligned}
+\]</span> Therefore the first term converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Lemma 3. Since the second term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">31</a>) has mean zero and variance <span class="math inline">\(p_d(1-p_d)/n\)</span>, it also converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Chebyshev’s inequality. This proves (<a href="#eq-Shat-consistency" class="quarto-xref">29</a>).</p>
+<p>Since <span class="math inline">\(\widehat{S}_{d,n}\)</span> and <span class="math inline">\(S_{d,n}\)</span> are nonnegative, Proposition 2 also gives</p>
+<p><span id="eq-Shat-root-consistency"><span class="math display">\[
+\frac{\widehat{S}_{d,n}}{S_{d,n}}
+\stackrel{\mathcal{P}}{\to}1.
+\tag{32}\]</span></span></p>
+<p>Now by (<a href="#eq-sigma-tilde" class="quarto-xref">12</a>) and (<a href="#eq-sigma-hat" class="quarto-xref">8</a>), we have <span id="eq-sigma-ratio-expansion"><span class="math display">\[
+\frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2}
+=
+\frac{\overline{D}_n(1-\overline{D}_n)}{p(1-p)}
+\left[
+\frac{
+\frac{|a_{0,n}|S_{0,n}}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
++
+\frac{|a_{1,n}|S_{1,n}}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+}{
+\frac{|a_{0,n}|S_{0,n}}{1-p}
++
+\frac{|a_{1,n}|S_{1,n}}{p}
+}
+\right]^2.
+\tag{33}\]</span></span></p>
+<p>The unbracketed term converges to one in <span class="math inline">\(\mathcal{P}\)</span> by Lemma 2 and Proposition 2. It therefore suffices to show that the bracketed ratio also converges to one. For all sufficiently large <span class="math inline">\(n\)</span>, <span class="math inline">\(B_n&gt;0\)</span> and the ratios <span class="math inline">\(b_{0,n}/B_n\)</span> and <span class="math inline">\(b_{1,n}/B_n\)</span> are nonnegative and sum to one. The difference between the bracketed ratio and one can therefore be bounded by <span class="math display">\[
+\begin{aligned}
+&amp;\left|
+\frac{b_{0,n}}{B_n}
+\left(\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
++
+\frac{b_{1,n}}{B_n}
+\left(\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
+-1
+\right| \\
+&amp;\leq
+\frac{b_{0,n}}{B_n}
+\left|
+\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+-1
+\right|
++
+\frac{b_{1,n}}{B_n}
+\left|
+\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+-1
+\right|
+\\
+&amp;\leq
+\left|
+\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+-1
+\right|
++
+\left|
+\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+-1
+\right|
+\end{aligned}
+\]</span> Thus, for every <span class="math inline">\(\epsilon&gt;0\)</span>, <span class="math display">\[
+\begin{aligned}
+&amp;\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|
+\frac{b_{0,n}}{B_n}
+\left(\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
++
+\frac{b_{1,n}}{B_n}
+\left(\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
+-1
+\right|&gt;
+\epsilon
+\right) \\
+&amp;\leq
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|
+\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+-1
+\right|&gt;
+\epsilon/2
+\right) +
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(
+\left|
+\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+-1
+\right|&gt;
+\epsilon/2
+\right)
+\end{aligned}
+\]</span></p>
+<p>The two probabilities on the right-hand side tend to zero by (<a href="#eq-Shat-root-consistency" class="quarto-xref">32</a>), Lemma 2, and Propositions 2 and 3. Therefore the bracketed ratio in (<a href="#eq-sigma-ratio-expansion" class="quarto-xref">33</a>) converges to one in <span class="math inline">\(\mathcal{P}\)</span>. Combining this with the convergence of the unbracketed term proves (<a href="#eq-variance-ratio-consistency" class="quarto-xref">14</a>) by Propositions 2 and 3.</p>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

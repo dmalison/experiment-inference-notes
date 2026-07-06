@@ -1,0 +1,183 @@
+---
+title: "Regularity Assumption Diagnostics"
+author: "David Malison"
+date: last-modified
+language:
+  title-block-published: "Last modified"
+format:
+  html:
+    toc: false
+    number-sections: false
+    link-external-newwindow: true
+    include-in-header:
+      text: |
+        <style>
+          table td { vertical-align: middle; }
+          h1.title { font-size: 2.75rem; text-align: center; }
+          .quarto-title-meta {
+            display: flex !important;
+            justify-content: center;
+            gap: 5rem;
+            text-align: center;
+          }
+          .assumption {
+            margin: 0.75em 0 0.75em 1.5em;
+            padding: 0.25em 0.75em;
+            border-left: 3px solid #ccc;
+          }
+        </style>
+crossref:
+  ref-hyperlink: true
+---
+
+In our note on treatment group means, we showed how to perform robust inference under two regularity assumptions.
+In this note, we construct diagnostics for whether these assumptions are reasonable in a particular finite sample.
+
+# Variance share diagnostic
+
+We adopt the notation from the treatment group means note.
+For $d\in\{0,1\}$, define
+$$
+\kappa_{d,n}
+=
+\frac{1}{n} \frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\,S_{d,n}^2}
+$$
+and let
+$$
+\kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
+$$
+
+$\kappa_{n}$ is the largest share of within-arm variation accounted for by a single unit.
+[Assumption 3(i)](../treatment-group-means/#asm-nondegenerate) is equivalent to
+
+$$
+\lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0
+$$
+
+Intuitively, this condition rules out any single unit dominating either potential-outcome sequence.
+If $\kappa_{n}$ is large, the variance estimator may be unstable and the CLT approximation unreliable.
+
+It is not possible to compute $\kappa_{n}$ directly because only one potential outcome is observed for each unit.
+A feasible alternative is to use the corresponding sample analogue. For $d\in\{0,1\}$, define
+$$
+\widehat\kappa_{d,n}
+=
+\frac{1}{n_d}\frac{\max_{1\leq i\leq n}
+|Y_i-\widehat{y}_{d,n}|^2 D_{i,d}}{\widehat{S}_{d,n}^2},
+$$ {#eq-dominant-unit-diagnostic}
+where
+$$
+n_d=n\overline{D}_{d,n}
+$$
+denotes the number of units assigned to treatment $d$. Let
+$$
+\widehat\kappa_n
+=
+\max\{\widehat\kappa_{0,n},\widehat\kappa_{1,n}\}.
+$$
+A warning can be triggered whenever $\widehat\kappa_n$ exceeds a maximum variance share tolerance $\overline\kappa$.
+
+# Berry--Esseen diagnostic
+
+Define
+
+$$
+\lambda_n
+=
+\frac{1}{n^{3/2}}\frac{\sum_{i=1}^n |\mathbf{b}_n'\mathbf{u}_{i,n}|^3}{(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}.
+$$ {#eq-lambda-def}
+
+The Berry--Esseen condition in [Assumption 3(ii)](../treatment-group-means/#asm-nondegenerate) is equivalent to
+
+$$
+\lim_{n\to\infty}\sup_{\theta\in\Theta}
+\lambda_n
+=0.
+$$
+
+In the treatment group means note, we showed that the Kolmogorov distance between the linearized statistic and the normal distribution is bounded by a constant multiple of $\lambda_n$.
+Therefore if this quantity is large, the normal approximation used by the confidence interval may be unreliable.
+
+Since $\mathbf{b}_n'\mathbf{u}_{i,n}$ is unobserved, we cannot compute $\lambda_n$ from the observed data in general.
+But if we impose
+
+$$
+y_{i,1}=y_{i,0}=y_i
+\qquad
+\text{for every } i,
+$$ {#eq-strong-null}
+
+then $\mathbf{b}_n'\mathbf{u}_{i,n}$ is proportional to $y_i-\overline y$ and (-@eq-lambda-def) reduces to
+
+$$
+\lambda_n
+=
+\frac{1}{n^{3/2}}\frac{\sum_{i=1}^n |y_i-\overline y|^3}{S_n^3},
+$$ {#eq-lambda-strong-null}
+
+where
+
+$$
+\overline y=\frac{1}{n}\sum_{i=1}^n y_i,
+\qquad
+S_n^2=\frac{1}{n}\sum_{i=1}^n (y_i-\overline y)^2.
+$$
+
+(-@eq-strong-null) is the sharp null assumption used to construct exact p-values in Fisher randomization inference (see [Imbens and Rubin, 2015, Chapter 5](https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/fishers-exact-pvalues-for-completely-randomized-experiments/23AF990D2EF9C90D0A424D555FACE578)).
+Since $Y_i = y_i$ under (-@eq-strong-null), we can compute the feasible diagnostic
+
+$$
+\widehat\lambda_n
+=
+\frac{1}{n^{3/2}}\frac{\sum_{i=1}^n |Y_i-\overline Y|^3}{\widehat S_n^3},
+$$ {#eq-lambda-diagnostic-feasible}
+
+where
+
+$$
+\overline Y=\frac{1}{n}\sum_{i=1}^n Y_i,
+\qquad
+\widehat S_n^2=\frac{1}{n}\sum_{i=1}^n (Y_i-\overline Y)^2.
+$$
+
+A warning can be triggered whenever $\widehat\lambda_n$ exceeds a maximum tolerance $\overline\lambda$. The tolerance can be chosen such that the Berry--Esseen bound is below a desired threshold. For example, if we want the Kolmogorov distance to be less than $0.05$, we can set
+
+$$
+\overline\lambda
+=
+\frac{0.05}{C}
+\frac{\sqrt{p(1-p)}}{p^2+(1-p)^2}
+$$
+
+where $C$ is the constant in the Berry--Esseen bound. [Shevtsova (2013)](https://www.mathnet.ru/eng/ia252) gives the upper bound $C\leq0.5583$.
+
+# Simulation
+
+To illustrate how the diagnostic behaves in finite samples, we examine the behavior of the average treatment effect estimator under two different potential outcomes.
+In both cases, we simulate under the strong null and set $n=1{,}000$ and $p=0.5$.
+
+## Well-behaved potential outcomes
+
+The first population consists of $1{,}000$ draws from a log-normal distribution with $\sigma=0.3$.
+@fig-log-normal-population displays a histogram of the potential outcomes:
+
+![Potential outcomes in the log-normal case.](log_normal_potential_outcomes.png){#fig-log-normal-population}
+
+@fig-log-normal-sampling-distribution shows that the sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ closely tracks $N(0,1)$, even though the potential outcomes are skewed.
+
+![Sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ in the log-normal case.](log_normal_sampling_distribution.png){#fig-log-normal-sampling-distribution}
+
+
+## Potential outcomes with outliers
+
+The first population consists of $997$ standard-normal draws plus $3$ extreme outliers at $y=60$.
+This finite population produces $\widehat\varepsilon_n=0.286$.
+@fig-be-failing-population displays a histogram of the observations:
+
+![Potential outcomes in the outlier case.](outlier_potential_outcomes.png){#fig-be-failing-population}
+
+@fig-be-failing shows that the sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ is multimodal.
+The modes correspond to the number of outliers assigned to treatment.
+
+![Sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ in the outlier case.](outlier_sampling_distribution.png){#fig-be-failing}
+

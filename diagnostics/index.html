@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Malison">
+<meta name="dcterms.date" content="2026-06-26">
+
+<title>Regularity Assumption Diagnostics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="index_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<style>
+  table td { vertical-align: middle; }
+  h1.title { font-size: 2.75rem; text-align: center; }
+  .quarto-title-meta {
+    display: flex !important;
+    justify-content: center;
+    gap: 5rem;
+    text-align: center;
+  }
+  .assumption {
+    margin: 0.75em 0 0.75em 1.5em;
+    padding: 0.25em 0.75em;
+    border-left: 3px solid #ccc;
+  }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regularity Assumption Diagnostics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Malison </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Last modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 26, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In our note on treatment group means, we showed how to perform robust inference under two regularity assumptions. In this note, we construct diagnostics for whether these assumptions are reasonable in a particular finite sample.</p>
+<section id="variance-share-diagnostic" class="level1">
+<h1>Variance share diagnostic</h1>
+<p>We adopt the notation from the treatment group means note. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span class="math display">\[
+\kappa_{d,n}
+=
+\frac{1}{n} \frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\,S_{d,n}^2}
+\]</span> and let <span class="math display">\[
+\kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
+\]</span></p>
+<p><span class="math inline">\(\kappa_{n}\)</span> is the largest share of within-arm variation accounted for by a single unit. <a href="../treatment-group-means/#asm-nondegenerate">Assumption 3(i)</a> is equivalent to</p>
+<p><span class="math display">\[
+\lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0
+\]</span></p>
+<p>Intuitively, this condition rules out any single unit dominating either potential-outcome sequence. If <span class="math inline">\(\kappa_{n}\)</span> is large, the variance estimator may be unstable and the CLT approximation unreliable.</p>
+<p>It is not possible to compute <span class="math inline">\(\kappa_{n}\)</span> directly because only one potential outcome is observed for each unit. A feasible alternative is to use the corresponding sample analogue. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span id="eq-dominant-unit-diagnostic"><span class="math display">\[
+\widehat\kappa_{d,n}
+=
+\frac{1}{n_d}\frac{\max_{1\leq i\leq n}
+|Y_i-\widehat{y}_{d,n}|^2 D_{i,d}}{\widehat{S}_{d,n}^2},
+\tag{1}\]</span></span> where <span class="math display">\[
+n_d=n\overline{D}_{d,n}
+\]</span> denotes the number of units assigned to treatment <span class="math inline">\(d\)</span>. Let <span class="math display">\[
+\widehat\kappa_n
+=
+\max\{\widehat\kappa_{0,n},\widehat\kappa_{1,n}\}.
+\]</span> A warning can be triggered whenever <span class="math inline">\(\widehat\kappa_n\)</span> exceeds a maximum variance share tolerance <span class="math inline">\(\overline\kappa\)</span>.</p>
+</section>
+<section id="berryesseen-diagnostic" class="level1">
+<h1>Berry–Esseen diagnostic</h1>
+<p>Define</p>
+<p><span id="eq-lambda-def"><span class="math display">\[
+\lambda_n
+=
+\frac{1}{n^{3/2}}\frac{\sum_{i=1}^n |\mathbf{b}_n'\mathbf{u}_{i,n}|^3}{(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}.
+\tag{2}\]</span></span></p>
+<p>The Berry–Esseen condition in <a href="../treatment-group-means/#asm-nondegenerate">Assumption 3(ii)</a> is equivalent to</p>
+<p><span class="math display">\[
+\lim_{n\to\infty}\sup_{\theta\in\Theta}
+\lambda_n
+=0.
+\]</span></p>
+<p>In the treatment group means note, we showed that the Kolmogorov distance between the linearized statistic and the normal distribution is bounded by a constant multiple of <span class="math inline">\(\lambda_n\)</span>. Therefore if this quantity is large, the normal approximation used by the confidence interval may be unreliable.</p>
+<p>Since <span class="math inline">\(\mathbf{b}_n'\mathbf{u}_{i,n}\)</span> is unobserved, we cannot compute <span class="math inline">\(\lambda_n\)</span> from the observed data in general. But if we impose</p>
+<p><span id="eq-strong-null"><span class="math display">\[
+y_{i,1}=y_{i,0}=y_i
+\qquad
+\text{for every } i,
+\tag{3}\]</span></span></p>
+<p>then <span class="math inline">\(\mathbf{b}_n'\mathbf{u}_{i,n}\)</span> is proportional to <span class="math inline">\(y_i-\overline y\)</span> and (<a href="#eq-lambda-def" class="quarto-xref">2</a>) reduces to</p>
+<p><span id="eq-lambda-strong-null"><span class="math display">\[
+\lambda_n
+=
+\frac{1}{n^{3/2}}\frac{\sum_{i=1}^n |y_i-\overline y|^3}{S_n^3},
+\tag{4}\]</span></span></p>
+<p>where</p>
+<p><span class="math display">\[
+\overline y=\frac{1}{n}\sum_{i=1}^n y_i,
+\qquad
+S_n^2=\frac{1}{n}\sum_{i=1}^n (y_i-\overline y)^2.
+\]</span></p>
+<p>(<a href="#eq-strong-null" class="quarto-xref">3</a>) is the sharp null assumption used to construct exact p-values in Fisher randomization inference (see <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/fishers-exact-pvalues-for-completely-randomized-experiments/23AF990D2EF9C90D0A424D555FACE578">Imbens and Rubin, 2015, Chapter 5</a>). Since <span class="math inline">\(Y_i = y_i\)</span> under (<a href="#eq-strong-null" class="quarto-xref">3</a>), we can compute the feasible diagnostic</p>
+<p><span id="eq-lambda-diagnostic-feasible"><span class="math display">\[
+\widehat\lambda_n
+=
+\frac{1}{n^{3/2}}\frac{\sum_{i=1}^n |Y_i-\overline Y|^3}{\widehat S_n^3},
+\tag{5}\]</span></span></p>
+<p>where</p>
+<p><span class="math display">\[
+\overline Y=\frac{1}{n}\sum_{i=1}^n Y_i,
+\qquad
+\widehat S_n^2=\frac{1}{n}\sum_{i=1}^n (Y_i-\overline Y)^2.
+\]</span></p>
+<p>A warning can be triggered whenever <span class="math inline">\(\widehat\lambda_n\)</span> exceeds a maximum tolerance <span class="math inline">\(\overline\lambda\)</span>. The tolerance can be chosen such that the Berry–Esseen bound is below a desired threshold. For example, if we want the Kolmogorov distance to be less than <span class="math inline">\(0.05\)</span>, we can set</p>
+<p><span class="math display">\[
+\overline\lambda
+=
+\frac{0.05}{C}
+\frac{\sqrt{p(1-p)}}{p^2+(1-p)^2}
+\]</span></p>
+<p>where <span class="math inline">\(C\)</span> is the constant in the Berry–Esseen bound. <a href="https://www.mathnet.ru/eng/ia252">Shevtsova (2013)</a> gives the upper bound <span class="math inline">\(C\leq0.5583\)</span>.</p>
+</section>
+<section id="simulation" class="level1">
+<h1>Simulation</h1>
+<p>To illustrate how the diagnostic behaves in finite samples, we examine the behavior of the average treatment effect estimator under two different potential outcomes. In both cases, we simulate under the strong null and set <span class="math inline">\(n=1{,}000\)</span> and <span class="math inline">\(p=0.5\)</span>.</p>
+<section id="well-behaved-potential-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="well-behaved-potential-outcomes">Well-behaved potential outcomes</h2>
+<p>The first population consists of <span class="math inline">\(1{,}000\)</span> draws from a log-normal distribution with <span class="math inline">\(\sigma=0.3\)</span>. <a href="#fig-log-normal-population" class="quarto-xref">Figure&nbsp;1</a> displays a histogram of the potential outcomes:</p>
+<div id="fig-log-normal-population" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-log-normal-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="log_normal_potential_outcomes.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-log-normal-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Potential outcomes in the log-normal case.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-log-normal-sampling-distribution" class="quarto-xref">Figure&nbsp;2</a> shows that the sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> closely tracks <span class="math inline">\(N(0,1)\)</span>, even though the potential outcomes are skewed.</p>
+<div id="fig-log-normal-sampling-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-log-normal-sampling-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="log_normal_sampling_distribution.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-log-normal-sampling-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> in the log-normal case.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="potential-outcomes-with-outliers" class="level2">
+<h2 class="anchored" data-anchor-id="potential-outcomes-with-outliers">Potential outcomes with outliers</h2>
+<p>The first population consists of <span class="math inline">\(997\)</span> standard-normal draws plus <span class="math inline">\(3\)</span> extreme outliers at <span class="math inline">\(y=60\)</span>. This finite population produces <span class="math inline">\(\widehat\varepsilon_n=0.286\)</span>. <a href="#fig-be-failing-population" class="quarto-xref">Figure&nbsp;3</a> displays a histogram of the observations:</p>
+<div id="fig-be-failing-population" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-be-failing-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outlier_potential_outcomes.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-be-failing-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Potential outcomes in the outlier case.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-be-failing" class="quarto-xref">Figure&nbsp;4</a> shows that the sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> is multimodal. The modes correspond to the number of outliers assigned to treatment.</p>
+<div id="fig-be-failing" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-be-failing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outlier_sampling_distribution.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-be-failing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> in the outlier case.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

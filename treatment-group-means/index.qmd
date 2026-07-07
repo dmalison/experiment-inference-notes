@@ -589,18 +589,19 @@ The animations below illustrate the sampling behavior of the confidence interval
 The left panel in each figure displays a fixed set of potential outcomes.
 In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown.
 The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws.
-The right panel displays the resulting estimator for $\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}$ and its corresponding $95\%$ confidence interval, colored green when the interval contains $\psi_n$ and red otherwise.
+The top-right panel displays the resulting estimator for the average treatment effect $\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}$ and its corresponding $95\%$ confidence interval, colored green when the interval contains $\psi_n$ and red otherwise.
+The bottom-right panel shows the sampling distribution of the studentized estimator $\sqrt{n}(\widehat{\psi}_n-\psi_n)/\widehat{\sigma}_n$ across 50,000 assignment draws, together with the standard normal density.
 
 In the first animation, $y_{i,1} = y_{i,0} + 1$ for every $i$.
-The conservative bound in (-@eq-conservative-variance) coincides with the true variance, and the empirical coverage is close to the nominal $95\%$ level.
+In this case, the conservative bound in (-@eq-conservative-variance) coincides with the true variance. Therefore the studentized estimator closely tracks the standard normal and the empirical coverage is close to the nominal $95\%$ level.
 
-![](homogeneous_coverage_animation.gif)
+![Coverage of the confidence interval under homogeneous treatment effects.](homogeneous_coverage_animation.gif){#fig-homogeneous-coverage}
 
 The second animation uses $y_{i,1} = -y_{i,0} + 1$.
 Here the two potential outcome sequences are negatively correlated, making the conservative variance bound in (-@eq-conservative-variance) loose.
-The estimator variance is much lower than the bound, and the displayed intervals cover $\psi_n$ in all displayed realizations.
+The estimator variance is much lower than the bound, so the studentized estimator is under-dispersed relative to the standard normal and the interval covers $\psi_n$ more often than the nominal level.
 
-![](heterogeneous_coverage_animation.gif)
+![Coverage of the confidence interval under heterogeneous treatment effects.](heterogeneous_coverage_animation.gif){#fig-heterogeneous-coverage}
 
 # Appendix
 

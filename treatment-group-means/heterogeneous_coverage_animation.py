@@ -111,7 +111,7 @@ for i in range(N):
 ax_table.plot([0.1, 4.9], [BOTTOM_LINE_Y, BOTTOM_LINE_Y], color="gray", lw=0.6)
 
 # Truth row: ȳ_0/ȳ_1 inline under the y columns + Δ̄ to the right.
-# Stored as artists so they can fade with the potential-outcome columns once realizations start.
+# Stored as artists so they can fade with the potential outcome columns once realizations start.
 truth_y = BOTTOM_LINE_Y + 1.3
 ybar_text = ax_table.text(
     2.0, truth_y,

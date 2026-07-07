@@ -35,7 +35,7 @@ crossref:
   ref-hyperlink: true
 ---
 
-This note develops confidence intervals for linear combinations of treatment group means in randomized experiments. We use a fixed potential-outcomes framework and establish uniform coverage properties, and then illustrate the behavior of the confidence intervals in a Monte Carlo simulation.
+This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence interval's finite-sample behavior using a Monte Carlo simulation.
 
 # Model
 
@@ -43,7 +43,7 @@ Experimental units are indexed by $i = 1, 2, \ldots$.
 Each unit is assigned to either treatment or control.
 Let $D_i$ denote a treatment indicator, with $D_i = 1$ if unit $i$ is assigned to treatment and $D_i = 0$ otherwise.
 Let $y_{i,d}$ denote the **potential outcome** for unit $i$ under treatment $d \in \{0, 1\}$.
-We condition on the full potential-outcome sequences $\{y_{i,0}\}_{i \geq 1}$ and $\{y_{i,1}\}_{i \geq 1}$, so probabilities are computed only over the randomized treatment assignments.
+We condition on the full potential outcome sequences $\{y_{i,0}\}_{i \geq 1}$ and $\{y_{i,1}\}_{i \geq 1}$, so probabilities are computed only over the randomized treatment assignments.
 
 Let
 
@@ -51,7 +51,7 @@ $$
   \overline{y}_{0,n} = \frac{1}{n}\sum_{i=1}^n y_{i,0}, \qquad \overline{y}_{1,n} = \frac{1}{n}\sum_{i=1}^n y_{i,1}, \qquad \overline{\mathbf{y}}_n = \begin{pmatrix} \overline{y}_{0,n} \\[1ex] \overline{y}_{1,n}\end{pmatrix}.
 $$
 
-Also define the centered potential-outcomes
+Also define the centered potential outcomes
 
 $$
 u_{i, 0, n} = y_{i,0} - \overline{y}_{0,n}, \qquad
@@ -64,7 +64,7 @@ u_{i,1,n}
 $$
 
 
-the potential-outcome variances
+the potential outcome variances
 
 $$
 S_{0,n}^2
@@ -82,7 +82,7 @@ $$
 $$ {#eq-Vn-def}
 
 
-We are interested in performing inference on a linear combination of the potential-outcome means. Define
+We are interested in performing inference on a linear combination of the potential outcome means. Define
 
 $$\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n$$
 
@@ -158,8 +158,8 @@ Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s t
 In practice, such spillovers can often be handled by randomizing at a coarser level.
 
 
-Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential-outcome variation, while Assumption 3(ii) ensures the [Berry--Esseen bound](https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem) for the target contrast vanishes uniformly over $\Theta$.
-In the [Appendix](#sec-stationary-ergodic-conditions), we show that if candidate potential-outcome paths are modeled as realizations of a stationary ergodic process, then for any $\epsilon>0$ there is a set of potential-outcome paths occurring with probability at least $1-\epsilon$ such that Assumption 3 holds after restricting the potential-outcome paths in $\Theta$ to that set.
+Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation, while Assumption 3(ii) ensures the [Berry--Esseen bound](https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem) for the target contrast vanishes uniformly over $\Theta$.
+In the [Appendix](#sec-stationary-ergodic-conditions), we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process, then for any $\epsilon>0$ there is a set of potential outcome paths occurring with probability at least $1-\epsilon$ such that Assumption 3 holds after restricting the potential outcome paths in $\Theta$ to that set.
 
 We assume access to a finite sample $\{(D_i, Y_i)\}_{i=1}^n$.
 For $\theta\in\Theta$, we let $\mathbb{P}_\theta$ denote probability of the observed sample under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2.
@@ -298,7 +298,7 @@ If (-@eq-asymptotic-p) holds, then for any $\epsilon > 0$, there exists an index
 
 ## Estimator
 
-We estimate $\psi_n$ by replacing the potential-outcome means with the control and treatment sample means. Define
+We estimate $\psi_n$ by replacing the potential outcome means with the control and treatment sample means. Define
 
 $$
 \begin{gathered}
@@ -597,7 +597,7 @@ The conservative bound in (-@eq-conservative-variance) coincides with the true v
 ![](homogeneous_coverage_animation.gif)
 
 The second animation uses $y_{i,1} = -y_{i,0} + 1$.
-Here the two potential-outcome sequences are negatively correlated, making the conservative variance bound in (-@eq-conservative-variance) loose.
+Here the two potential outcome sequences are negatively correlated, making the conservative variance bound in (-@eq-conservative-variance) loose.
 The estimator variance is much lower than the bound, and the displayed intervals cover $\psi_n$ in all displayed realizations.
 
 ![](heterogeneous_coverage_animation.gif)
@@ -647,7 +647,7 @@ with $\mathbb{P}_\mathbf{Y}$-probability one.
 
 Fix $\epsilon > 0$.
 By [Egorov's theorem](https://en.wikipedia.org/wiki/Egorov%27s_theorem), there exists a set $E$ of paths with $\mathbb{P}_\mathbf{Y}(E)>1-\epsilon$ such that these convergences hold uniformly on $E$.
-Let $\Theta$ be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential-outcome path lies in $E$.
+Let $\Theta$ be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential outcome path lies in $E$.
 
 We now verify $\Theta$ satisfies Assumption 3(i).
 The uniform convergence of the first and second empirical moments implies

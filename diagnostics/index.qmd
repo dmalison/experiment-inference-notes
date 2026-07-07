@@ -1,5 +1,5 @@
 ---
-title: "Regularity Assumption Diagnostics"
+title: "Regularity Diagnostics"
 author: "David Malison"
 date: last-modified
 language:
@@ -30,8 +30,8 @@ crossref:
   ref-hyperlink: true
 ---
 
-In our note on treatment group means, we showed how to perform robust inference under two regularity assumptions.
-In this note, we construct diagnostics for whether these assumptions are reasonable in a particular finite sample.
+In our note on [treatment group means](../treatment-group-means/), we showed how to construct confidence intervals that were uniformly valid under two regularity assumptions.
+In this note, we construct diagnostics for whether these assumptions are reasonable in a given finite sample.
 
 # Variance share diagnostic
 
@@ -42,23 +42,31 @@ $$
 =
 \frac{1}{n} \frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\,S_{d,n}^2}
 $$
-and let
+
+Because $S_{d,n}^2=n^{-1}\sum_{i=1}^n u_{i,d,n}^2$, this can equivalently be written as
+
+$$
+\kappa_{d,n}
+=
+\frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\sum_{i=1}^n u_{i,d,n}^2}.
+$$
+
+$\kappa_{d,n}$ can therefore be interpreted as the largest share of variation in the $d$th potential outcome sequence accounted for by a single unit.
+
+Now set
 $$
 \kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
 $$
-
-$\kappa_{n}$ is the largest share of within-arm variation accounted for by a single unit.
-[Assumption 3(i)](../treatment-group-means/#asm-nondegenerate) is equivalent to
+[Assumption 3(i)](../treatment-group-means/#asm-nondegenerate) is equivalent to requiring
 
 $$
 \lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0
 $$
 
-Intuitively, this condition rules out any single unit dominating either potential-outcome sequence.
-If $\kappa_{n}$ is large, the variance estimator may be unstable and the CLT approximation unreliable.
+If $\kappa_{n}$ is large in a finite sample, then the asymptotic approximations that rely on Assumption 3(i) may be unreliable.
 
 It is not possible to compute $\kappa_{n}$ directly because only one potential outcome is observed for each unit.
-A feasible alternative is to use the corresponding sample analogue. For $d\in\{0,1\}$, define
+A feasible sample analogue replaces the unobserved potential outcome deviations with observed within-arm residuals. For $d\in\{0,1\}$, define
 $$
 \widehat\kappa_{d,n}
 =
@@ -75,7 +83,8 @@ $$
 =
 \max\{\widehat\kappa_{0,n},\widehat\kappa_{1,n}\}.
 $$
-A warning can be triggered whenever $\widehat\kappa_n$ exceeds a maximum variance share tolerance $\overline\kappa$.
+This statistic is easy to compute and has a variance-share interpretation analogous to that of $\kappa_n$.
+A diagnostic warning can be triggered whenever $\widehat\kappa_n$ exceeds a maximum tolerance $\overline\kappa$.
 
 # Berry--Esseen diagnostic
 
@@ -140,44 +149,46 @@ $$
 \widehat S_n^2=\frac{1}{n}\sum_{i=1}^n (Y_i-\overline Y)^2.
 $$
 
-A warning can be triggered whenever $\widehat\lambda_n$ exceeds a maximum tolerance $\overline\lambda$. The tolerance can be chosen such that the Berry--Esseen bound is below a desired threshold. For example, if we want the Kolmogorov distance to be less than $0.05$, we can set
+A warning can be triggered whenever $\widehat\lambda_n$ exceeds a maximum tolerance $\overline\lambda$. The tolerance can be chosen such that the Berry--Esseen bound is below a desired threshold. For example, if we want the Kolmogorov distance under the strong null to be less than $0.05$, we can set
 
 $$
 \overline\lambda
 =
 \frac{0.05}{C}
 \frac{\sqrt{p(1-p)}}{p^2+(1-p)^2}
-$$
+$$ {#eq-lambda-tolerance}
 
 where $C$ is the constant in the Berry--Esseen bound. [Shevtsova (2013)](https://www.mathnet.ru/eng/ia252) gives the upper bound $C\leq0.5583$.
 
 # Simulation
 
-To illustrate how the diagnostic behaves in finite samples, we examine the behavior of the average treatment effect estimator under two different potential outcomes.
-In both cases, we simulate under the strong null and set $n=1{,}000$ and $p=0.5$.
+To illustrate how these diagnostics behave in finite samples, we examine the behavior of the average treatment effect estimator under two finite populations of potential outcomes.
+In both cases, we simulate data under the strong null and set $n=1{,}000$ and $p=0.5$.
+We set $\overline\kappa=0.10$ for the variance share diagnostic; for the Berry--Esseen diagnostic, we plug $C=0.5583$ into (-@eq-lambda-tolerance) to obtain $\overline\lambda=0.09$.
 
-## Well-behaved potential outcomes
+## Well-behaved potential outcomes {#well-behaved-outcomes}
 
 The first population consists of $1{,}000$ draws from a log-normal distribution with $\sigma=0.3$.
 @fig-log-normal-population displays a histogram of the potential outcomes:
 
 ![Potential outcomes in the log-normal case.](log_normal_potential_outcomes.png){#fig-log-normal-population}
 
-@fig-log-normal-sampling-distribution shows that the sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ closely tracks $N(0,1)$, even though the potential outcomes are skewed.
+@fig-log-normal-sampling-distribution displays the sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$. It closely tracks $N(0,1)$, even though the potential outcomes are somewhat skewed. For this finite population, $\kappa_n=0.035$ and $\lambda_n=0.059$, which are both below their respective tolerances.
 
 ![Sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ in the log-normal case.](log_normal_sampling_distribution.png){#fig-log-normal-sampling-distribution}
 
 
-## Potential outcomes with outliers
+## Potential outcomes with outliers {#outlier-outcomes}
 
-The first population consists of $997$ standard-normal draws plus $3$ extreme outliers at $y=60$.
-This finite population produces $\widehat\varepsilon_n=0.286$.
-@fig-be-failing-population displays a histogram of the observations:
+The second population consists of $997$ standard-normal draws plus $3$ extreme outliers at $y=60$.
+@fig-be-failing-population displays a histogram of the potential outcomes:
 
 ![Potential outcomes in the outlier case.](outlier_potential_outcomes.png){#fig-be-failing-population}
 
+For this finite population, $\kappa_n=0.307$ and $\lambda_n=0.512$, which are both above their respective tolerances.
 @fig-be-failing shows that the sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ is multimodal.
 The modes correspond to the number of outliers assigned to treatment.
+In this case, the standard normal is a poor approximation.
 
 ![Sampling distribution of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ in the outlier case.](outlier_sampling_distribution.png){#fig-be-failing}
 

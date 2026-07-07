@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-06-26">
+<meta name="dcterms.date" content="2026-07-07">
 
-<title>Regularity Assumption Diagnostics</title>
+<title>Regularity Diagnostics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -95,7 +95,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Regularity Assumption Diagnostics</h1>
+<h1 class="title">Regularity Diagnostics</h1>
 </div>
 
 
@@ -112,7 +112,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 26, 2026</p>
+      <p class="date">July 7, 2026</p>
     </div>
   </div>
   
@@ -124,22 +124,29 @@ window.Quarto = {
 </header>
 
 
-<p>In our note on treatment group means, we showed how to perform robust inference under two regularity assumptions. In this note, we construct diagnostics for whether these assumptions are reasonable in a particular finite sample.</p>
+<p>In our note on <a href="../treatment-group-means/">treatment group means</a>, we showed how to construct confidence intervals that were uniformly valid under two regularity assumptions. In this note, we construct diagnostics for whether these assumptions are reasonable in a given finite sample.</p>
 <section id="variance-share-diagnostic" class="level1">
 <h1>Variance share diagnostic</h1>
 <p>We adopt the notation from the treatment group means note. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span class="math display">\[
 \kappa_{d,n}
 =
 \frac{1}{n} \frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\,S_{d,n}^2}
-\]</span> and let <span class="math display">\[
-\kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
 \]</span></p>
-<p><span class="math inline">\(\kappa_{n}\)</span> is the largest share of within-arm variation accounted for by a single unit. <a href="../treatment-group-means/#asm-nondegenerate">Assumption 3(i)</a> is equivalent to</p>
+<p>Because <span class="math inline">\(S_{d,n}^2=n^{-1}\sum_{i=1}^n u_{i,d,n}^2\)</span>, this can equivalently be written as</p>
+<p><span class="math display">\[
+\kappa_{d,n}
+=
+\frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\sum_{i=1}^n u_{i,d,n}^2}.
+\]</span></p>
+<p><span class="math inline">\(\kappa_{d,n}\)</span> can therefore be interpreted as the largest share of variation in the <span class="math inline">\(d\)</span>th potential outcome sequence accounted for by a single unit.</p>
+<p>Now set <span class="math display">\[
+\kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
+\]</span> <a href="../treatment-group-means/#asm-nondegenerate">Assumption 3(i)</a> is equivalent to requiring</p>
 <p><span class="math display">\[
 \lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0
 \]</span></p>
-<p>Intuitively, this condition rules out any single unit dominating either potential-outcome sequence. If <span class="math inline">\(\kappa_{n}\)</span> is large, the variance estimator may be unstable and the CLT approximation unreliable.</p>
-<p>It is not possible to compute <span class="math inline">\(\kappa_{n}\)</span> directly because only one potential outcome is observed for each unit. A feasible alternative is to use the corresponding sample analogue. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span id="eq-dominant-unit-diagnostic"><span class="math display">\[
+<p>If <span class="math inline">\(\kappa_{n}\)</span> is large in a finite sample, then the asymptotic approximations that rely on Assumption 3(i) may be unreliable.</p>
+<p>It is not possible to compute <span class="math inline">\(\kappa_{n}\)</span> directly because only one potential outcome is observed for each unit. A feasible sample analogue replaces the unobserved potential outcome deviations with observed within-arm residuals. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span id="eq-dominant-unit-diagnostic"><span class="math display">\[
 \widehat\kappa_{d,n}
 =
 \frac{1}{n_d}\frac{\max_{1\leq i\leq n}
@@ -150,7 +157,7 @@ n_d=n\overline{D}_{d,n}
 \widehat\kappa_n
 =
 \max\{\widehat\kappa_{0,n},\widehat\kappa_{1,n}\}.
-\]</span> A warning can be triggered whenever <span class="math inline">\(\widehat\kappa_n\)</span> exceeds a maximum variance share tolerance <span class="math inline">\(\overline\kappa\)</span>.</p>
+\]</span> This statistic is easy to compute and has a variance-share interpretation analogous to that of <span class="math inline">\(\kappa_n\)</span>. A diagnostic warning can be triggered whenever <span class="math inline">\(\widehat\kappa_n\)</span> exceeds a maximum tolerance <span class="math inline">\(\overline\kappa\)</span>.</p>
 </section>
 <section id="berryesseen-diagnostic" class="level1">
 <h1>Berry–Esseen diagnostic</h1>
@@ -197,20 +204,20 @@ S_n^2=\frac{1}{n}\sum_{i=1}^n (y_i-\overline y)^2.
 \qquad
 \widehat S_n^2=\frac{1}{n}\sum_{i=1}^n (Y_i-\overline Y)^2.
 \]</span></p>
-<p>A warning can be triggered whenever <span class="math inline">\(\widehat\lambda_n\)</span> exceeds a maximum tolerance <span class="math inline">\(\overline\lambda\)</span>. The tolerance can be chosen such that the Berry–Esseen bound is below a desired threshold. For example, if we want the Kolmogorov distance to be less than <span class="math inline">\(0.05\)</span>, we can set</p>
-<p><span class="math display">\[
+<p>A warning can be triggered whenever <span class="math inline">\(\widehat\lambda_n\)</span> exceeds a maximum tolerance <span class="math inline">\(\overline\lambda\)</span>. The tolerance can be chosen such that the Berry–Esseen bound is below a desired threshold. For example, if we want the Kolmogorov distance under the strong null to be less than <span class="math inline">\(0.05\)</span>, we can set</p>
+<p><span id="eq-lambda-tolerance"><span class="math display">\[
 \overline\lambda
 =
 \frac{0.05}{C}
 \frac{\sqrt{p(1-p)}}{p^2+(1-p)^2}
-\]</span></p>
+\tag{6}\]</span></span></p>
 <p>where <span class="math inline">\(C\)</span> is the constant in the Berry–Esseen bound. <a href="https://www.mathnet.ru/eng/ia252">Shevtsova (2013)</a> gives the upper bound <span class="math inline">\(C\leq0.5583\)</span>.</p>
 </section>
 <section id="simulation" class="level1">
 <h1>Simulation</h1>
-<p>To illustrate how the diagnostic behaves in finite samples, we examine the behavior of the average treatment effect estimator under two different potential outcomes. In both cases, we simulate under the strong null and set <span class="math inline">\(n=1{,}000\)</span> and <span class="math inline">\(p=0.5\)</span>.</p>
-<section id="well-behaved-potential-outcomes" class="level2">
-<h2 class="anchored" data-anchor-id="well-behaved-potential-outcomes">Well-behaved potential outcomes</h2>
+<p>To illustrate how these diagnostics behave in finite samples, we examine the behavior of the average treatment effect estimator under two finite populations of potential outcomes. In both cases, we simulate data under the strong null and set <span class="math inline">\(n=1{,}000\)</span> and <span class="math inline">\(p=0.5\)</span>. We set <span class="math inline">\(\overline\kappa=0.10\)</span> for the variance share diagnostic; for the Berry–Esseen diagnostic, we plug <span class="math inline">\(C=0.5583\)</span> into (<a href="#eq-lambda-tolerance" class="quarto-xref">6</a>) to obtain <span class="math inline">\(\overline\lambda=0.09\)</span>.</p>
+<section id="well-behaved-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="well-behaved-outcomes">Well-behaved potential outcomes</h2>
 <p>The first population consists of <span class="math inline">\(1{,}000\)</span> draws from a log-normal distribution with <span class="math inline">\(\sigma=0.3\)</span>. <a href="#fig-log-normal-population" class="quarto-xref">Figure&nbsp;1</a> displays a histogram of the potential outcomes:</p>
 <div id="fig-log-normal-population" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -222,7 +229,7 @@ Figure&nbsp;1: Potential outcomes in the log-normal case.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-log-normal-sampling-distribution" class="quarto-xref">Figure&nbsp;2</a> shows that the sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> closely tracks <span class="math inline">\(N(0,1)\)</span>, even though the potential outcomes are skewed.</p>
+<p><a href="#fig-log-normal-sampling-distribution" class="quarto-xref">Figure&nbsp;2</a> displays the sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span>. It closely tracks <span class="math inline">\(N(0,1)\)</span>, even though the potential outcomes are somewhat skewed. For this finite population, <span class="math inline">\(\kappa_n=0.035\)</span> and <span class="math inline">\(\lambda_n=0.059\)</span>, which are both below their respective tolerances.</p>
 <div id="fig-log-normal-sampling-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-log-normal-sampling-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -234,9 +241,9 @@ Figure&nbsp;2: Sampling distribution of <span class="math inline">\(\sqrt{n}(\wi
 </figure>
 </div>
 </section>
-<section id="potential-outcomes-with-outliers" class="level2">
-<h2 class="anchored" data-anchor-id="potential-outcomes-with-outliers">Potential outcomes with outliers</h2>
-<p>The first population consists of <span class="math inline">\(997\)</span> standard-normal draws plus <span class="math inline">\(3\)</span> extreme outliers at <span class="math inline">\(y=60\)</span>. This finite population produces <span class="math inline">\(\widehat\varepsilon_n=0.286\)</span>. <a href="#fig-be-failing-population" class="quarto-xref">Figure&nbsp;3</a> displays a histogram of the observations:</p>
+<section id="outlier-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="outlier-outcomes">Potential outcomes with outliers</h2>
+<p>The second population consists of <span class="math inline">\(997\)</span> standard-normal draws plus <span class="math inline">\(3\)</span> extreme outliers at <span class="math inline">\(y=60\)</span>. <a href="#fig-be-failing-population" class="quarto-xref">Figure&nbsp;3</a> displays a histogram of the potential outcomes:</p>
 <div id="fig-be-failing-population" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-be-failing-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -247,7 +254,7 @@ Figure&nbsp;3: Potential outcomes in the outlier case.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-be-failing" class="quarto-xref">Figure&nbsp;4</a> shows that the sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> is multimodal. The modes correspond to the number of outliers assigned to treatment.</p>
+<p>For this finite population, <span class="math inline">\(\kappa_n=0.307\)</span> and <span class="math inline">\(\lambda_n=0.512\)</span>, which are both above their respective tolerances. <a href="#fig-be-failing" class="quarto-xref">Figure&nbsp;4</a> shows that the sampling distribution of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span> is multimodal. The modes correspond to the number of outliers assigned to treatment. In this case, the standard normal is a poor approximation.</p>
 <div id="fig-be-failing" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-be-failing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">

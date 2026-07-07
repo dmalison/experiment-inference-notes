@@ -129,15 +129,15 @@ window.Quarto = {
 </header>
 
 
-<p>This note develops confidence intervals for linear combinations of treatment group means in randomized experiments. We use a fixed potential-outcomes framework and establish uniform coverage properties, and then illustrate the behavior of the confidence intervals in a Monte Carlo simulation.</p>
+<p>This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence interval’s finite-sample behavior using a Monte Carlo simulation.</p>
 <section id="model" class="level1">
 <h1>Model</h1>
-<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote a treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise. Let <span class="math inline">\(y_{i,d}\)</span> denote the <strong>potential outcome</strong> for unit <span class="math inline">\(i\)</span> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We condition on the full potential-outcome sequences <span class="math inline">\(\{y_{i,0}\}_{i \geq 1}\)</span> and <span class="math inline">\(\{y_{i,1}\}_{i \geq 1}\)</span>, so probabilities are computed only over the randomized treatment assignments.</p>
+<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote a treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise. Let <span class="math inline">\(y_{i,d}\)</span> denote the <strong>potential outcome</strong> for unit <span class="math inline">\(i\)</span> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We condition on the full potential outcome sequences <span class="math inline">\(\{y_{i,0}\}_{i \geq 1}\)</span> and <span class="math inline">\(\{y_{i,1}\}_{i \geq 1}\)</span>, so probabilities are computed only over the randomized treatment assignments.</p>
 <p>Let</p>
 <p><span class="math display">\[
   \overline{y}_{0,n} = \frac{1}{n}\sum_{i=1}^n y_{i,0}, \qquad \overline{y}_{1,n} = \frac{1}{n}\sum_{i=1}^n y_{i,1}, \qquad \overline{\mathbf{y}}_n = \begin{pmatrix} \overline{y}_{0,n} \\[1ex] \overline{y}_{1,n}\end{pmatrix}.
 \]</span></p>
-<p>Also define the centered potential-outcomes</p>
+<p>Also define the centered potential outcomes</p>
 <p><span class="math display">\[
 u_{i, 0, n} = y_{i,0} - \overline{y}_{0,n}, \qquad
 u_{i, 1, n} = y_{i,1} - \overline{y}_{1,n}, \qquad
@@ -147,7 +147,7 @@ u_{i,0,n} \\
 u_{i,1,n}
 \end{pmatrix}
 \]</span></p>
-<p>the potential-outcome variances</p>
+<p>the potential outcome variances</p>
 <p><span class="math display">\[
 S_{0,n}^2
 =
@@ -160,7 +160,7 @@ S_{1,n}^2
 <p><span id="eq-Vn-def"><span class="math display">\[
 \mathbf{V}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i, n} \mathbf{u}_{i, n}'.
 \tag{1}\]</span></span></p>
-<p>We are interested in performing inference on a linear combination of the potential-outcome means. Define</p>
+<p>We are interested in performing inference on a linear combination of the potential outcome means. Define</p>
 <p><span class="math display">\[\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n\]</span></p>
 <p>for a nonzero, non-random coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the <strong>average treatment effect (ATE)</strong>.</p>
 <p>Collect the model primitives into the parameter vector</p>
@@ -208,7 +208,7 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 </div>
 <p>Assumption 1 requires the treatment assignment probability <span class="math inline">\(p\)</span> to be bounded away from zero and one. In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups. In this case, Assumption 1 holds by taking <span class="math inline">\(\underline p\)</span> to be the smallest permitted bucket fraction.</p>
 <p>Assumption 2 requires unit <span class="math inline">\(i\)</span>’s observed outcome to depend only on unit <span class="math inline">\(i\)</span>’s treatment assignment and not on the treatment assignments of other units. This is a form of the <a href="https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption">stable unit treatment value assumption (SUTVA)</a> and can be restrictive in some settings. For example, if <span class="math inline">\(i\)</span> indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions. In practice, such spillovers can often be handled by randomizing at a coarser level.</p>
-<p>Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential-outcome variation, while Assumption 3(ii) ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> for the target contrast vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential-outcome paths are modeled as realizations of a stationary ergodic process, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential-outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumption 3 holds after restricting the potential-outcome paths in <span class="math inline">\(\Theta\)</span> to that set.</p>
+<p>Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation, while Assumption 3(ii) ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> for the target contrast vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumption 3 holds after restricting the potential outcome paths in <span class="math inline">\(\Theta\)</span> to that set.</p>
 <p>We assume access to a finite sample <span class="math inline">\(\{(D_i, Y_i)\}_{i=1}^n\)</span>. For <span class="math inline">\(\theta\in\Theta\)</span>, we let <span class="math inline">\(\mathbb{P}_\theta\)</span> denote probability of the observed sample under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2. We let <span class="math inline">\(\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}\)</span> denote the set of possible probability measures.</p>
 </section>
 <section id="inference" class="level1">
@@ -302,7 +302,7 @@ X_nY_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} cX, \\
 </section>
 <section id="estimator" class="level2">
 <h2 class="anchored" data-anchor-id="estimator">Estimator</h2>
-<p>We estimate <span class="math inline">\(\psi_n\)</span> by replacing the potential-outcome means with the control and treatment sample means. Define</p>
+<p>We estimate <span class="math inline">\(\psi_n\)</span> by replacing the potential outcome means with the control and treatment sample means. Define</p>
 <p><span id="eq-estimators"><span class="math display">\[
 \begin{gathered}
 \widehat{y}_{0,n} = \frac{\overline{Y(1 - D)}_n}{1 - \overline{D}_n}, \qquad \widehat{y}_{1,n} = \frac{\overline{YD}_n}{\overline{D}_n}, \qquad \widehat{\mathbf{y}}_n = \begin{pmatrix} \widehat{y}_{0,n} \\ \widehat{y}_{1,n} \end{pmatrix}
@@ -539,7 +539,7 @@ a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 <p>The animations below illustrate the sampling behavior of the confidence interval in (<a href="#eq-wald-ci" class="quarto-xref">16</a>). The left panel in each figure displays a fixed set of potential outcomes. In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown. The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws. The right panel displays the resulting estimator for <span class="math inline">\(\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}\)</span> and its corresponding <span class="math inline">\(95\%\)</span> confidence interval, colored green when the interval contains <span class="math inline">\(\psi_n\)</span> and red otherwise.</p>
 <p>In the first animation, <span class="math inline">\(y_{i,1} = y_{i,0} + 1\)</span> for every <span class="math inline">\(i\)</span>. The conservative bound in (<a href="#eq-conservative-variance" class="quarto-xref">17</a>) coincides with the true variance, and the empirical coverage is close to the nominal <span class="math inline">\(95\%\)</span> level.</p>
 <p><img src="homogeneous_coverage_animation.gif" class="img-fluid"></p>
-<p>The second animation uses <span class="math inline">\(y_{i,1} = -y_{i,0} + 1\)</span>. Here the two potential-outcome sequences are negatively correlated, making the conservative variance bound in (<a href="#eq-conservative-variance" class="quarto-xref">17</a>) loose. The estimator variance is much lower than the bound, and the displayed intervals cover <span class="math inline">\(\psi_n\)</span> in all displayed realizations.</p>
+<p>The second animation uses <span class="math inline">\(y_{i,1} = -y_{i,0} + 1\)</span>. Here the two potential outcome sequences are negatively correlated, making the conservative variance bound in (<a href="#eq-conservative-variance" class="quarto-xref">17</a>) loose. The estimator variance is much lower than the bound, and the displayed intervals cover <span class="math inline">\(\psi_n\)</span> in all displayed realizations.</p>
 <p><img src="heterogeneous_coverage_animation.gif" class="img-fluid"></p>
 </section>
 <section id="appendix" class="level1">
@@ -575,7 +575,7 @@ a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 \end{gathered}
 \]</span></p>
 <p>with <span class="math inline">\(\mathbb{P}_\mathbf{Y}\)</span>-probability one.</p>
-<p>Fix <span class="math inline">\(\epsilon &gt; 0\)</span>. By <a href="https://en.wikipedia.org/wiki/Egorov%27s_theorem">Egorov’s theorem</a>, there exists a set <span class="math inline">\(E\)</span> of paths with <span class="math inline">\(\mathbb{P}_\mathbf{Y}(E)&gt;1-\epsilon\)</span> such that these convergences hold uniformly on <span class="math inline">\(E\)</span>. Let <span class="math inline">\(\Theta\)</span> be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential-outcome path lies in <span class="math inline">\(E\)</span>.</p>
+<p>Fix <span class="math inline">\(\epsilon &gt; 0\)</span>. By <a href="https://en.wikipedia.org/wiki/Egorov%27s_theorem">Egorov’s theorem</a>, there exists a set <span class="math inline">\(E\)</span> of paths with <span class="math inline">\(\mathbb{P}_\mathbf{Y}(E)&gt;1-\epsilon\)</span> such that these convergences hold uniformly on <span class="math inline">\(E\)</span>. Let <span class="math inline">\(\Theta\)</span> be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential outcome path lies in <span class="math inline">\(E\)</span>.</p>
 <p>We now verify <span class="math inline">\(\Theta\)</span> satisfies Assumption 3(i). The uniform convergence of the first and second empirical moments implies</p>
 <p><span id="eq-Vn-uniform-convergence"><span class="math display">\[
 \lim_{n\to\infty}

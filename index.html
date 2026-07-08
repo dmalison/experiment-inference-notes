@@ -3,11 +3,48 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="0; url=treatment-group-means/">
     <title>Experiment Inference Notes</title>
-    <link rel="canonical" href="treatment-group-means/">
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        max-width: 46rem;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+        color: #1a1a1a;
+      }
+      h1 { font-size: 2.5rem; text-align: center; margin-bottom: 0.25rem; }
+      p.subtitle { text-align: center; color: #666; margin-top: 0; }
+      ul.notes { list-style: none; padding: 0; margin: 2.5rem 0; }
+      ul.notes li {
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        transition: background 0.15s ease;
+      }
+      ul.notes li:hover { background: rgba(0, 0, 0, 0.03); }
+      ul.notes a { font-size: 1.15rem; font-weight: 600; text-decoration: none; }
+      ul.notes a:hover { text-decoration: underline; }
+      @media (prefers-color-scheme: dark) {
+        body { color: #e6e6e6; background: #121212; }
+        p.subtitle { color: #aaa; }
+        ul.notes li { border-color: #333; }
+        ul.notes li:hover { background: rgba(255, 255, 255, 0.05); }
+      }
+    </style>
   </head>
   <body>
-    <p><a href="treatment-group-means/">Open treatment group means notes</a>.</p>
+    <h1>Experiment Inference Notes</h1>
+    <p class="subtitle">David Malison</p>
+    <ul class="notes">
+      <li>
+        <a href="treatment-group-means/">Uniform Inference on Treatment Group Means</a>
+      </li>
+      <li>
+        <a href="diagnostics/">Regularity Diagnostics</a>
+      </li>
+    </ul>
   </body>
 </html>

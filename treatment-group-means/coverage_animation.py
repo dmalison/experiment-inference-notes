@@ -7,7 +7,6 @@ Generates two comparable animations from the same seed:
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -15,12 +14,19 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 from scipy import stats
 
+from lib.ate import compute_ate
+from lib.experiment import (
+    ExperimentConfig,
+    Population,
+    simulate_experiment,
+)
+from lib.simulation import SimulationConfig, simulate_studentized_ate
+
 N_UNITS = 30
 TREATMENT_PROBABILITY = 0.5
 N_EXPERIMENTS = 10
 SEED = 3
-ALPHA = 0.05
-z_critical = stats.norm.ppf(1 - ALPHA / 2)
+CI_LEVEL = 0.95
 
 # Shared x-axis range and ticks across the homogeneous/heterogeneous figures
 # so the two animations are visually comparable.
@@ -35,63 +41,9 @@ HIST_COLOR = "#ee964b"
 NORMAL_COLOR = "#1b4332"
 
 
-@dataclass
-class ExperimentResult:
-    y0_bar_hat: float
-    y1_bar_hat: float
-    psi_hat: float
-    ci_lo: float
-    ci_hi: float
-    true_value_covered: bool
-
-
-@dataclass
-class Population:
-    y0: np.ndarray
-    y1: np.ndarray
-    psi: float
-
-
-def run_experiment(assignment: np.ndarray, population: Population) -> ExperimentResult:
-    y0, y1 = population.y0, population.y1
-    frac_treated = assignment.mean()
-    n_treated, n_control = assignment.sum(), N_UNITS - assignment.sum()
-    y1_bar_hat = (assignment * y1).sum() / n_treated
-    y0_bar_hat = ((1 - assignment) * y0).sum() / n_control
-    psi_hat = y1_bar_hat - y0_bar_hat
-    s1_sq_hat = (assignment * (y1 - y1_bar_hat) ** 2).sum() / n_treated
-    s0_sq_hat = ((1 - assignment) * (y0 - y0_bar_hat) ** 2).sum() / n_control
-    sigma_sq_hat = s1_sq_hat / frac_treated + s0_sq_hat / (1 - frac_treated)
-    se = np.sqrt(sigma_sq_hat / N_UNITS)
-    ci_lo, ci_hi = psi_hat - z_critical * se, psi_hat + z_critical * se
-    return ExperimentResult(
-        y0_bar_hat=float(y0_bar_hat),
-        y1_bar_hat=float(y1_bar_hat),
-        psi_hat=float(psi_hat),
-        ci_lo=float(ci_lo),
-        ci_hi=float(ci_hi),
-        true_value_covered=bool(ci_lo <= population.psi <= ci_hi),
-    )
-
-
 def fmt(x: float) -> str:
     """Format with 2 decimals, mapping near-zero to '0.00' (no '-0.00')."""
     return "0.00" if abs(x) < 0.005 else f"{x:.2f}"
-
-
-def studentized_statistics(
-    population: Population, rng: np.random.Generator, n_draws: int
-) -> np.ndarray:
-    """Studentized estimator sqrt(n)(psi_hat - psi) / sigma_hat over many assignment draws."""
-    studentized = np.empty(n_draws)
-    for k in range(n_draws):
-        assignment = rng.binomial(1, TREATMENT_PROBABILITY, size=N_UNITS)
-        while assignment.sum() in (0, N_UNITS):
-            assignment = rng.binomial(1, TREATMENT_PROBABILITY, size=N_UNITS)
-        result = run_experiment(assignment, population)
-        se = (result.ci_hi - result.psi_hat) / z_critical
-        studentized[k] = (result.psi_hat - population.psi) / se
-    return studentized
 
 
 def draw_studentized_histogram(ax: plt.Axes, studentized: np.ndarray) -> None:
@@ -124,25 +76,34 @@ def make_coverage_animation(
 
     y0_bar = y0.mean()
     y1_bar = y1.mean()
-    psi = y1_bar - y0_bar
-    population = Population(y0=y0, y1=y1, psi=psi)
+    population = Population(y0=y0, y1=y1)
+    ate = population.ate
 
     # ---------- generate experiment results ----------
+    config = ExperimentConfig(TREATMENT_PROBABILITY, population, rng)
     assignments, y0_bar_hats, y1_bar_hats, psi_hats, cis, covered_flags = [], [], [], [], [], []
     for _ in range(N_EXPERIMENTS):
-        assignment = rng.binomial(1, TREATMENT_PROBABILITY, size=N_UNITS)
-        while assignment.sum() in (0, N_UNITS):
-            assignment = rng.binomial(1, TREATMENT_PROBABILITY, size=N_UNITS)
-        assignments.append(assignment)
-        result = run_experiment(assignment, population)
+        experiment = simulate_experiment(config)
+        while experiment.d.sum() in (0, N_UNITS):
+            experiment = simulate_experiment(config)
+        assignments.append(experiment.d)
+        result = compute_ate(experiment, CI_LEVEL)
         y0_bar_hats.append(result.y0_bar_hat)
         y1_bar_hats.append(result.y1_bar_hat)
-        psi_hats.append(result.psi_hat)
+        psi_hats.append(result.ate_hat)
         cis.append((result.ci_lo, result.ci_hi))
-        covered_flags.append(result.true_value_covered)
+        covered_flags.append(result.ci_lo <= ate <= result.ci_hi)
 
     # ---------- studentized sampling distribution (bottom panel) ----------
-    studentized = studentized_statistics(population, np.random.default_rng(0), N_HISTOGRAM_DRAWS)
+    studentized = simulate_studentized_ate(
+        SimulationConfig(
+            population=population,
+            treatment_probability=TREATMENT_PROBABILITY,
+            ci_level=CI_LEVEL,
+            rng=np.random.default_rng(0),
+            n_draws=N_HISTOGRAM_DRAWS,
+        )
+    )
 
     # ---------- plot setup ----------
     # Table panel geometry
@@ -204,7 +165,7 @@ def make_coverage_animation(
         rf"$\overline{{y}}_{{0,n}} = {fmt(y0_bar)}$     $\overline{{y}}_{{1,n}} = {fmt(y1_bar)}$",
         ha="center", fontsize=12, color=TRUTH_COLOR,
     )
-    dbar_text = ax_table.text(4.3, truth_y, rf"$\psi_n = {fmt(psi)}$",
+    dbar_text = ax_table.text(4.3, truth_y, rf"$\psi_n = {fmt(ate)}$",
                               ha="center", fontsize=12, color=TRUTH_COLOR)
 
     # Estimate row: ŷ_{0,n}/ŷ_{1,n} inline + ψ̂_n under ψ_n
@@ -222,9 +183,9 @@ def make_coverage_animation(
     ax_ci.set_xticks(CI_XTICKS)
     ax_ci.set_ylim(LAST_CI_Y + 0.5, -2.0)
     ax_ci.set_xlabel(r"$\widehat{\psi}_n$ and $C_{1-\alpha,\,n}$", fontsize=13)
-    ax_ci.plot([psi, psi], [-0.5, LAST_CI_Y + 0.5],
+    ax_ci.plot([ate, ate], [-0.5, LAST_CI_Y + 0.5],
                color=TRUTH_COLOR, linestyle="--", lw=1.5, alpha=0.7)
-    ax_ci.text(psi, -1.5, r"$\psi_n$",
+    ax_ci.text(ate, -1.5, r"$\psi_n$",
                ha="center", va="center", fontsize=14, color=TRUTH_COLOR)
     ax_ci.set_yticks([])
     for spine in ("left", "right", "top"):
@@ -289,7 +250,7 @@ def make_coverage_animation(
     anim.save(out, writer=PillowWriter(fps=1.25))
     plt.close(fig)
     print(f"wrote {out}")
-    print(f"y0.mean = {y0.mean():.4f}, y1.mean = {y1.mean():.4f}, psi = {psi:.4f}")
+    print(f"y0.mean = {y0.mean():.4f}, y1.mean = {y1.mean():.4f}, psi = {ate:.4f}")
 
 
 if __name__ == "__main__":

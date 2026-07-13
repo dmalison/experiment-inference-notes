@@ -22,7 +22,8 @@ from lib.experiment import (
 )
 from lib.simulation import SimulationConfig, simulate_studentized_ate
 
-N_UNITS = 30
+N_UNITS = 1000
+N_TABLE_ROWS = 20  # units shown in the table (of N_UNITS total)
 TREATMENT_PROBABILITY = 0.5
 N_EXPERIMENTS = 10
 SEED = 3
@@ -109,7 +110,8 @@ def make_coverage_animation(
     # Table panel geometry
     ROW_OFFSET = 0.4
     ROW_SPACING = 1.3
-    BOTTOM_LINE_Y = (N_UNITS - 1) * ROW_SPACING + ROW_OFFSET + 0.6
+    ELLIPSIS_Y = (N_TABLE_ROWS - 1) * ROW_SPACING + ROW_OFFSET + 0.95
+    BOTTOM_LINE_Y = (N_TABLE_ROWS - 1) * ROW_SPACING + ROW_OFFSET + 1.7
     TABLE_DATA_RANGE = BOTTOM_LINE_Y + 10.0  # 7 below bottom line, 3 above header
     FIG_HEIGHT = 9.5 * TABLE_DATA_RANGE / 40.0  # 40 = original data range
     HIST_HEIGHT = 4.0  # full-width histogram strip below the table and CI panels
@@ -142,7 +144,7 @@ def make_coverage_animation(
     ax_table.plot([0.1, 4.9], [-1.4, -1.4], color="gray", lw=0.6)
 
     cell0_artists, cell1_artists, di_artists, yi_artists = [], [], [], []
-    for i in range(N_UNITS):
+    for i in range(N_TABLE_ROWS):
         y_pos = i * ROW_SPACING + ROW_OFFSET
         ax_table.text(0.5, y_pos, str(i + 1), ha="center", fontsize=10, color="gray")
         t0 = ax_table.text(1.5, y_pos, f"{y0[i]:+.2f}", ha="center", fontsize=11, family="monospace")
@@ -153,6 +155,13 @@ def make_coverage_animation(
         cell1_artists.append(t1)
         di_artists.append(td)
         yi_artists.append(ty)
+
+    # Ellipsis row indicating the remaining N_UNITS - N_TABLE_ROWS units
+    ax_table.text(0.5, ELLIPSIS_Y, "\u22ee", ha="center", va="center", fontsize=13, color="gray")
+    ell0 = ax_table.text(1.5, ELLIPSIS_Y, "\u22ee", ha="center", va="center", fontsize=13, color="#2a2a2a")
+    ell1 = ax_table.text(2.5, ELLIPSIS_Y, "\u22ee", ha="center", va="center", fontsize=13, color="#2a2a2a")
+    elld = ax_table.text(3.5, ELLIPSIS_Y, "", ha="center", va="center", fontsize=13, color="#2a2a2a")
+    elly = ax_table.text(4.5, ELLIPSIS_Y, "", ha="center", va="center", fontsize=13, color="#2a2a2a")
 
     # Bottom line of the values table
     ax_table.plot([0.1, 4.9], [BOTTOM_LINE_Y, BOTTOM_LINE_Y], color="gray", lw=0.6)
@@ -202,11 +211,15 @@ def make_coverage_animation(
     def update(frame: int) -> None:
         if frame < INTRO_FRAMES:
             exp_label.set_text("Fixed potential outcomes")
-            for i in range(N_UNITS):
+            for i in range(N_TABLE_ROWS):
                 cell0_artists[i].set_alpha(1.0)
                 cell1_artists[i].set_alpha(1.0)
                 di_artists[i].set_text("")
                 yi_artists[i].set_text("")
+            ell0.set_alpha(1.0)
+            ell1.set_alpha(1.0)
+            elld.set_text("")
+            elly.set_text("")
             ybar_text.set_alpha(1.0)
             dbar_text.set_alpha(1.0)
             mu_text.set_text("")
@@ -220,12 +233,16 @@ def make_coverage_animation(
             return
 
         assignment = assignments[k]
-        for i in range(N_UNITS):
+        for i in range(N_TABLE_ROWS):
             di_artists[i].set_text(str(int(assignment[i])))
             Y_i = y1[i] if assignment[i] == 1 else y0[i]
             yi_artists[i].set_text(f"{Y_i:+.2f}")
             cell0_artists[i].set_alpha(0.3)
             cell1_artists[i].set_alpha(0.3)
+        ell0.set_alpha(0.3)
+        ell1.set_alpha(0.3)
+        elld.set_text("\u22ee")
+        elly.set_text("\u22ee")
         ybar_text.set_alpha(0.3)
         dbar_text.set_alpha(0.3)
 

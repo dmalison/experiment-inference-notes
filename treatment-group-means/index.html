@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-07">
+<meta name="dcterms.date" content="2026-07-10">
 
 <title>Uniform Inference on Treatment Group Means</title>
 <style>
@@ -117,7 +117,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 7, 2026</p>
+      <p class="date">July 10, 2026</p>
     </div>
   </div>
   
@@ -536,7 +536,7 @@ a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 </section>
 <section id="illustration" class="level1">
 <h1>Illustration</h1>
-<p>The animations below illustrate the sampling behavior of the confidence interval in (<a href="#eq-wald-ci" class="quarto-xref">16</a>). The left panel in each figure displays a fixed set of potential outcomes. In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown. The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws. The top-right panel displays the resulting estimator for the average treatment effect <span class="math inline">\(\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}\)</span> and its corresponding <span class="math inline">\(95\%\)</span> confidence interval, colored green when the interval contains <span class="math inline">\(\psi_n\)</span> and red otherwise. The bottom-right panel shows the sampling distribution of the studentized estimator <span class="math inline">\(\sqrt{n}(\widehat{\psi}_n-\psi_n)/\widehat{\sigma}_n\)</span> across 50,000 assignment draws, together with the standard normal density.</p>
+<p>The animations below illustrate the sampling behavior of the confidence interval in (<a href="#eq-wald-ci" class="quarto-xref">16</a>). The left panel in each figure displays a fixed set of potential outcomes for the first 20 observations of a sample of <span class="math inline">\(n = 1{,}000\)</span> units. In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown. The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws. The top-right panel displays the resulting estimator for the average treatment effect <span class="math inline">\(\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}\)</span> and its corresponding <span class="math inline">\(95\%\)</span> confidence interval, colored green when the interval contains <span class="math inline">\(\psi_n\)</span> and red otherwise. The bottom-right panel shows the sampling distribution of the studentized estimator <span class="math inline">\(\sqrt{n}(\widehat{\psi}_n-\psi_n)/\widehat{\sigma}_n\)</span> across 50,000 assignment draws, together with the standard normal density.</p>
 <p>In the first animation, <span class="math inline">\(y_{i,1} = y_{i,0} + 1\)</span> for every <span class="math inline">\(i\)</span>. In this case, the conservative bound in (<a href="#eq-conservative-variance" class="quarto-xref">17</a>) coincides with the true variance. Therefore the studentized estimator closely tracks the standard normal and the empirical coverage is close to the nominal <span class="math inline">\(95\%\)</span> level.</p>
 <div id="fig-homogeneous-coverage" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">

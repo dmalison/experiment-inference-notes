@@ -586,7 +586,7 @@ Therefore $\{C_{1-\alpha,n}\}_{n \geq 1}$ is asymptotically valid for $\{\psi_n\
 # Illustration
 
 The animations below illustrate the sampling behavior of the confidence interval in (-@eq-wald-ci).
-The left panel in each figure displays a fixed set of potential outcomes.
+The left panel in each figure displays a fixed set of potential outcomes for the first 20 observations of a sample of $n = 1{,}000$ units.
 In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown.
 The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws.
 The top-right panel displays the resulting estimator for the average treatment effect $\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}$ and its corresponding $95\%$ confidence interval, colored green when the interval contains $\psi_n$ and red otherwise.

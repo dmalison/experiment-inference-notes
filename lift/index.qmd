@@ -1,5 +1,5 @@
 ---
-title: "Uniformly Valid Confidence Sets for Relative Treatment Effects"
+title: "Uniform Inference on Relative Treatment Effects"
 author: "David Malison"
 date: last-modified
 language:

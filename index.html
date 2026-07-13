@@ -40,14 +40,37 @@
     <p class="subtitle">David Malison</p>
     <ul class="notes">
       <li>
-        <a href="treatment-group-means/">Uniform Inference on Treatment Group Means</a>
+        <a href="treatment-group-means/">treatment-group-means/</a>
       </li>
       <li>
-        <a href="lift/">Uniformly Valid Confidence Sets for Relative Treatment Effects</a>
+        <a href="lift/">lift/</a>
       </li>
       <li>
-        <a href="diagnostics/">Regularity Diagnostics</a>
+        <a href="diagnostics/">diagnostics/</a>
       </li>
     </ul>
+    <script>
+      async function loadNoteTitle(link) {
+        const fallback = link.textContent.trim();
+
+        try {
+          const response = await fetch(link.href);
+          if (!response.ok) return;
+
+          const html = await response.text();
+          const page = new DOMParser().parseFromString(html, "text/html");
+          const title = page.querySelector("h1.title")?.textContent.trim()
+            || page.querySelector("title")?.textContent.trim();
+
+          if (title) {
+            link.textContent = title;
+          }
+        } catch {
+          link.textContent = fallback;
+        }
+      }
+
+      document.querySelectorAll("ul.notes a[href]").forEach(loadNoteTitle);
+    </script>
   </body>
 </html>

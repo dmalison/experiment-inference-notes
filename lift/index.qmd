@@ -40,7 +40,7 @@ crossref:
   ref-hyperlink: true
 ---
 
-Average treatment effects (ATEs) are often reported relative to the baseline mean. This note studies how to conduct robust statistical inference on this ratio. We first show why scaling the ATE confidence interval or applying the delta method yields confidence intervals with unreliable coverage. We then construct a uniformly valid confidence set by combining Fieller's method with a test of the baseline mean's sign.^[The author thanks Sergey Gitlin for proposing the solution developed here.]
+Average treatment effects (ATEs) are often reported relative to the baseline mean. This note studies how to conduct robust statistical inference on this ratio. We first show why scaling the ATE confidence interval or applying the delta method yields confidence intervals with unreliable coverage. We then construct a uniformly valid confidence set by combining Fieller's method with a test of the baseline mean's sign. We also show how to use a similar construction when effects are reported relative to a full-population baseline. ^[The author thanks Sergey Gitlin for proposing the solution developed here.]
 
 # Relative treatment effect
 
@@ -62,7 +62,7 @@ Our goal in this note is to construct an asymptotically valid confidence set for
 
 ## Scaled ATE confidence interval
 
-A simple but naive way to construct a confidence interval for $\rho_n$ is to scale the ATE confidence interval by $1/|\widehat{y}_{0,n}|$.
+A simple but naive confidence interval for $\rho_n$ can be obtained by scaling the ATE confidence interval by $1/|\widehat{y}_{0,n}|$.
 This approach yields the interval
 
 $$
@@ -91,7 +91,7 @@ The problem with this interval is that it effectively ignores sampling variabili
 As a consequence, its asymptotic coverage does not equal its nominal level in general.
 
 @fig-scaled-ate-noncoverage illustrates this behavior.
-We simulated $10{,}000$ draws from a $N(0,1)$ distribution and normalized the sample to have exactly zero mean and unit variance.
+We simulated $10{,}000$ draws from a $N(0,1)$ distribution and normalized them to have exactly zero mean and unit variance.
 We then set the potential outcomes for each unit according to
 $$
 \begin{aligned}
@@ -116,7 +116,8 @@ The bottom panel shows that non-coverage matches the nominal level only when $\r
 
 ## Delta method
 
-We can account for denominator uncertainty by applying the [delta method](https://en.wikipedia.org/wiki/Delta_method) to
+To address the coverage problem illustrated in @fig-scaled-ate-noncoverage, we need to incorporate denominator uncertainty into inference. 
+One approach is to apply the [delta method](https://en.wikipedia.org/wiki/Delta_method) to
 
 $$
 \sqrt{n}\left(\widehat{\rho}_n - \rho_n\right).
@@ -157,10 +158,11 @@ $$
 $$
 
 If we compare (-@eq-scaled-ate-interval) with (-@eq-delta-method-interval), we see that the delta method standard error replaces the control-mean contribution $\widehat{\sigma}_{0,n}$ with $\left|1+\operatorname{sgn}(\widehat{y}_{0,n})\widehat{\rho}_n\right|\widehat{\sigma}_{0,n}$.
-This difference explains the pattern in @fig-scaled-ate-noncoverage: because the baseline mean is positive in this simulation, the two intervals are nearly the same when $\rho_n$ is close to zero, while the scaled ATE confidence interval understates uncertainty for positive lifts and overstates it for negative lifts.
+This difference explains the pattern in @fig-scaled-ate-noncoverage: the two intervals are nearly the same when $\rho_n$ is close to zero, while the scaled ATE confidence interval understates uncertainty for positive lifts and overstates it for negative lifts because the baseline mean is positive.
 
 The problem with the delta method is that we cannot uniformly control the remainder $R_n$ in (-@eq-lift-linearization) without further restrictions.
-As a consequence, the delta method interval is not uniformly valid over the parameter space; along sequences where the denominator approaches zero, coverage can be arbitrarily poor.
+As a consequence, the delta method interval is not uniformly valid over the parameter space.
+Along sequences where the denominator approaches zero, coverage can be poor.
 
 @fig-lift-skewness illustrates this behavior.
 To generate the data for this figure, we set the potential outcomes for each unit according to 
@@ -176,14 +178,14 @@ The bottom panel plots the empirical non-coverage of the delta-method confidence
 
 ![Top: sampling distribution of the standardized delta-method statistic. Bottom: empirical non-coverage of the nominal $95\%$ delta-method interval as a function of the baseline signal-to-noise ratio $\sqrt{n}\,\overline{y}_{0,n}/\sigma_{0,n}$.](lift_skewness.png){#fig-lift-skewness}
 
-At $\overline{y}_{0,n}=0.01$ the right skew pushes the delta-method non-coverage well above the nominal level, while at $\overline{y}_{0,n}=0.1$ the standardized statistic is close to $N(0,1)$ and non-coverage is near nominal.
+At $\overline{y}_{0,n}=0.01$ the delta-method non-coverage is well above the nominal level, while at $\overline{y}_{0,n}=0.1$ the standardized statistic is close to $N(0,1)$ and non-coverage is near nominal.
 The bottom panel shows that the delta method only achieves nominal coverage when the baseline mean is more than 10 standard errors from zero.
 
 # Fieller's method
 
 To perform robust inference, we need a coverage guarantee that holds uniformly over the parameter space.
 In the [treatment group means note](../treatment-group-means/), we showed how to construct such confidence sets for a linear combination of means.
-In this section, we leverage this result to construct a robust confidence set for the percentage lift without introducing further assumptions on the parameter space.
+In this section, we leverage this result to construct a robust confidence set for $\rho_n$ without introducing further restrictions on the parameter space.
 
 ## Splitting by the control mean sign
 
@@ -219,11 +221,11 @@ $$
 \end{aligned}
 $$
 
-For any value of $\rho_n^s$, the sample analogues simplify to
+For any candidate value $r$, the sample analogues simplify to
 $$
-\widehat{\psi}_n^+ = \widehat{y}_{0,n}\,\rho_n^+ - \widehat{\psi}_n^{\mathrm{ATE}},
+\widehat{\psi}_n^+(r) = \widehat{y}_{0,n}\,r - \widehat{\psi}_n^{\mathrm{ATE}},
 \qquad
-\widehat{\psi}_n^- = \widehat{y}_{0,n}\,\rho_n^- + \widehat{\psi}_n^{\mathrm{ATE}}.
+\widehat{\psi}_n^-(r) = \widehat{y}_{0,n}\,r + \widehat{\psi}_n^{\mathrm{ATE}}.
 $$
 At the true values of $\rho_n^+$ and $\rho_n^-$, we also have
 $$\psi_n^+ = \psi_n^- = 0.$$
@@ -255,16 +257,16 @@ Inverting the right-hand side expressions, we obtain the confidence sets
 $$
 \begin{aligned}
 C_{1-\alpha,n}^{+}
-&= \Bigg\{\rho_n^+ :{}
-\left(\widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)(\rho_n^+)^2 \\
-&\qquad - 2\left(\widehat{y}_{0,n}\,\widehat{\psi}_n^{\mathrm{ATE}} + \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)\rho_n^+
-- \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1+\rho_n^+\right| - 1\right) \\
+&= \Bigg\{r :{}
+\left(\widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r^2 \\
+&\qquad - 2\left(\widehat{y}_{0,n}\,\widehat{\psi}_n^{\mathrm{ATE}} + \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r
+- \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1+r\right| - 1\right) \\
 &\qquad + (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0\Bigg\}, \\[2ex]
 C_{1-\alpha,n}^{-}
-&= \Bigg\{\rho_n^- :{}
-\left(\widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)(\rho_n^-)^2 \\
-&\qquad + 2\left(\widehat{y}_{0,n}\,\widehat{\psi}_n^{\mathrm{ATE}} + \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)\rho_n^-
-- \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1-\rho_n^-\right| - 1\right) \\
+&= \Bigg\{r :{}
+\left(\widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r^2 \\
+&\qquad + 2\left(\widehat{y}_{0,n}\,\widehat{\psi}_n^{\mathrm{ATE}} + \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r
+- \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1-r\right| - 1\right) \\
 &\qquad + (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0\Bigg\}.
 \end{aligned}
 $$ {#eq-fieller-sets}
@@ -275,16 +277,25 @@ $$
 \widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2.
 $$
 
-If this coefficient is positive, the quadratic functions open upward and the set satisfying the corresponding inequality is bounded.
-If this coefficient is nonpositive, the set contains values that are arbitrarily large in magnitude.
-Therefore the confidence sets are bounded if and only if
+If this coefficient is positive, the sign-specific confidence set is a bounded interval; otherwise, it contains values that are arbitrarily large in magnitude.
+Equivalently, the confidence sets are bounded intervals if and only if
 $$
 \frac{|\widehat{y}_{0,n}|}{\widehat{\sigma}_{0,n} / \sqrt{n}} > z_{1-\alpha/2}.
-$$
-This is exactly the condition for rejecting the null hypothesis that the control mean is zero at level $\alpha$.
-Therefore if we cannot bound the control mean away from zero at level $\alpha$, then we also cannot bound the magnitude of $\rho_n^s$ at this confidence level.
+$$ {#eq-baseline-significance-condition}
+The expression in (-@eq-baseline-significance-condition) is exactly the condition for rejecting the null hypothesis that the control mean is zero at level $\alpha$.
+Thus, if we cannot bound the control mean away from zero at level $\alpha$, we also cannot obtain a bounded confidence interval for $\rho_n^s$ at this confidence level.
 
-It is also useful to note that the numerators on the right-hand side of (-@eq-fieller-inversion) equal zero at $\rho_n^s = \widehat{\rho}_n^s$, where
+Evaluating the inequalities in (-@eq-fieller-sets) at $r=0$ shows that $0 \in C_{1-\alpha,n}^{s}$ if and only if
+$$
+(\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0,
+$$
+or equivalently,
+$$
+|\widehat{\psi}_n^{\mathrm{ATE}}| \leq z_{1-\alpha/2}\,\frac{\widehat{\sigma}_n^{\mathrm{ATE}}}{\sqrt n}.
+$$
+Thus zero belongs to the sign-specific Fieller set exactly when the usual two-sided ATE test fails to reject at level $\alpha$.
+
+Lastly, note that the numerators on the right-hand side of (-@eq-fieller-inversion) equal zero at $\rho_n^s = \widehat{\rho}_n^s$, where
 $$
 \widehat{\rho}_n^+
 =
@@ -295,21 +306,22 @@ $$
 -\frac{\widehat{\psi}_n^{\mathrm{ATE}}}{\widehat{y}_{0,n}}.
 $$
 As a consequence, these sign-specific point estimates always lie in their respective confidence sets.
-However, these point estimates need not be the midpoints of the confidence sets.
+However, they need not correspond to the confidence set midpoints.
 
-@fig-fieller-confidence-set-bounded and @fig-fieller-confidence-set-unbounded illustrate the sign-specific confidence sets.
+
+@fig-fieller-confidence-set-bounded and @fig-fieller-confidence-set-unbounded illustrate the confidence sets in (-@eq-fieller-sets).
 In each panel, the shaded region marks the values of $\rho_n^s$ for which the corresponding Fieller inequality value in (-@eq-fieller-sets) is below zero.
 
 ![Bounded sign-specific Fieller confidence sets. Top: left-hand side of the inequality defining $C_{1-\alpha,n}^{+}$. Bottom: left-hand side of the inequality defining $C_{1-\alpha,n}^{-}$. Shaded regions mark the corresponding confidence sets.](lift_fieller_confidence_sets_bounded.png){#fig-fieller-confidence-set-bounded}
 
-In the bounded case, the Fieller inequality value is positive in both tails, so each sign-specific confidence set is an interval around the corresponding point estimate. Note that the point estimate is not the midpoint of the interval.
+@fig-fieller-confidence-set-bounded  displays the bounded case. The Fieller inequality value is positive in both tails, so each sign-specific confidence set is an interval around the corresponding point estimate. Note that the point estimate is not the midpoint of the interval.
 
 ![Unbounded sign-specific Fieller confidence sets. Top: left-hand side of the inequality defining $C_{1-\alpha,n}^{+}$. Bottom: left-hand side of the inequality defining $C_{1-\alpha,n}^{-}$. Shaded regions mark the corresponding confidence sets.](lift_fieller_confidence_sets_unbounded.png){#fig-fieller-confidence-set-unbounded}
 
-In the unbounded case, the Fieller inequality value is negative in the tails, so the confidence set contains arbitrarily large positive or negative lifts. 
+@fig-fieller-confidence-set-unbounded  displays the unbounded case. The Fieller inequality value is negative in the tails, so the confidence set contains arbitrarily large positive or negative lifts.
 
 It is useful to compare these confidence sets with the delta-method confidence interval in (-@eq-delta-method-interval).
-For the positive-denominator region, the positive-denominator part of (-@eq-fieller-sets) can be written as
+For the positive-denominator region, (-@eq-fieller-sets) can be written as
 
 $$
 \left|
@@ -328,37 +340,119 @@ $$ {#eq-fieller-positive-denominator-form}
 
 When $\widehat{y}_{0,n} > 0$, the only difference from the interval in (-@eq-delta-method-interval) is that the right-hand side of (-@eq-fieller-positive-denominator-form) substitutes $\rho_n^+$ for $\widehat{\psi}_n^{\mathrm{ATE}}/\widehat{y}_{0,n}$.
 A similar expression holds for the negative-denominator region.
-In the [Appendix](#sec-fieller-delta-equivalence), we show this substitution has a negligible impact on the confidence set when the baseline mean is well-separated from zero.
-Thus, when the baseline mean is many standard errors away from zero, the Fieller confidence sets are asymptotically equivalent to the delta-method confidence interval.
+In the [Appendix](#sec-fieller-delta-equivalence), we show that substitution has a negligible impact on the confidence set when the baseline mean is well-separated from zero.
 
-## Confidence set for $\rho_n$
+## Confidence interval for $\rho_n$
 
-We now combine the confidence sets for $\rho_n^+$ and $\rho_n^-$ to obtain a uniformly valid confidence set for $\rho_n$.
-Choose $\alpha_0,\alpha_1>0$ with $\alpha_0+\alpha_1=\alpha$ and define the test statistic
+### Known baseline sign
+
+We now combine the sign-specific sets into a confidence interval for $\rho_n$.
+First suppose the sign of $\overline{y}_{0,n}$ is known to be positive.
+In this case, $\rho_n=\rho_n^+$, so we could directly use the positive-denominator Fieller set.
+As illustrated in @fig-fieller-confidence-set-unbounded, however, the sign-specific confidence set may not be an interval when the denominator is not statistically distinguishable from zero.
+To obtain a connected set, choose $\alpha^{\mathrm{Fiellers}},\alpha^{\mathrm{sign}}>0$ with $\alpha^{\mathrm{Fiellers}}+\alpha^{\mathrm{sign}}=\alpha$ and $\alpha^{\mathrm{sign}}\leq\alpha^{\mathrm{Fiellers}}$.
+Let $C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}$ denote the positive-denominator Fieller set, and define the denominator and ATE sign statistics
 
 $$
 T_{0,n}
 =
-\frac{\sqrt n\,\widehat{y}_{0,n}}{\widehat{\sigma}_{0,n}}.
+\frac{\sqrt n\,\widehat{y}_{0,n}}{\widehat{\sigma}_{0,n}},
+\qquad
+T_{\Delta,n}
+=
+\frac{\sqrt n\,\widehat{\psi}_n^{\mathrm{ATE}}}{\widehat{\sigma}_n^{\mathrm{ATE}}}.
+$$ {#eq-sign-statistics}
+
+Consider the sign-specific interval
+
+$$
+I_{1-\alpha,n}^{+}
+=
+\begin{cases}
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{+},
+& |T_{0,n}|>z_{1-\alpha^{\mathrm{Fiellers}}/2}, \\[3ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}\cap[0,\infty),
+& |T_{0,n}|\leq z_{1-\alpha^{\mathrm{Fiellers}}/2},
+\quad T_{\Delta,n}>z_{1-\alpha^{\mathrm{sign}}/2}, \\[3ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}\cap(-\infty,0],
+& |T_{0,n}|\leq z_{1-\alpha^{\mathrm{Fiellers}}/2},
+\quad T_{\Delta,n}<-z_{1-\alpha^{\mathrm{sign}}/2}, \\[3ex]
+\mathbb{R},
+& |T_{0,n}|\leq z_{1-\alpha^{\mathrm{Fiellers}}/2},
+\quad |T_{\Delta,n}|\leq z_{1-\alpha^{\mathrm{sign}}/2}.
+\end{cases}
+$$ {#eq-sign-specific-interval}
+
+When the denominator is statistically distinguishable from zero, the Fieller set is bounded and we use it directly.
+When the denominator is not statistically distinguishable from zero, we use an ATE sign test.
+If the ATE is significantly positive, we truncate the Fieller set to nonnegative values; if it is significantly negative, we truncate to nonpositive values.
+If the ATE sign test is inconclusive, we return the real line.
+The condition $\alpha^{\mathrm{sign}}\leq\alpha^{\mathrm{Fiellers}}$ ensures that, when truncation occurs, the resulting set is a ray rather than two disjoint pieces.
+
+To see that $I_{1-\alpha,n}^{+}$ remains uniformly valid,
+let
+$$
+E_{\mathrm{Fieller}}
+=
+\left\{
+\rho_n^+\in C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}
+\right\}
+$$
+and let $E_{\mathrm{sign}}$ denote the event that the ATE sign test is either inconclusive or selects the correct sign:
+$$
+E_{\mathrm{sign}}
+=
+\left\{|T_{\Delta,n}|\leq z_{1-\alpha^{\mathrm{sign}}/2}\right\}
+\cup
+\left\{T_{\Delta,n}>z_{1-\alpha^{\mathrm{sign}}/2},\;\psi_n^{\mathrm{ATE}}>0\right\}
+\cup
+\left\{T_{\Delta,n}<-z_{1-\alpha^{\mathrm{sign}}/2},\;\psi_n^{\mathrm{ATE}}<0\right\}.
+$$
+On the event $E_{\mathrm{Fieller}}\cap E_{\mathrm{sign}}$, the Fieller set contains $\rho_n$ and truncation based on the sign test does not remove it.
+Therefore
+$$
+\mathbb{P}_\theta\{\rho_n \in I_{1-\alpha,n}^{+}\}
+\geq
+\mathbb{P}_\theta(E_{\mathrm{Fieller}}\cap E_{\mathrm{sign}})
+\geq
+1 - \mathbb{P}_\theta\{E_{\mathrm{Fieller}}^c\} - \mathbb{P}_\theta\{E_{\mathrm{sign}}^c\}
+$$
+which implies
+$$
+\begin{aligned}
+\liminf_{n\to\infty}\inf_{\theta \in \Theta}\mathbb{P}_\theta\{\rho_n \in I_{1-\alpha,n}^{+}\}
+&\geq
+1 - \limsup_{n\to\infty}\sup_{\theta \in \Theta}\mathbb{P}_\theta\{E_{\mathrm{Fieller}}^c\} - \limsup_{n\to\infty}\sup_{\theta \in \Theta}\mathbb{P}_\theta\{E_{\mathrm{sign}}^c\} \\[1ex]
+&\geq 1 - \alpha^{\mathrm{Fiellers}} - \alpha^{\mathrm{sign}} \\[1ex]
+&= 1 - \alpha.
+\end{aligned}
 $$
 
+If $\overline{y}_{0,n}<0$ is known instead, define $I_{1-\alpha,n}^{-}$ analogously by replacing $C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}$ with $C_{1-\alpha^{\mathrm{Fiellers}},n}^{-}$ in (-@eq-sign-specific-interval).
+The same argument gives uniform validity.
+
+### Unknown baseline sign
+
+In the case when the sign of $\overline{y}_{0,n}$ is unknown, we can use the denominator statistic $T_{0,n}$ in (-@eq-sign-statistics) to determine which sign-specific set to use.
+Choose $\alpha^{\mathrm{Fiellers}},\alpha^{\mathrm{sign}}>0$ with $\alpha^{\mathrm{Fiellers}}+\alpha^{\mathrm{sign}}=\alpha$ and $\alpha^{\mathrm{sign}}\leq\alpha^{\mathrm{Fiellers}}$.
 Define the confidence set for $\rho_n$ as
 
 $$
 C_{1-\alpha,n}
 =
 \begin{cases}
-C_{1-\alpha_1,n}^{+},
-& T_{0,n}>z_{1-\alpha_0/2}, \\[1ex]
-C_{1-\alpha_1,n}^{-},
-& T_{0,n}<-z_{1-\alpha_0/2}, \\[1ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{+},
+& T_{0,n}>z_{1-\alpha^{\mathrm{sign}}/2}, \\[1ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{-},
+& T_{0,n}<-z_{1-\alpha^{\mathrm{sign}}/2}, \\[1ex]
 \mathbb{R},
-& |T_{0,n}|\leq z_{1-\alpha_0/2}.
+& |T_{0,n}|\leq z_{1-\alpha^{\mathrm{sign}}/2}.
 \end{cases}
 $$ {#eq-final-confidence-set}
 
-If $T_{0,n}$ is significantly positive at level $\alpha_0 / 2$, $C_{1-\alpha,n}$ uses the positive-denominator set; if it is significantly negative, $C_{1-\alpha,n}$ uses the negative-denominator set.
+If $T_{0,n}$ is significantly positive at level $\alpha^{\mathrm{sign}} / 2$, $C_{1-\alpha,n}$ uses the positive-denominator set; if it is significantly negative, $C_{1-\alpha,n}$ uses the negative-denominator set.
 If the sign test is inconclusive, $C_{1-\alpha,n}$ reverts to the real line.
+Because $\alpha^{\mathrm{sign}}\leq\alpha^{\mathrm{Fiellers}}$, rejection of the denominator sign test implies the selected sign-specific Fieller set is a bounded interval.
 
 To prove $C_{1-\alpha,n}$ is uniformly asymptotically valid, partition the sample space by the three possible outcomes of the sign test:
 
@@ -366,19 +460,19 @@ $$
 E_{0,+}
 =
 \left\{
-T_{0,n} > z_{1-\alpha_0/2}
+T_{0,n} > z_{1-\alpha^{\mathrm{sign}}/2}
 \right\},
 \qquad
 E_{0,-}
 =
 \left\{
-T_{0,n} < -z_{1-\alpha_0/2}
+T_{0,n} < -z_{1-\alpha^{\mathrm{sign}}/2}
 \right\},
 \qquad
 E_{0}
 =
 \left\{
-\left|T_{0,n}\right|\leq z_{1-\alpha_0/2}
+\left|T_{0,n}\right|\leq z_{1-\alpha^{\mathrm{sign}}/2}
 \right\}.
 $$
 
@@ -388,19 +482,19 @@ $$
 E_+
 =
 \left\{
-\rho_n^+\in C_{1-\alpha_1,n}^{+}
+\rho_n^+\in C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}
 \right\},
 \qquad
 E_-
 =
 \left\{
-\rho_n^-\in C_{1-\alpha_1,n}^{-}
+\rho_n^-\in C_{1-\alpha^{\mathrm{Fiellers}},n}^{-}
 \right\}.
 $$
 denote the coverage events for the sign-specific confidence sets.
 
 First suppose $\overline{y}_{0,n}>0$.
-If $E_{0,+}\cap E_+$ occurs, then $C_{1-\alpha,n}=C_{1-\alpha_1,n}^{+}$ and $\rho_n=\rho_n^+$, so $\rho_n\in C_{1-\alpha,n}$.
+If $E_{0,+}\cap E_+$ occurs, then $C_{1-\alpha,n}=C_{1-\alpha^{\mathrm{Fiellers}},n}^{+}$ and $\rho_n=\rho_n^+$, so $\rho_n\in C_{1-\alpha,n}$.
 If $E_{0}$ occurs, then $C_{1-\alpha,n}=\mathbb{R}$, so $\rho_n\in C_{1-\alpha,n}$ automatically.
 Therefore
 
@@ -425,14 +519,14 @@ $$
 E_{0,-}
 &=
 \left\{
-T_{0,n}<-z_{1-\alpha_0/2}
+T_{0,n}<-z_{1-\alpha^{\mathrm{sign}}/2}
 \right\} \\
 &\subseteq
 \left\{
 \sqrt n
 \frac{\widehat{y}_{0,n}-\overline{y}_{0,n}}
 {\widehat{\sigma}_{0,n}}
-<-z_{1-\alpha_0/2}
+<-z_{1-\alpha^{\mathrm{sign}}/2}
 \right\} \\
 &\subseteq
 \left\{
@@ -441,7 +535,7 @@ T_{0,n}<-z_{1-\alpha_0/2}
 \frac{\widehat{y}_{0,n}-\overline{y}_{0,n}}
 {\widehat{\sigma}_{0,n}}
 \right|
-> z_{1-\alpha_0/2}
+> z_{1-\alpha^{\mathrm{sign}}/2}
 \right\},
 \end{aligned}
 $$ {#eq-E0-minus-inclusion}
@@ -459,7 +553,7 @@ $$
 \frac{\widehat{y}_{0,n}-\overline{y}_{0,n}}
 {\widehat{\sigma}_{0,n}}
 \right|
-> z_{1-\alpha_0/2}
+> z_{1-\alpha^{\mathrm{sign}}/2}
 \right)
 +
 \mathbb{P}_\theta(E_+^c).
@@ -478,7 +572,7 @@ $$
 \frac{\widehat{y}_{0,n}-\overline{y}_{0,n}}
 {\widehat{\sigma}_{0,n}}
 \right|
-> z_{1-\alpha_0/2}
+> z_{1-\alpha^{\mathrm{sign}}/2}
 \right)
 +
 \mathbb{P}_\theta(E_-^c).
@@ -498,7 +592,7 @@ $$
 \frac{\widehat{y}_{0,n}-\overline{y}_{0,n}}
 {\widehat{\sigma}_{0,n}}
 \right|
-> z_{1-\alpha_0/2}
+> z_{1-\alpha^{\mathrm{sign}}/2}
 \right)
 +
 \max\left\{
@@ -524,7 +618,7 @@ $$
 \frac{\widehat{y}_{0,n}-\overline{y}_{0,n}}
 {\widehat{\sigma}_{0,n}}
 \right|
-> z_{1-\alpha_0/2}
+> z_{1-\alpha^{\mathrm{sign}}/2}
 \right) +
 \max\left\{
 \sup_{\theta\in\Theta}\mathbb{P}_\theta(E_+^c),
@@ -544,7 +638,7 @@ $$
 \rho_n\notin C_{1-\alpha,n}
 \right)
 \leq
-\alpha_0+\alpha_1
+\alpha^{\mathrm{Fiellers}}+\alpha^{\mathrm{sign}}
 =
 \alpha.
 $$
@@ -563,9 +657,201 @@ $$
 
 Therefore $\{C_{1-\alpha,n}\}_{n \geq 1}$ is asymptotically valid for $\{\rho_n\}_{n \geq 1}$ over $\Theta$.
 
-@fig-uniform-noncoverage recreates the bottom panels of @fig-scaled-ate-noncoverage and @fig-lift-skewness, but reports the non-coverage of the uniform set in (-@eq-final-confidence-set). The top panel varies the lift at a fixed baseline $\overline{y}_{0,n}=1$. The uniform set's non-coverage remains near the nominal level for every lift. The bottom panel varies the baseline at a fixed lift $\rho_n=10\%$, as in @fig-lift-skewness. While the delta-method interval's non-coverage rose as the baseline approached zero, the uniform set's non-coverage falls because the sign pretest fails and the set defaults to the real line. Unlike the delta method confidence interval, the uniform set's non-coverage never exceeds the nominal $5\%$.
+### Illustration
 
-![Empirical non-coverage of the nominal $95\%$ uniformly valid confidence set in (-@eq-final-confidence-set), with $\alpha_0=0.001$ and $\alpha_1=0.049$. Top: as a function of the percentage lift $\rho_n$ at fixed baseline $\overline{y}_{0,n}=1$. Bottom: as a function of the number of standard errors $\sqrt{n}\,\overline{y}_{0,n}/\sigma_{0,n}$ separating the baseline from zero at fixed lift $\rho_n=10\%$.](lift_uniform_noncoverage.png){#fig-uniform-noncoverage}
+@fig-uniform-noncoverage recreates the bottom panels of @fig-scaled-ate-noncoverage and @fig-lift-skewness, but reports the non-coverage of the uniform set in (-@eq-final-confidence-set). The top panel varies the lift at a fixed baseline $\overline{y}_{0,n}=1$.
+Unlike the scaled-ATE confidence set, the uniform set maintains nominal coverage across the range of lifts.
+The bottom panel varies the baseline at a fixed lift $\rho_n=10\%$.
+The green and red lines in the bottom panel show the known-positive and known-negative baseline intervals $I_{1-\alpha,n}^{+}$ and $I_{1-\alpha,n}^{-}$ from the known-baseline-sign construction.
+The uniform set and the known-sign intervals both have higher inclusion rates near zero, but for slightly different reasons: the uniform set returns the real line when the denominator sign test is inconclusive, while the known-sign intervals return the real line when both denominator and ATE sign tests are inconclusive.
+
+![Empirical non-coverage of the nominal $95\%$ uniformly valid confidence set in (-@eq-final-confidence-set), with $\alpha^{\mathrm{sign}}=0.001$ and $\alpha^{\mathrm{Fiellers}}=0.049$, and of the known-positive and known-negative baseline intervals $I_{1-\alpha,n}^{+}$ and $I_{1-\alpha,n}^{-}$ from the known-baseline-sign construction. Top: as a function of the percentage lift $\rho_n$ at fixed baseline $\overline{y}_{0,n}=1$. Bottom: as a function of the number of standard errors $\sqrt{n}\,\overline{y}_{0,n}/\sigma_{0,n}$ separating the baseline from zero at fixed lift $\rho_n=10\%$.](lift_uniform_noncoverage.png){#fig-uniform-noncoverage}
+
+# Full-population relative effects
+
+The units in an experiment often only represent a subset of a larger population of interest.
+For example, the experimental units may correspond to a set of users who qualified for a promotion, while the population of interest is all product users.
+In such settings, cross-experiment comparisons are easier if treatment effects are reported relative to a full-population baseline rather than to a particular experiment's control group.
+
+Let $N_n^{\mathrm{untreated}}$ denote the number of units outside the experiment, and let $\overline{y}_n^{\mathrm{untreated}}$ denote their mean outcome.
+We assume outcomes for untreated units are unaffected by the experiment's randomization and are therefore held fixed.
+For $d\in\{0,1\}$, the full-population mean under treatment state $d$ is given by
+
+$$
+\overline{y}^\mathrm{full}_{d,n} = \frac{n}{N_n^{\mathrm{untreated}} + n}\overline{y}_{d, n} + \frac{N_n^{\mathrm{untreated}}}{N_n^{\mathrm{untreated}} + n} \overline{y}^{\mathrm{untreated}}_n
+$$
+
+The full-population average treatment effect is defined as
+
+$$
+\psi_n^{\mathrm{full}} = \overline{y}^\mathrm{full}_{1,n} - \overline{y}^\mathrm{full}_{0,n} = \frac{n}{N_n^{\mathrm{untreated}} + n} \psi_n^{\mathrm{ATE}}
+$$
+
+and the **full-population relative effect** is given by
+
+$$
+\rho_n^{\mathrm{full}}
+= \frac{\psi_n^{\mathrm{full}}}{|\overline{y}_{0,n}^{\mathrm{full}}|}
+$$ {#eq-full-relative-effect-definition}
+
+To construct a confidence set for $\rho_n^{\mathrm{full}}$, define
+
+$$
+q_n = \frac{N_n^{\mathrm{untreated}}}{n},
+\qquad
+B_n = \overline{y}_{0,n}+q_n\overline{y}_n^{\mathrm{untreated}},
+\qquad
+\widehat{B}_n = \widehat{y}_{0,n}+q_n\overline{y}_n^{\mathrm{untreated}}.
+$$
+
+Dividing the numerator and denominator in (-@eq-full-relative-effect-definition) by $n/(N_n^{\mathrm{untreated}}+n)$ gives
+$$
+\rho_n^{\mathrm{full}}=\frac{\psi_n^{\mathrm{ATE}}}{|B_n|}
+$$ {#eq-full-relative-effect-shifted-denominator}
+Since
+
+$$
+\sqrt n(\widehat{B}_n-B_n)=\sqrt n(\widehat{y}_{0,n}-\overline{y}_{0,n}),
+$$
+
+the standard error term for the denominator in (-@eq-full-relative-effect-shifted-denominator) equals $\widehat{\sigma}_{0,n}/\sqrt n$.
+Now define the sign-specific targets
+
+$$
+\rho_n^{\mathrm{full},+}=\frac{\psi_n^{\mathrm{ATE}}}{B_n},
+\qquad
+\rho_n^{\mathrm{full},-}=-\frac{\psi_n^{\mathrm{ATE}}}{B_n}.
+$$
+
+and the corresponding linear combinations $\psi_n^{\mathrm{full},+}$ and $\psi_n^{\mathrm{full},-}$
+
+$$
+\begin{aligned}
+\psi_n^{\mathrm{full},+}
+&=
+\rho_n^{\mathrm{full},+}B_n-\psi_n^{\mathrm{ATE}} \\[1ex]
+&=
+\left(1+\rho_n^{\mathrm{full},+}\right)\overline{y}_{0,n}
+-\overline{y}_{1,n}
++\rho_n^{\mathrm{full},+}q_n\overline{y}_n^{\mathrm{untreated}}, \\[1ex]
+\psi_n^{\mathrm{full},-}
+&=
+\rho_n^{\mathrm{full},-}B_n+\psi_n^{\mathrm{ATE}} \\[1ex]
+&=
+\overline{y}_{1,n}
+-\left(1-\rho_n^{\mathrm{full},-}\right)\overline{y}_{0,n}
++\rho_n^{\mathrm{full},-}q_n\overline{y}_n^{\mathrm{untreated}}.
+\end{aligned}
+$$
+
+At the true values of $\rho_n^{\mathrm{full},+}$ and $\rho_n^{\mathrm{full},-}$, we again have $\psi_n^{\mathrm{full},+}=\psi_n^{\mathrm{full},-}=0$.
+For any candidate value $r$, the sample analogues simplify to $\widehat{B}_n r-\widehat{\psi}_n^{\mathrm{ATE}}$ and $\widehat{B}_n r+\widehat{\psi}_n^{\mathrm{ATE}}$.
+Define the sign-specific confidence sets as
+
+$$
+\begin{aligned}
+C_{1-\alpha,n}^{\mathrm{full},+}
+&=
+\left\{
+r:
+\left|\widehat{B}_n r-\widehat{\psi}_n^{\mathrm{ATE}}\right|
+\leq
+\frac{z_{1-\alpha/2}}{\sqrt n}
+\left(\left|1+r\right|\widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}\right)
+\right\}, \\[1ex]
+C_{1-\alpha,n}^{\mathrm{full},-}
+&=
+\left\{
+r:
+\left|\widehat{B}_n r+\widehat{\psi}_n^{\mathrm{ATE}}\right|
+\leq
+\frac{z_{1-\alpha/2}}{\sqrt n}
+\left(\left|1-r\right|\widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}\right)
+\right\}.
+\end{aligned}
+$$ {#eq-full-fieller-sets}
+
+Inverting these sets, we obtain
+
+$$
+\begin{aligned}
+C_{1-\alpha,n}^{\mathrm{full},+}
+&= \Bigg\{r :{}
+\left(\widehat{B}_n^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r^2 \\
+&\qquad - 2\left(\widehat{B}_n\,\widehat{\psi}_n^{\mathrm{ATE}} + \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r
+- \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1+r\right| - 1\right) \\
+&\qquad + (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0\Bigg\}, \\[2ex]
+C_{1-\alpha,n}^{\mathrm{full},-}
+&= \Bigg\{r :{}
+\left(\widehat{B}_n^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r^2 \\
+&\qquad + 2\left(\widehat{B}_n\,\widehat{\psi}_n^{\mathrm{ATE}} + \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2\right)r
+- \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1-r\right| - 1\right) \\
+&\qquad + (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0\Bigg\}.
+\end{aligned}
+$$ {#eq-full-fieller-sets-inverted}
+
+These confidence sets have the same form as the confidence sets in (-@eq-fieller-sets), with $\widehat{B}_n$ replacing $\widehat{y}_{0,n}$.
+
+As in the control-baseline case, the sign-specific Fieller sets may fail to be intervals when the denominator is not statistically distinguishable from zero.
+Define the full-population denominator statistic
+$$
+T_{0,n}^{\mathrm{full}}
+=
+\frac{\sqrt n\,\widehat{B}_n}{\widehat{\sigma}_{0,n}}.
+$$
+Define the known-positive-baseline interval
+
+$$
+I_{1-\alpha,n}^{\mathrm{full},+}
+=
+\begin{cases}
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},+},
+& |T_{0,n}^{\mathrm{full}}|>z_{1-\alpha^{\mathrm{Fiellers}}/2}, \\[3ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},+}\cap[0,\infty),
+& |T_{0,n}^{\mathrm{full}}|\leq z_{1-\alpha^{\mathrm{Fiellers}}/2},
+\quad T_{\Delta,n}>z_{1-\alpha^{\mathrm{sign}}/2}, \\[3ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},+}\cap(-\infty,0],
+& |T_{0,n}^{\mathrm{full}}|\leq z_{1-\alpha^{\mathrm{Fiellers}}/2},
+\quad T_{\Delta,n}<-z_{1-\alpha^{\mathrm{sign}}/2}, \\[3ex]
+\mathbb{R},
+& |T_{0,n}^{\mathrm{full}}|\leq z_{1-\alpha^{\mathrm{Fiellers}}/2},
+\quad |T_{\Delta,n}|\leq z_{1-\alpha^{\mathrm{sign}}/2}.
+\end{cases}
+$$ {#eq-full-sign-specific-interval}
+
+If $B_n>0$ is known, use $I_{1-\alpha,n}^{\mathrm{full},+}$ as the confidence interval for $\rho_n^{\mathrm{full}}$.
+If $B_n<0$ is known, define $I_{1-\alpha,n}^{\mathrm{full},-}$ analogously by replacing $C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},+}$ with $C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},-}$ in (-@eq-full-sign-specific-interval), and use $I_{1-\alpha,n}^{\mathrm{full},-}$.
+
+In the case when the sign of $B_n$ is unknown, use the statistic $T_{0,n}^{\mathrm{full}}$ to determine which sign-specific set to use:
+
+$$
+C_{1-\alpha,n}^{\mathrm{full}}
+=
+\begin{cases}
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},+},
+& T_{0,n}^{\mathrm{full}}>z_{1-\alpha^{\mathrm{sign}}/2}, \\[1ex]
+C_{1-\alpha^{\mathrm{Fiellers}},n}^{\mathrm{full},-},
+& T_{0,n}^{\mathrm{full}}<-z_{1-\alpha^{\mathrm{sign}}/2}, \\[1ex]
+\mathbb{R},
+& |T_{0,n}^{\mathrm{full}}|\leq z_{1-\alpha^{\mathrm{sign}}/2}.
+\end{cases}
+$$ {#eq-full-final-confidence-set}
+
+The proof of uniform validity is identical to the proof for (-@eq-final-confidence-set), with $\widehat{y}_{0,n}$ replaced by $\widehat{B}_n$.
+The sign-pretest error is controlled because $\widehat{B}_n-B_n=\widehat{y}_{0,n}-\overline{y}_{0,n}$, and the sign-specific sets in (-@eq-full-fieller-sets) are valid confidence sets for $\psi_n^{\mathrm{full},+}$ and $\psi_n^{\mathrm{full},-}$.
+Thus, over parameter sequences with $B_n\neq0$,
+
+$$
+\liminf_{n\to\infty}
+\inf_{\theta\in\Theta:\,B_n\neq0}
+\mathbb{P}_\theta\left(
+\rho_n^{\mathrm{full}}\in C_{1-\alpha,n}^{\mathrm{full}}
+\right)
+\geq
+1-\alpha.
+$$
+
+
 
 # Appendix
 
@@ -689,6 +975,5 @@ $$
 
 The Fieller set is thus squeezed between a contraction and expansion of the delta-method interval.
 Since $|\sqrt n\,\widehat{y}_{0,n}/\widehat{\sigma}_{0,n}|\to\infty$ implies $b\to0$, the scale factors $1/(1+b)$ and $1/(1-b)$ both converge to one.
-Therefore the two sets are asymptotically equivalent.
 
 The same argument applies to the negative-denominator region after replacing $\widehat{\psi}_n^{\mathrm{ATE}}/\widehat{y}_{0,n}$ by $-\widehat{\psi}_n^{\mathrm{ATE}}/\widehat{y}_{0,n}$ and $\left|1+\rho_n^+\right|$ by $\left|1-\rho_n^-\right|$.

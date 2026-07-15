@@ -120,9 +120,9 @@ def lift_panel():
     nc_sign_known_pos = np.empty(grid.size)
     nc_sign_known_neg = np.empty(grid.size)
     for k, lift in enumerate(grid):
-        y0, y1 = fig1.population(lift, eps)          # ybar0 = 1, so Delta^% = lift
+        population = fig1.make_population(lift, eps)      # ybar0 = 1, so Delta^% = lift
         nc[k], nc_sign_known_pos[k], nc_sign_known_neg[k] = noncoverage_rates(
-            np.random.default_rng(fig1.ASSIGN_SEED), y0, y1, lift, fig1.DRAWS_COV)
+            np.random.default_rng(fig1.ASSIGN_SEED), population.y0, population.y1, lift, fig1.DRAWS_COV)
     return grid, nc, nc_sign_known_pos, nc_sign_known_neg
 
 

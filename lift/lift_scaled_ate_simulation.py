@@ -33,10 +33,13 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 from scipy import stats
 
+from lib.simulation import Population, SimulationConfig, simulate_results
+
 SEED = 42
 N = 10_000               # units, fixed across the whole figure
 P = 0.5                  # treatment probability
 YBAR0 = 1.0              # baseline, held fixed (far from zero)
+CI_LEVEL = 0.95
 Z = stats.norm.ppf(0.975)
 
 # Assignments depend only on this seed and n (not on the lift), so re-seeding it
@@ -65,42 +68,10 @@ def normalized_eps(rng: np.random.Generator, n: int) -> np.ndarray:
     return eps
 
 
-def population(lift: float, eps: np.ndarray):
+def make_population(lift: float, eps: np.ndarray) -> Population:
     y0 = YBAR0 + eps
     y1 = YBAR0 + lift + eps     # constant treatment effect, Delta^% = lift
-    return y0, y1
-
-
-def _draw(rng, y0, y1, lift, draws, chunk=4000):
-    """Return the studentized scaled-ATE statistic over `draws` assignments:
-    sqrt(n)(Delta_hat^% - lift) / (sigma_hat_{n,Delta} / |y0_hat|). The scaled
-    interval covers iff this statistic lies in [-z, z].
-    """
-    n = y0.size
-    stats_out = []
-    done = 0
-    while done < draws:
-        b = min(chunk, draws - done)
-        D = rng.random((b, n)) < P
-        n_t = D.sum(1)
-        n_c = n - n_t
-        ok = (n_t > 1) & (n_c > 1)
-        D, n_t, n_c = D[ok], n_t[ok], n_c[ok]
-        notD = ~D
-
-        mu0 = (notD * y0).sum(1) / n_c
-        mu1 = (D * y1).sum(1) / n_t
-        S0 = (notD * (y0[None, :] - mu0[:, None]) ** 2).sum(1) / n_c
-        S1 = (D * (y1[None, :] - mu1[:, None]) ** 2).sum(1) / n_t
-        Dbar = n_t / n
-
-        dhat = (mu1 - mu0) / np.abs(mu0)
-        sig0 = np.sqrt(Dbar * S0 / (1 - Dbar))      # sigma_{n,0}
-        sig1 = np.sqrt((1 - Dbar) * S1 / Dbar)      # sigma_{n,1}
-        sd_scaled = (sig0 + sig1) / np.abs(mu0)      # sigma_hat_{n,Delta} / |y0_hat|
-        stats_out.append(np.sqrt(n) * (dhat - lift) / sd_scaled)
-        done += b
-    return np.concatenate(stats_out)
+    return Population(y0=y0, y1=y1)
 
 
 def main() -> None:
@@ -118,8 +89,20 @@ def main() -> None:
     # --- Top row: studentized scaled-ATE statistic --------------------------
     for key, lift in zip(("top_left", "top_right"), TOP_LIFTS):
         ax = axd[key]
-        y0, y1 = population(lift, eps)
-        zstat = _draw(rng, y0, y1, lift, DRAWS_TOP)
+        population = make_population(lift, eps)
+        zstat = np.array([
+            (result.lift_hat - lift)
+            / (result.ate_se_hat / abs(result.control_mean_hat))
+            for result in simulate_results(
+                SimulationConfig(
+                    population=population,
+                    treatment_probability=P,
+                    ci_level=CI_LEVEL,
+                    rng=rng,
+                    n_draws=DRAWS_TOP,
+                )
+            )
+        ])
 
         ax.hist(zstat, bins=bins, density=True, color=LIFT_COLORS[lift],
                 alpha=0.75, edgecolor="white", linewidth=0.4)
@@ -142,8 +125,20 @@ def main() -> None:
     # identical set of treatment assignments (only the lift changes).
     noncoverage = np.empty(LIFT_GRID.size)
     for k, lift in enumerate(LIFT_GRID):
-        y0, y1 = population(lift, eps)
-        zstat = _draw(np.random.default_rng(ASSIGN_SEED), y0, y1, lift, DRAWS_COV)
+        population = make_population(lift, eps)
+        zstat = np.array([
+            (result.lift_hat - lift)
+            / (result.ate_se_hat / abs(result.control_mean_hat))
+            for result in simulate_results(
+                SimulationConfig(
+                    population=population,
+                    treatment_probability=P,
+                    ci_level=CI_LEVEL,
+                    rng=np.random.default_rng(ASSIGN_SEED),
+                    n_draws=DRAWS_COV,
+                )
+            )
+        ])
         noncoverage[k] = np.mean(np.abs(zstat) > Z)
 
     axb = axd["bottom"]

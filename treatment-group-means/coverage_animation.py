@@ -14,13 +14,8 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 from scipy import stats
 
-from lib.ate import compute_ate
-from lib.experiment import (
-    ExperimentConfig,
-    Population,
-    simulate_experiment,
-)
-from lib.simulation import SimulationConfig, simulate_studentized_ate
+from lib.simulation import Population, SimulationConfig, simulate_results, simulate_experiments
+from lib.treatment_effect import compute_treatment_effect_result
 
 N_UNITS = 1000
 N_TABLE_ROWS = 20  # units shown in the table (of N_UNITS total)
@@ -81,30 +76,39 @@ def make_coverage_animation(
     ate = population.ate
 
     # ---------- generate experiment results ----------
-    config = ExperimentConfig(TREATMENT_PROBABILITY, population, rng)
+    config = SimulationConfig(
+        population=population,
+        treatment_probability=TREATMENT_PROBABILITY,
+        ci_level=CI_LEVEL,
+        rng=rng,
+        n_draws=1,
+    )
     assignments, y0_bar_hats, y1_bar_hats, psi_hats, cis, covered_flags = [], [], [], [], [], []
     for _ in range(N_EXPERIMENTS):
-        experiment = simulate_experiment(config)
-        while experiment.d.sum() in (0, N_UNITS):
-            experiment = simulate_experiment(config)
-        assignments.append(experiment.d)
-        result = compute_ate(experiment, CI_LEVEL)
-        y0_bar_hats.append(result.y0_bar_hat)
-        y1_bar_hats.append(result.y1_bar_hat)
+        experiment = simulate_experiments(config)[0]
+        while experiment.treatment_indicator.sum() in (0, N_UNITS):
+            experiment = simulate_experiments(config)[0]
+        assignments.append(experiment.treatment_indicator)
+        result = compute_treatment_effect_result(experiment, CI_LEVEL)
+        y0_bar_hats.append(result.control_mean_hat)
+        y1_bar_hats.append(result.treatment_mean_hat)
         psi_hats.append(result.ate_hat)
-        cis.append((result.ci_lo, result.ci_hi))
-        covered_flags.append(result.ci_lo <= ate <= result.ci_hi)
+        cis.append((result.ate_ci_lo, result.ate_ci_hi))
+        covered_flags.append(result.ate_ci_lo <= ate <= result.ate_ci_hi)
 
     # ---------- studentized sampling distribution (bottom panel) ----------
-    studentized = simulate_studentized_ate(
-        SimulationConfig(
-            population=population,
-            treatment_probability=TREATMENT_PROBABILITY,
-            ci_level=CI_LEVEL,
-            rng=np.random.default_rng(0),
-            n_draws=N_HISTOGRAM_DRAWS,
+    studentized = np.array([
+        result.studentized_ate
+        for result in simulate_results(
+            SimulationConfig(
+                population=population,
+                treatment_probability=TREATMENT_PROBABILITY,
+                ci_level=CI_LEVEL,
+                rng=np.random.default_rng(0),
+                n_draws=N_HISTOGRAM_DRAWS,
+            )
         )
-    )
+    ])
 
     # ---------- plot setup ----------
     # Table panel geometry

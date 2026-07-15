@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 from lib.diagnostics import generate_diagnostics
-from lib.experiment import ExperimentConfig, Population, simulate_experiment
-from lib.simulation import SimulationConfig, simulate_studentized_ate
+from lib.experiment import summarize_experiment
+from lib.simulation import Population, SimulationConfig, simulate_results, simulate_experiments
 
 N_UNITS = 1_000
 N_DRAWS = 50_000
@@ -79,39 +79,53 @@ y_fail = np.concatenate([
     np.array([60.0, 60.0, 60.0]),
 ])
 population_fail = Population(y0=y_fail, y1=y_fail)
-experiment_fail = simulate_experiment(
-    ExperimentConfig(TREATMENT_PROBABILITY, population_fail, np.random.default_rng(SEED_SIM))
-)
-diagnostics_fail = generate_diagnostics(experiment_fail)
+experiment_fail = simulate_experiments(SimulationConfig(
+    population=population_fail,
+    treatment_probability=TREATMENT_PROBABILITY,
+    ci_level=CI_LEVEL,
+    rng=np.random.default_rng(SEED_SIM),
+    n_draws=1,
+))[0]
+diagnostics_fail = generate_diagnostics(summarize_experiment(experiment_fail))
 print(f"FAIL: berry_esseen_bound = {diagnostics_fail.berry_esseen_bound:.3f}, max_variance_share = {diagnostics_fail.max_variance_share:.3f}")
-studentized_fail = simulate_studentized_ate(
-    SimulationConfig(
-        population=population_fail,
-        treatment_probability=TREATMENT_PROBABILITY,
-        ci_level=CI_LEVEL,
-        rng=np.random.default_rng(SEED_SIM),
-        n_draws=N_DRAWS,
+studentized_fail = np.array([
+    result.studentized_ate
+    for result in simulate_results(
+        SimulationConfig(
+            population=population_fail,
+            treatment_probability=TREATMENT_PROBABILITY,
+            ci_level=CI_LEVEL,
+            rng=np.random.default_rng(SEED_SIM),
+            n_draws=N_DRAWS,
+        )
     )
-)
+])
 
 # Passing case: light-tailed log-normal (sigma = 0.3)
 rng_y_pass = np.random.default_rng(SEED_Y_PASS)
 y_pass = stats.lognorm.rvs(s=0.3, scale=1.0, size=N_UNITS, random_state=rng_y_pass)
 population_pass = Population(y0=y_pass, y1=y_pass)
-experiment_pass = simulate_experiment(
-    ExperimentConfig(TREATMENT_PROBABILITY, population_pass, np.random.default_rng(SEED_SIM + 1))
-)
-diagnostics_pass = generate_diagnostics(experiment_pass)
+experiment_pass = simulate_experiments(SimulationConfig(
+    population=population_pass,
+    treatment_probability=TREATMENT_PROBABILITY,
+    ci_level=CI_LEVEL,
+    rng=np.random.default_rng(SEED_SIM + 1),
+    n_draws=1,
+))[0]
+diagnostics_pass = generate_diagnostics(summarize_experiment(experiment_pass))
 print(f"PASS: berry_esseen_bound = {diagnostics_pass.berry_esseen_bound:.3f}, max_variance_share = {diagnostics_pass.max_variance_share:.3f}")
-studentized_pass = simulate_studentized_ate(
-    SimulationConfig(
-        population=population_pass,
-        treatment_probability=TREATMENT_PROBABILITY,
-        ci_level=CI_LEVEL,
-        rng=np.random.default_rng(SEED_SIM + 1),
-        n_draws=N_DRAWS,
+studentized_pass = np.array([
+    result.studentized_ate
+    for result in simulate_results(
+        SimulationConfig(
+            population=population_pass,
+            treatment_probability=TREATMENT_PROBABILITY,
+            ci_level=CI_LEVEL,
+            rng=np.random.default_rng(SEED_SIM + 1),
+            n_draws=N_DRAWS,
+        )
     )
-)
+])
 
 out_dir = Path(__file__).parent
 make_population_figure(

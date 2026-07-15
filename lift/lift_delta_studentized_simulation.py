@@ -31,43 +31,24 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 from scipy import stats
 
+from lib.simulation import SimulationConfig, simulate_summary_stats
+
 import lift_scaled_ate_simulation as fig1
 
 NORMAL_COLOR = "#1b4332"
-CURVE_COLOR = "#2f2f2f"      # delta-method line (near-black; matches the skewness figure)
+CURVE_COLOR = fig1.CURVE_COLOR
 
 
-def _draw_delta(rng, y0, y1, lift, draws, chunk=4000):
-    """Studentized delta-method statistic sqrt(n)(Delta_hat^% - lift)/sigma_hat
-    over `draws` assignments, with sigma_hat the delta-method plug-in SD. Mirrors
-    `lift_scaled_ate_simulation._draw` exactly except for the denominator.
-    """
-    n = y0.size
-    out = []
-    done = 0
-    while done < draws:
-        b = min(chunk, draws - done)
-        D = rng.random((b, n)) < fig1.P
-        n_t = D.sum(1)
-        n_c = n - n_t
-        ok = (n_t > 1) & (n_c > 1)
-        D, n_t, n_c = D[ok], n_t[ok], n_c[ok]
-        notD = ~D
-
-        mu0 = (notD * y0).sum(1) / n_c
-        mu1 = (D * y1).sum(1) / n_t
-        S0 = (notD * (y0[None, :] - mu0[:, None]) ** 2).sum(1) / n_c
-        S1 = (D * (y1[None, :] - mu1[:, None]) ** 2).sum(1) / n_t
-        Dbar = n_t / n
-
-        dhat = (mu1 - mu0) / np.abs(mu0)
-        sig0 = np.sqrt(Dbar * S0 / (1 - Dbar))      # sigma_{n,0}
-        sig1 = np.sqrt((1 - Dbar) * S1 / Dbar)      # sigma_{n,1}
-        # Delta-method plug-in SD: carries the |1 + sgn(y0_hat) Delta_hat^%| factor.
-        sd_delta = (np.abs(1 + np.sign(mu0) * dhat) * sig0 + sig1) / np.abs(mu0)
-        out.append(np.sqrt(n) * (dhat - lift) / sd_delta)
-        done += b
-    return np.concatenate(out)
+def _studentized_delta_method(summary, lift):
+    d_bar = summary.treatment_count / summary.count
+    lift_hat = (summary.treatment_mean - summary.control_mean) / abs(summary.control_mean)
+    sigma0 = summary.control_std * np.sqrt(d_bar / (1 - d_bar))
+    sigma1 = summary.treatment_std * np.sqrt((1 - d_bar) / d_bar)
+    sd_delta = (
+        (abs(1 + np.sign(summary.control_mean) * lift_hat) * sigma0 + sigma1)
+        / abs(summary.control_mean)
+    )
+    return np.sqrt(summary.count) * (lift_hat - lift) / sd_delta
 
 
 def main() -> None:
@@ -87,8 +68,19 @@ def main() -> None:
     # --- Top row: studentized delta-method statistic ------------------------
     for key, lift in zip(("top_left", "top_right"), fig1.TOP_LIFTS):
         ax = axd[key]
-        y0, y1 = fig1.population(lift, eps)
-        z = _draw_delta(rng, y0, y1, lift, fig1.DRAWS_TOP)
+        population = fig1.make_population(lift, eps)
+        z = np.array([
+            _studentized_delta_method(summary, lift)
+            for summary in simulate_summary_stats(
+                SimulationConfig(
+                    population=population,
+                    treatment_probability=fig1.P,
+                    ci_level=fig1.CI_LEVEL,
+                    rng=rng,
+                    n_draws=fig1.DRAWS_TOP,
+                )
+            )
+        ])
 
         ax.hist(z, bins=bins, density=True, color=fig1.LIFT_COLORS[lift],
                 alpha=0.75, edgecolor="white", linewidth=0.4)
@@ -110,9 +102,19 @@ def main() -> None:
     # Re-seed the assignment RNG per lift so every dot shares the same draws.
     noncoverage = np.empty(fig1.LIFT_GRID.size)
     for k, lift in enumerate(fig1.LIFT_GRID):
-        y0, y1 = fig1.population(lift, eps)
-        z = _draw_delta(np.random.default_rng(fig1.ASSIGN_SEED),
-                        y0, y1, lift, fig1.DRAWS_COV)
+        population = fig1.make_population(lift, eps)
+        z = np.array([
+            _studentized_delta_method(summary, lift)
+            for summary in simulate_summary_stats(
+                SimulationConfig(
+                    population=population,
+                    treatment_probability=fig1.P,
+                    ci_level=fig1.CI_LEVEL,
+                    rng=np.random.default_rng(fig1.ASSIGN_SEED),
+                    n_draws=fig1.DRAWS_COV,
+                )
+            )
+        ])
         noncoverage[k] = np.mean(np.abs(z) > fig1.Z)
 
     axb = axd["bottom"]

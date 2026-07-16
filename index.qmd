@@ -1,0 +1,75 @@
+---
+title: "Experiment Inference Notes"
+author: "David Malison"
+filters:
+  - last-modified.lua
+language:
+  title-block-published: "Last modified"
+format:
+  html:
+    toc: false
+    number-sections: false
+    include-in-header:
+      text: |
+        <style>
+          :root { color-scheme: light dark; }
+          main.content {
+            max-width: 46rem;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+          }
+          h1.title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.25rem;
+          }
+          .quarto-title-meta {
+            display: flex !important;
+            justify-content: center;
+            gap: 5rem;
+            text-align: center;
+          }
+          .intro {
+            max-width: 40rem;
+            margin: 1.75rem auto 0;
+            color: #333;
+          }
+          .notes ul {
+            list-style: none;
+            padding: 0;
+            margin: 2.5rem 0;
+          }
+          .notes li {
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            margin: 0.75rem 0;
+            transition: background 0.15s ease;
+          }
+          .notes li:hover { background: rgba(0, 0, 0, 0.03); }
+          .notes a {
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-decoration: none;
+          }
+          .notes a:hover { text-decoration: underline; }
+          @media (prefers-color-scheme: dark) {
+            .intro { color: #d0d0d0; }
+            .notes li { border-color: #333; }
+            .notes li:hover { background: rgba(255, 255, 255, 0.05); }
+          }
+        </style>
+---
+
+::: {.intro}
+These notes develop tools for asymptotic inference in randomized experiments.
+We model the data using a fixed-potential-outcomes framework with a small set of transparent assumptions.
+The procedures we derive have coverage guarantees that hold uniformly over the parameter space. As a result, they can support reliable inference across a wide range of potential outcome configurations.
+
+:::
+
+::: {.notes}
+- [Uniform Inference on Treatment Group Means](treatment-group-means/)
+- [Uniform Inference on Relative Treatment Effects](lift/)
+- [Regularity Diagnostics](diagnostics/)
+:::

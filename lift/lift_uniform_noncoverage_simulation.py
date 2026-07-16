@@ -1,25 +1,27 @@
-"""Non-coverage of the uniformly valid confidence set, recreated on the exact
+"""Non-coverage of the uniformly-valid confidence interval, recreated on the exact
 data-generating processes of Figures 1 and 2.
 
 Two stacked panels, both at n = 10,000 in the fixed-potential-outcomes framework
 (one population per point, only the Bernoulli(1/2) assignment re-randomized):
 
-* Top: non-coverage of the uniform set as a function of the percentage lift
-  Delta^%, on the DGP of ``lift_scaled_ate_simulation.py`` (baseline ybar0 = 1
-  held fixed, lift varied). Recreates the bottom panel of that figure for the
-  uniform set instead of the scaled-ATE interval.
+* Top: non-coverage of the uniformly-valid confidence interval as a function of
+    the percentage lift Delta^%, on the DGP of ``lift_scaled_ate_simulation.py``
+    (baseline ybar0 = 1 held fixed, lift varied). Recreates the bottom panel of
+    that figure for the uniformly-valid confidence interval instead of the
+    scaled-ATE interval.
 * Bottom: non-coverage as a function of the number of standard errors
   sqrt(n) ybar0 / sigma_{n,0} separating the baseline from zero, on the DGP of
-  ``lift_skewness_simulation.py`` (lift Delta^% = 10% held fixed, baseline
-  varied). Recreates the bottom panel of that figure for the uniform set instead
-  of the delta-method interval.
+    ``lift_skewness_simulation.py`` (lift Delta^% = 10% held fixed, baseline
+    varied). Recreates the bottom panel of that figure for the uniformly-valid
+    confidence interval instead of the delta-method interval.
 
 Both panels reuse the originals' populations and assignment RNG streams (same
 SEED / ASSIGN_SEED / DRAWS_COV via the imported modules); only the interval rule
-changes. The uniform set is C^%_{n,1-alpha} of (eq-final-confidence-set): a sign
-pretest T_{n,0} = sqrt(n) y0_hat / sigma_{n,0} at level alpha^sign, then the
-Fieller set C^{%,+}/C^{%,-} at level alpha^Fiellers, or the real line when the
-sign test is inconclusive. alpha^sign = 0.001 and alpha^Fiellers = 0.049
+changes. The uniformly-valid confidence interval is C^%_{n,1-alpha} of
+(eq-final-confidence-set): a sign pretest T_{n,0} = sqrt(n) y0_hat / sigma_{n,0}
+at level alpha^sign, then the Fieller set C^{%,+}/C^{%,-} at level
+alpha^Fiellers, or the real line when the sign test is inconclusive.
+alpha^sign = 0.001 and alpha^Fiellers = 0.049
 (matching the coverage table). The additional solid curves show the known-
 baseline-sign intervals I^+ and I^- defined in the known baseline sign section,
 using the same alpha split.
@@ -36,7 +38,7 @@ from scipy import stats
 import lift_scaled_ate_simulation as fig1   # Delta^% varied at ybar0 = 1
 import lift_skewness_simulation as fig2      # baseline varied at Delta^% = 10%
 
-# Uniform-set tuning, matching lift_coverage_table.py.
+# Uniformly-valid interval tuning, matching lift_coverage_table.py.
 ALPHA = 0.05
 ALPHA_SIGN = 0.001
 ALPHA_FIELLER = ALPHA - ALPHA_SIGN
@@ -151,7 +153,7 @@ def main() -> None:
     # --- Top: vs lift (Fig 1 DGP) ------------------------------------------
     ax_top.axhline(0.05, color=NOMINAL_COLOR, lw=1, linestyle="--", label="nominal")
     ax_top.plot(lift_grid, nc_lift, marker="o", ms=4, color=UNIFORM_COLOR,
-                lw=1.5, zorder=2, label="uniform set")
+                lw=1.5, zorder=2, label="uniformly-valid confidence interval")
     for lift in fig1.TOP_LIFTS:                      # highlight Fig 1's two panels
         v = nc_lift[np.isclose(lift_grid, lift)][0]
         ax_top.plot(lift, v, marker="o", ms=10, color=fig1.LIFT_COLORS[lift],
@@ -160,7 +162,7 @@ def main() -> None:
     ax_top.set_xlim(-1.03, 1.03)
     ax_top.set_xlabel(r"$\rho_n$", fontsize=11)
     ax_top.xaxis.set_major_formatter(PercentFormatter(xmax=1, decimals=0))
-    ax_top.set_ylabel(r"$95\%$ set non-coverage", fontsize=10)
+    ax_top.set_ylabel(r"$95\%$ interval non-coverage", fontsize=10)
     ax_top.set_title(r"varying the lift at $\overline{y}_0 = 1$", fontsize=11)
     ax_top.legend(frameon=False, fontsize=9, loc="upper left")
 
@@ -168,7 +170,7 @@ def main() -> None:
     ax_bot.axhline(0.05, color=NOMINAL_COLOR, lw=1, linestyle="--", label="nominal")
     ax_bot.axvline(0, color="0.8", lw=1, zorder=0)   # denominator singularity
     ax_bot.plot(se_grid, nc_base, marker="o", ms=4, color=UNIFORM_COLOR,
-                lw=1.5, zorder=2, label="uniform set")
+                lw=1.5, zorder=2, label="uniformly-valid confidence interval")
     ax_bot.plot(se_grid, nc_base_sign_known_pos, marker="o", ms=4,
                 color=POSITIVE_SIGN_COLOR, lw=1.5, zorder=3,
                 label=r"known positive sign ($I^+$)")
@@ -186,7 +188,7 @@ def main() -> None:
     ax_bot.set_xlim(-10.5, 10.5)
     ax_bot.set_xticks(range(-10, 11))
     ax_bot.set_xlabel(r"$\sqrt{n}\,\overline{y}_0/\sigma_{n,0}$", fontsize=11)
-    ax_bot.set_ylabel(r"$95\%$ set non-coverage", fontsize=10)
+    ax_bot.set_ylabel(r"$95\%$ interval non-coverage", fontsize=10)
     ax_bot.set_title(r"varying the baseline at $\rho_n = 10\%$", fontsize=11)
     ax_bot.legend(frameon=False, fontsize=9, loc="upper left")
 

@@ -182,14 +182,16 @@ The bottom panel shows that the delta method achieves nominal coverage only when
 # Fieller's method
 
 To address the problem in @fig-lift-skewness, we need a coverage property that holds uniformly over the parameter space.
-In the [treatment group means note](../treatment-group-means/), we showed how to construct uniformly valid confidence sets for a linear combination of means.
-In this section, we use this result to construct a uniformly-valid confidence interval for $\rho_n$.
+In the [treatment group means note](../treatment-group-means/), we showed how to construct uniformly valid confidence sets for linear combinations of means.
+We now use that result to construct a uniformly valid confidence interval for $\rho_n$.
 
 ## Splitting by the control mean sign
 
-We first remove the absolute value in the definition of $\rho_n$ by defining
+To remove the absolute value from the denominator of $\rho_n$, define
 $$
-\rho_n^+ = \frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}},\qquad \rho_n^- = -\frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}}
+\rho_n^+ = \frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}},
+\qquad
+\rho_n^- = -\frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}}.
 $$
 We construct confidence sets for $\rho_n^+$ and $\rho_n^-$ using [Fieller's method](https://en.wikipedia.org/wiki/Fieller%27s_theorem).
 Define $\psi_n^+$ and $\psi_n^-$ by
@@ -199,27 +201,57 @@ $$
 \psi_n^- = \overline{y}_{1,n} - (1-\rho_n^-)\,\overline{y}_{0,n},
 $$
 with sample analogues $\widehat{\psi}_n^+$ and $\widehat{\psi}_n^-$.
-Fix $s \in \{+,-\}$ and $\alpha \in (0,1)$.
-Let $C^s_{1-\alpha,n}$ denote the confidence set for $\psi_n^s$ as defined in the treatment group means note.
-This confidence set satisfies
+Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment-group means, we can apply the results from the treatment group means note after verifying the regularity conditions for the target-specific coefficient vector
 $$
-\liminf_{n\to \infty}\inf_{\theta \in \Theta}\mathbb{P}_\theta(\psi_n^s \in C_{1-\alpha,n}^s) \geq 1-\alpha
+\mathbf a_n^s
+=
+(\rho_n^s+m^s,-m^s)',
+$$
+where $s\in\{+,-\}$, $m^+=1$, and $m^-=-1$.
+Let
+$$
+\gamma_n
+=
+\frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
+{S_{0,n}S_{1,n}},
+$$
+denote the correlation between the control and treatment potential-outcome sequences.
+A sufficient condition for Assumption 3(ii) is that Assumption 3(i) holds and
+$$
+\liminf_{n\to\infty}\inf_{\theta\in\Theta}
+\left[
+\operatorname{sgn}\left(
+\frac{\overline y_{1,n}}{\overline y_{0,n}}
+\right)\gamma_n
+\right]
+> -1.
+$$ {#eq-sign-specific-correlation-condition}
+When the two potential-outcome means have the same sign, (-@eq-sign-specific-correlation-condition) reduces to the ATE condition that $\gamma_n$ remain uniformly bounded away from $-1$.
+When the means have opposite signs, it instead requires $\gamma_n$ to remain uniformly bounded away from $1$.
+
+Fix $\alpha\in(0,1)$, and let $C^s_{1-\alpha,n}$ denote the confidence set for $\psi_n^s$ defined in the treatment group means note.
+Under Assumption 3(i) and (-@eq-sign-specific-correlation-condition), we have
+$$
+\liminf_{n\to \infty}
+\inf_{\theta \in \Theta}
+\mathbb{P}_\theta
+\left(\psi_n^s \in C_{1-\alpha,n}^s\right)
+\geq 1-\alpha.
 $$ {#eq-sign-specific-linear-combination-coverage}
 
-By construction, 
+By construction,
 $$
 \left\{\psi_n^s \in C_{1-\alpha,n}^s\right\}
 \iff
-\left\{\left|\frac{\widehat{\psi}_n^s - \psi_n^s}{\sqrt{(\widehat{\sigma}_n^{s}(\theta))^2/n}}\right| \leq z_{1-\alpha/2}\right\}
+\left\{\left|\frac{\widehat{\psi}_n^s - \psi_n^s}{\sqrt{(\widehat{\sigma}_n^{s}(\theta))^2/n}}\right| \leq z_{1-\alpha/2}\right\},
 $$
 where
 $$
 (\widehat{\sigma}_n^{s}(\theta))^2
 =
-\left(\left|1+m^s\rho_n^s\right|\,\widehat{\sigma}_{0,n} + \widehat{\sigma}_{1,n}\right)^2
+\left(\left|1+m^s\rho_n^s\right|\,\widehat{\sigma}_{0,n} + \widehat{\sigma}_{1,n}\right)^2.
 $$
-and $m^+=1$ and $m^-=-1$.
-For any candidate value $r$, the sample analogues simplify to
+For any candidate value $r$, the sample analogue is
 $$
 \widehat{\psi}_n^s(r)
 =

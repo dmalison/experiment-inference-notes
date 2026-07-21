@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-16">
+<meta name="dcterms.date" content="2026-07-21">
 
 <title>Uniform Inference on Relative Treatment Effects</title>
 <style>
@@ -122,7 +122,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 16, 2026</p>
+      <p class="date">July 21, 2026</p>
     </div>
   </div>
   
@@ -250,27 +250,51 @@ Figure&nbsp;3: Top: sampling distribution of the standardized delta-method stati
 </section>
 <section id="fiellers-method" class="level1">
 <h1>Fieller’s method</h1>
-<p>To address the problem in <a href="#fig-lift-skewness" class="quarto-xref">Figure&nbsp;3</a>, we need a coverage property that holds uniformly over the parameter space. In the <a href="../treatment-group-means/">treatment group means note</a>, we showed how to construct uniformly valid confidence sets for a linear combination of means. In this section, we use this result to construct a uniformly-valid confidence interval for <span class="math inline">\(\rho_n\)</span>.</p>
+<p>To address the problem in <a href="#fig-lift-skewness" class="quarto-xref">Figure&nbsp;3</a>, we need a coverage property that holds uniformly over the parameter space. In the <a href="../treatment-group-means/">treatment group means note</a>, we showed how to construct uniformly valid confidence sets for linear combinations of means. We now use that result to construct a uniformly valid confidence interval for <span class="math inline">\(\rho_n\)</span>.</p>
 <section id="splitting-by-the-control-mean-sign" class="level2">
 <h2 class="anchored" data-anchor-id="splitting-by-the-control-mean-sign">Splitting by the control mean sign</h2>
-<p>We first remove the absolute value in the definition of <span class="math inline">\(\rho_n\)</span> by defining <span class="math display">\[
-\rho_n^+ = \frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}},\qquad \rho_n^- = -\frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}}
+<p>To remove the absolute value from the denominator of <span class="math inline">\(\rho_n\)</span>, define <span class="math display">\[
+\rho_n^+ = \frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}},
+\qquad
+\rho_n^- = -\frac{\psi_n^{\mathrm{ATE}}}{\overline{y}_{0,n}}.
 \]</span> We construct confidence sets for <span class="math inline">\(\rho_n^+\)</span> and <span class="math inline">\(\rho_n^-\)</span> using <a href="https://en.wikipedia.org/wiki/Fieller%27s_theorem">Fieller’s method</a>. Define <span class="math inline">\(\psi_n^+\)</span> and <span class="math inline">\(\psi_n^-\)</span> by <span class="math display">\[
 \psi_n^+ = (1+\rho_n^+)\,\overline{y}_{0,n} - \overline{y}_{1,n},
 \qquad
 \psi_n^- = \overline{y}_{1,n} - (1-\rho_n^-)\,\overline{y}_{0,n},
-\]</span> with sample analogues <span class="math inline">\(\widehat{\psi}_n^+\)</span> and <span class="math inline">\(\widehat{\psi}_n^-\)</span>. Fix <span class="math inline">\(s \in \{+,-\}\)</span> and <span class="math inline">\(\alpha \in (0,1)\)</span>. Let <span class="math inline">\(C^s_{1-\alpha,n}\)</span> denote the confidence set for <span class="math inline">\(\psi_n^s\)</span> as defined in the treatment group means note. This confidence set satisfies <span id="eq-sign-specific-linear-combination-coverage"><span class="math display">\[
-\liminf_{n\to \infty}\inf_{\theta \in \Theta}\mathbb{P}_\theta(\psi_n^s \in C_{1-\alpha,n}^s) \geq 1-\alpha
-\tag{7}\]</span></span></p>
+\]</span> with sample analogues <span class="math inline">\(\widehat{\psi}_n^+\)</span> and <span class="math inline">\(\widehat{\psi}_n^-\)</span>. Because <span class="math inline">\(\psi_n^+\)</span> and <span class="math inline">\(\psi_n^-\)</span> are linear combinations of the treatment-group means, we can apply the results from the treatment group means note after verifying the regularity conditions for the target-specific coefficient vector <span class="math display">\[
+\mathbf a_n^s
+=
+(\rho_n^s+m^s,-m^s)',
+\]</span> where <span class="math inline">\(s\in\{+,-\}\)</span>, <span class="math inline">\(m^+=1\)</span>, and <span class="math inline">\(m^-=-1\)</span>. Let <span class="math display">\[
+\gamma_n
+=
+\frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
+{S_{0,n}S_{1,n}},
+\]</span> denote the correlation between the control and treatment potential-outcome sequences. A sufficient condition for Assumption 3(ii) is that Assumption 3(i) holds and <span id="eq-sign-specific-correlation-condition"><span class="math display">\[
+\liminf_{n\to\infty}\inf_{\theta\in\Theta}
+\left[
+\operatorname{sgn}\left(
+\frac{\overline y_{1,n}}{\overline y_{0,n}}
+\right)\gamma_n
+\right]
+&gt; -1.
+\tag{7}\]</span></span> When the two potential-outcome means have the same sign, (<a href="#eq-sign-specific-correlation-condition" class="quarto-xref">7</a>) reduces to the ATE condition that <span class="math inline">\(\gamma_n\)</span> remain uniformly bounded away from <span class="math inline">\(-1\)</span>. When the means have opposite signs, it instead requires <span class="math inline">\(\gamma_n\)</span> to remain uniformly bounded away from <span class="math inline">\(1\)</span>.</p>
+<p>Fix <span class="math inline">\(\alpha\in(0,1)\)</span>, and let <span class="math inline">\(C^s_{1-\alpha,n}\)</span> denote the confidence set for <span class="math inline">\(\psi_n^s\)</span> defined in the treatment group means note. Under Assumption 3(i) and (<a href="#eq-sign-specific-correlation-condition" class="quarto-xref">7</a>), we have <span id="eq-sign-specific-linear-combination-coverage"><span class="math display">\[
+\liminf_{n\to \infty}
+\inf_{\theta \in \Theta}
+\mathbb{P}_\theta
+\left(\psi_n^s \in C_{1-\alpha,n}^s\right)
+\geq 1-\alpha.
+\tag{8}\]</span></span></p>
 <p>By construction, <span class="math display">\[
 \left\{\psi_n^s \in C_{1-\alpha,n}^s\right\}
 \iff
-\left\{\left|\frac{\widehat{\psi}_n^s - \psi_n^s}{\sqrt{(\widehat{\sigma}_n^{s}(\theta))^2/n}}\right| \leq z_{1-\alpha/2}\right\}
+\left\{\left|\frac{\widehat{\psi}_n^s - \psi_n^s}{\sqrt{(\widehat{\sigma}_n^{s}(\theta))^2/n}}\right| \leq z_{1-\alpha/2}\right\},
 \]</span> where <span class="math display">\[
 (\widehat{\sigma}_n^{s}(\theta))^2
 =
-\left(\left|1+m^s\rho_n^s\right|\,\widehat{\sigma}_{0,n} + \widehat{\sigma}_{1,n}\right)^2
-\]</span> and <span class="math inline">\(m^+=1\)</span> and <span class="math inline">\(m^-=-1\)</span>. For any candidate value <span class="math inline">\(r\)</span>, the sample analogues simplify to <span class="math display">\[
+\left(\left|1+m^s\rho_n^s\right|\,\widehat{\sigma}_{0,n} + \widehat{\sigma}_{1,n}\right)^2.
+\]</span> For any candidate value <span class="math inline">\(r\)</span>, the sample analogue is <span class="math display">\[
 \widehat{\psi}_n^s(r)
 =
 \widehat{y}_{0,n}\,r - m^s\widehat{\psi}_n^{\mathrm{ATE}}.
@@ -284,7 +308,7 @@ Figure&nbsp;3: Top: sampling distribution of the standardized delta-method stati
 \frac{\widehat{y}_{0,n}\,\rho_n^s - m^s\widehat{\psi}_n^{\mathrm{ATE}}}
 {\left(\left|1+m^s\rho_n^s\right|\,\widehat{\sigma}_{0,n} + \widehat{\sigma}_{1,n}\right)/\sqrt n}
 \right| \leq z_{1-\alpha/2}\right\}.
-\tag{8}\]</span></span></p>
+\tag{9}\]</span></span></p>
 <p>Inverting the right-hand side, we obtain the confidence set <span id="eq-fieller-sets"><span class="math display">\[
 \begin{aligned}
 C_{1-\alpha,n}^{s}
@@ -294,23 +318,23 @@ C_{1-\alpha,n}^{s}
 - \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1+m^sr\right| - 1\right) \\
 &amp;\quad + (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0\Bigg\}.
 \end{aligned}
-\tag{9}\]</span></span></p>
-<p>The coverage property in (<a href="#eq-sign-specific-linear-combination-coverage" class="quarto-xref">7</a>) and the equivalence in (<a href="#eq-fieller-inversion" class="quarto-xref">8</a>) imply <span id="eq-sign-specific-fieller-coverage"><span class="math display">\[
-\liminf_{n \to \infty} \inf_{\theta \in \Theta} \mathbb{P}_\theta(\rho_n^s \in C_{1-\alpha,n}^{s}) \geq 1-\alpha
 \tag{10}\]</span></span></p>
-<p>The expression on the left-hand side of the inequality in (<a href="#eq-fieller-sets" class="quarto-xref">9</a>) is piecewise quadratic. Each piece has leading coefficient</p>
+<p>The coverage property in (<a href="#eq-sign-specific-linear-combination-coverage" class="quarto-xref">8</a>) and the equivalence in (<a href="#eq-fieller-inversion" class="quarto-xref">9</a>) imply <span id="eq-sign-specific-fieller-coverage"><span class="math display">\[
+\liminf_{n \to \infty} \inf_{\theta \in \Theta} \mathbb{P}_\theta(\rho_n^s \in C_{1-\alpha,n}^{s}) \geq 1-\alpha
+\tag{11}\]</span></span></p>
+<p>The expression on the left-hand side of the inequality in (<a href="#eq-fieller-sets" class="quarto-xref">10</a>) is piecewise quadratic. Each piece has leading coefficient</p>
 <p><span class="math display">\[
 \widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2.
 \]</span></p>
 <p>If this coefficient is positive, the sign-specific confidence set is a bounded interval; otherwise, it contains values that are arbitrarily large in magnitude. Equivalently, the confidence sets are bounded intervals if and only if <span id="eq-baseline-significance-condition"><span class="math display">\[
 \frac{|\widehat{y}_{0,n}|}{\widehat{\sigma}_{0,n} / \sqrt{n}} &gt; z_{1-\alpha/2}.
-\tag{11}\]</span></span> The expression in (<a href="#eq-baseline-significance-condition" class="quarto-xref">11</a>) is exactly the condition for rejecting the null hypothesis that the control mean is zero at level <span class="math inline">\(\alpha\)</span>. Thus, if we cannot bound the control mean away from zero at level <span class="math inline">\(\alpha\)</span>, we also do not obtain a bounded confidence set for <span class="math inline">\(\rho_n^s\)</span> at this level.</p>
-<p>Evaluating the inequalities in (<a href="#eq-fieller-sets" class="quarto-xref">9</a>) at <span class="math inline">\(r=0\)</span> also shows that <span class="math inline">\(0 \notin C_{1-\alpha,n}^{s}\)</span> if and only if <span class="math display">\[
+\tag{12}\]</span></span> The expression in (<a href="#eq-baseline-significance-condition" class="quarto-xref">12</a>) is exactly the condition for rejecting the null hypothesis that the control mean is zero at level <span class="math inline">\(\alpha\)</span>. Thus, if we cannot bound the control mean away from zero at level <span class="math inline">\(\alpha\)</span>, we also do not obtain a bounded confidence set for <span class="math inline">\(\rho_n^s\)</span> at this level.</p>
+<p>Evaluating the inequalities in (<a href="#eq-fieller-sets" class="quarto-xref">10</a>) at <span class="math inline">\(r=0\)</span> also shows that <span class="math inline">\(0 \notin C_{1-\alpha,n}^{s}\)</span> if and only if <span class="math display">\[
 (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 &gt; 0,
 \]</span> or equivalently, <span class="math display">\[
 \frac{|\widehat{\psi}_n^{\mathrm{ATE}}|}{\widehat{\sigma}_n^{\mathrm{ATE}} / \sqrt n} &gt; z_{1-\alpha/2}.
 \]</span> Thus the sign-specific confidence set excludes zero exactly when the usual two-sided ATE test rejects <span class="math inline">\(\psi_n^\mathrm{ATE} = 0\)</span> at level <span class="math inline">\(\alpha\)</span>.</p>
-<p>Finally, note that the numerators on the right-hand side of (<a href="#eq-fieller-inversion" class="quarto-xref">8</a>) equal zero at <span class="math inline">\(\rho_n^s = \widehat{\rho}_n^s\)</span>, where <span class="math display">\[
+<p>Finally, note that the numerators on the right-hand side of (<a href="#eq-fieller-inversion" class="quarto-xref">9</a>) equal zero at <span class="math inline">\(\rho_n^s = \widehat{\rho}_n^s\)</span>, where <span class="math display">\[
 \widehat{\rho}_n^+
 =
 \frac{\widehat{\psi}_n^{\mathrm{ATE}}}{\widehat{y}_{0,n}},
@@ -319,7 +343,7 @@ C_{1-\alpha,n}^{s}
 =
 -\frac{\widehat{\psi}_n^{\mathrm{ATE}}}{\widehat{y}_{0,n}}.
 \]</span> As a consequence, these sign-specific point estimates always lie in their respective confidence sets. However, they need not be the midpoints of their confidence sets.</p>
-<p><a href="#fig-fieller-confidence-set-bounded" class="quarto-xref">Figure&nbsp;4</a> and <a href="#fig-fieller-confidence-set-unbounded" class="quarto-xref">Figure&nbsp;5</a> illustrate the confidence sets in (<a href="#eq-fieller-sets" class="quarto-xref">9</a>). In each panel, the shaded region marks the values of <span class="math inline">\(\rho_n^s\)</span> for which the corresponding Fieller inequality value in (<a href="#eq-fieller-sets" class="quarto-xref">9</a>) is below zero.</p>
+<p><a href="#fig-fieller-confidence-set-bounded" class="quarto-xref">Figure&nbsp;4</a> and <a href="#fig-fieller-confidence-set-unbounded" class="quarto-xref">Figure&nbsp;5</a> illustrate the confidence sets in (<a href="#eq-fieller-sets" class="quarto-xref">10</a>). In each panel, the shaded region marks the values of <span class="math inline">\(\rho_n^s\)</span> for which the corresponding Fieller inequality value in (<a href="#eq-fieller-sets" class="quarto-xref">10</a>) is below zero.</p>
 <p><a href="#fig-fieller-confidence-set-bounded" class="quarto-xref">Figure&nbsp;4</a> displays the bounded case. The value of the Fieller inequality is positive in both tails, so each sign-specific confidence set is an interval around the corresponding point estimate. Note that the point estimate is not the midpoint of the interval.</p>
 <div id="fig-fieller-confidence-set-bounded" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -344,7 +368,7 @@ Figure&nbsp;5: Unbounded sign-specific confidence sets. Top: left-hand side of t
 </div>
 <section id="comparison-with-delta-method" class="level3">
 <h3 class="anchored" data-anchor-id="comparison-with-delta-method">Comparison with delta method</h3>
-<p>It is useful to compare the sign-specific confidence sets with the delta-method confidence interval in (<a href="#eq-delta-method-interval" class="quarto-xref">5</a>). The sign-specific confidence set in (<a href="#eq-fieller-sets" class="quarto-xref">9</a>) can be written as</p>
+<p>It is useful to compare the sign-specific confidence sets with the delta-method confidence interval in (<a href="#eq-delta-method-interval" class="quarto-xref">5</a>). The sign-specific confidence set in (<a href="#eq-fieller-sets" class="quarto-xref">10</a>) can be written as</p>
 <p><span id="eq-fieller-sign-specific-form"><span class="math display">\[
 C_{1-\alpha,n}^{s}
 =
@@ -363,7 +387,7 @@ r
 \widehat{\sigma}_{1,n}
 \right)
 \right\}
-\tag{12}\]</span></span></p>
+\tag{13}\]</span></span></p>
 <p>while the delta-method confidence interval can be written as</p>
 <p><span id="eq-delta-method-form"><span class="math display">\[
 C_{1-\alpha,n}^{\mathrm{DM}}
@@ -383,12 +407,12 @@ r
 \widehat{\sigma}_{1,n}
 \right)
 \right\}.
-\tag{13}\]</span></span></p>
-<p>Suppose <span class="math inline">\(m^s = \operatorname{sgn}(\widehat{y}_{0,n})\)</span>. Then <span class="math inline">\(\widehat{\rho}_n^s=\widehat{\rho}_n\)</span>, so the only difference between <span class="math inline">\(C_{1-\alpha,n}^{s}\)</span> and <span class="math inline">\(C_{1-\alpha,n}^{\mathrm{DM}}\)</span> is that the right-hand side of (<a href="#eq-fieller-sign-specific-form" class="quarto-xref">12</a>) substitutes the candidate value <span class="math inline">\(r\)</span> for the point estimate <span class="math inline">\(\widehat{\rho}_n\)</span>. Now let <span class="math inline">\(T_{0,n}\)</span> be the test statistic for whether the baseline mean is zero: <span id="eq-baseline-statistic"><span class="math display">\[
+\tag{14}\]</span></span></p>
+<p>Suppose <span class="math inline">\(m^s = \operatorname{sgn}(\widehat{y}_{0,n})\)</span>. Then <span class="math inline">\(\widehat{\rho}_n^s=\widehat{\rho}_n\)</span>, so the only difference between <span class="math inline">\(C_{1-\alpha,n}^{s}\)</span> and <span class="math inline">\(C_{1-\alpha,n}^{\mathrm{DM}}\)</span> is that the right-hand side of (<a href="#eq-fieller-sign-specific-form" class="quarto-xref">13</a>) substitutes the candidate value <span class="math inline">\(r\)</span> for the point estimate <span class="math inline">\(\widehat{\rho}_n\)</span>. Now let <span class="math inline">\(T_{0,n}\)</span> be the test statistic for whether the baseline mean is zero: <span id="eq-baseline-statistic"><span class="math display">\[
 T_{0,n}
 =
 \frac{\sqrt n\,\widehat{y}_{0,n}}{\widehat{\sigma}_{0,n}}
-\tag{14}\]</span></span> In the <a href="#sec-fieller-delta-equivalence">Appendix</a>, we show that whenever <span class="math inline">\(|T_{0,n}|&gt;z_{1-\alpha/2}\)</span>, <span class="math display">\[
+\tag{15}\]</span></span> In the <a href="#sec-fieller-delta-equivalence">Appendix</a>, we show that whenever <span class="math inline">\(|T_{0,n}|&gt;z_{1-\alpha/2}\)</span>, <span class="math display">\[
 \frac{\lambda\left(C_{1-\alpha,n}^{s}\triangle C_{1-\alpha,n}^{\mathrm{DM}}\right)}
 {\lambda\left(C_{1-\alpha,n}^{\mathrm{DM}}\right)}
 \leq
@@ -401,7 +425,7 @@ T_{0,n}
 <h2 class="anchored" data-anchor-id="confidence-interval-for-rho_n">Confidence interval for <span class="math inline">\(\rho_n\)</span></h2>
 <section id="known-baseline-sign" class="level3">
 <h3 class="anchored" data-anchor-id="known-baseline-sign">Known baseline sign</h3>
-<p>We now use the sign-specific confidence sets to construct a confidence interval for <span class="math inline">\(\rho_n\)</span>. First suppose the sign of <span class="math inline">\(\overline{y}_{0,n}\)</span> is known to be <span class="math inline">\(s\in\{+,-\}\)</span>. For example, many outcomes are known to take only nonnegative values. Then <span class="math inline">\(\rho_n=\rho_n^s\)</span>, so the sign-specific confidence set <span class="math inline">\(C_{1-\alpha,n}^{s}\)</span> is asymptotically valid for <span class="math inline">\(\rho_n\)</span> by (<a href="#eq-sign-specific-fieller-coverage" class="quarto-xref">10</a>). However, as illustrated in <a href="#fig-fieller-confidence-set-unbounded" class="quarto-xref">Figure&nbsp;5</a>, this set may not be an interval when the denominator is not statistically distinguishable from zero. To construct a connected set, we choose <span class="math inline">\(\alpha^{\mathrm{Fieller}},\alpha^{\mathrm{ATE}}&gt;0\)</span> with <span class="math inline">\(\alpha^{\mathrm{Fieller}}+\alpha^{\mathrm{ATE}}=\alpha\)</span> and <span class="math inline">\(\alpha^{\mathrm{ATE}}\leq\alpha^{\mathrm{Fieller}}\)</span>. Let <span class="math inline">\(C_{1-\alpha^{\mathrm{Fieller}},n}^{s}\)</span> denote the corresponding sign-specific confidence set and define the ATE sign statistic</p>
+<p>We now use the sign-specific confidence sets to construct a confidence interval for <span class="math inline">\(\rho_n\)</span>. First suppose the sign of <span class="math inline">\(\overline{y}_{0,n}\)</span> is known to be <span class="math inline">\(s\in\{+,-\}\)</span>. For example, many outcomes are known to take only nonnegative values. Then <span class="math inline">\(\rho_n=\rho_n^s\)</span>, so the sign-specific confidence set <span class="math inline">\(C_{1-\alpha,n}^{s}\)</span> is asymptotically valid for <span class="math inline">\(\rho_n\)</span> by (<a href="#eq-sign-specific-fieller-coverage" class="quarto-xref">11</a>). However, as illustrated in <a href="#fig-fieller-confidence-set-unbounded" class="quarto-xref">Figure&nbsp;5</a>, this set may not be an interval when the denominator is not statistically distinguishable from zero. To construct a connected set, we choose <span class="math inline">\(\alpha^{\mathrm{Fieller}},\alpha^{\mathrm{ATE}}&gt;0\)</span> with <span class="math inline">\(\alpha^{\mathrm{Fieller}}+\alpha^{\mathrm{ATE}}=\alpha\)</span> and <span class="math inline">\(\alpha^{\mathrm{ATE}}\leq\alpha^{\mathrm{Fieller}}\)</span>. Let <span class="math inline">\(C_{1-\alpha^{\mathrm{Fieller}},n}^{s}\)</span> denote the corresponding sign-specific confidence set and define the ATE sign statistic</p>
 <p><span class="math display">\[
 T_n^{\mathrm{ATE}}
 =
@@ -424,7 +448,7 @@ C_{1-\alpha^{\mathrm{Fieller}},n}^{s}\cap(-\infty,0],
 &amp; |T_{0,n}|\leq z_{1-\alpha^{\mathrm{Fieller}}/2},
 \quad |T_n^{\mathrm{ATE}}|\leq z_{1-\alpha^{\mathrm{ATE}}/2}.
 \end{cases}
-\tag{15}\]</span></span></p>
+\tag{16}\]</span></span></p>
 <p>When the denominator is statistically distinguishable from zero, the sign-specific confidence set is a bounded interval and we use it directly. When the denominator is not statistically distinguishable from zero, we use an ATE sign test. If the ATE is significantly positive, we truncate the sign-specific confidence set to nonnegative values; if it is significantly negative, we truncate it to nonpositive values. If the ATE sign test is inconclusive, we return the real line. The condition <span class="math inline">\(\alpha^{\mathrm{ATE}}\leq\alpha^{\mathrm{Fieller}}\)</span> ensures that, when truncation occurs, the resulting set is a ray rather than two disjoint pieces.</p>
 <p>To see why <span class="math inline">\(I_{1-\alpha,n}^{s}\)</span> is uniformly valid, define the inclusion event <span class="math display">\[
 E^{\mathrm{Fieller},s}
@@ -464,7 +488,7 @@ E^{\mathrm{Fieller},s}
 \psi_n^{\mathrm{ATE}} \notin C_{1-\alpha^{\mathrm{ATE}},n}^{\mathrm{ATE}}
 \right\} \\
 \end{aligned}
-\]</span> where <span class="math inline">\(C_{1-\alpha^{\mathrm{ATE}},n}^{\mathrm{ATE}}\)</span> is the usual ATE confidence interval. The coverage property in (<a href="#eq-sign-specific-fieller-coverage" class="quarto-xref">10</a>) and the asymptotic validity of the ATE confidence interval then give <span class="math display">\[
+\]</span> where <span class="math inline">\(C_{1-\alpha^{\mathrm{ATE}},n}^{\mathrm{ATE}}\)</span> is the usual ATE confidence interval. The coverage property in (<a href="#eq-sign-specific-fieller-coverage" class="quarto-xref">11</a>) and the asymptotic validity of the ATE confidence interval then give <span class="math display">\[
 \begin{aligned}
 \liminf_{n\to\infty}\inf_{\theta \in \Theta}\mathbb{P}_\theta\{\rho_n \in I_{1-\alpha,n}^{s}\}
 &amp;\geq
@@ -476,7 +500,7 @@ E^{\mathrm{Fieller},s}
 </section>
 <section id="unknown-baseline-sign" class="level3">
 <h3 class="anchored" data-anchor-id="unknown-baseline-sign">Unknown baseline sign</h3>
-<p>When the sign of <span class="math inline">\(\overline{y}_{0,n}\)</span> is unknown, we can use the denominator statistic <span class="math inline">\(T_{0,n}\)</span> in (<a href="#eq-baseline-statistic" class="quarto-xref">14</a>) to determine which sign-specific set to use. Choose <span class="math inline">\(\alpha^{\mathrm{Fieller}},\alpha_0&gt;0\)</span> with <span class="math inline">\(\alpha^{\mathrm{Fieller}}+\alpha_0=\alpha\)</span> and <span class="math inline">\(\alpha_0\leq\alpha^{\mathrm{Fieller}}\)</span>. Define the confidence interval for <span class="math inline">\(\rho_n\)</span> as</p>
+<p>When the sign of <span class="math inline">\(\overline{y}_{0,n}\)</span> is unknown, we can use the denominator statistic <span class="math inline">\(T_{0,n}\)</span> in (<a href="#eq-baseline-statistic" class="quarto-xref">15</a>) to determine which sign-specific set to use. Choose <span class="math inline">\(\alpha^{\mathrm{Fieller}},\alpha_0&gt;0\)</span> with <span class="math inline">\(\alpha^{\mathrm{Fieller}}+\alpha_0=\alpha\)</span> and <span class="math inline">\(\alpha_0\leq\alpha^{\mathrm{Fieller}}\)</span>. Define the confidence interval for <span class="math inline">\(\rho_n\)</span> as</p>
 <p><span id="eq-final-confidence-set"><span class="math display">\[
 I_{1-\alpha,n}
 =
@@ -488,7 +512,7 @@ C_{1-\alpha^{\mathrm{Fieller}},n}^{-},
 \mathbb{R},
 &amp; |T_{0,n}|\leq z_{1-\alpha_0/2}.
 \end{cases}
-\tag{16}\]</span></span></p>
+\tag{17}\]</span></span></p>
 <p>If <span class="math inline">\(T_{0,n}\)</span> is significantly positive in the upper tail at level <span class="math inline">\(\alpha_0 / 2\)</span>, <span class="math inline">\(I_{1-\alpha,n}\)</span> uses the positive-denominator set; if it is significantly negative, <span class="math inline">\(I_{1-\alpha,n}\)</span> uses the negative-denominator set. If the sign test is inconclusive, <span class="math inline">\(I_{1-\alpha,n}\)</span> returns the real line. Because <span class="math inline">\(\alpha_0\leq\alpha^{\mathrm{Fieller}}\)</span>, rejection of the denominator sign test implies the selected sign-specific confidence set is a bounded interval.</p>
 <p>To prove <span class="math inline">\(I_{1-\alpha,n}\)</span> is uniformly asymptotically valid, partition the sample space according to the three possible outcomes of the sign test:</p>
 <p><span class="math display">\[
@@ -517,7 +541,7 @@ E_0^0
 &amp;\geq
 1-\mathbb{P}_\theta(E_0^-)-\mathbb{P}_\theta((E^{\mathrm{Fieller},+})^c).
 \end{aligned}
-\tag{17}\]</span></span></p>
+\tag{18}\]</span></span></p>
 <p>Since <span class="math inline">\(\overline{y}_{0,n}&gt;0\)</span>,</p>
 <p><span id="eq-baseline-minus-inclusion"><span class="math display">\[
 \begin{aligned}
@@ -546,7 +570,7 @@ T_{0,n}&lt;-z_{1-\alpha_0/2}
 \overline{y}_{0,n} \notin C_{1-\alpha_0,n}^{0}
 \right\}
 \end{aligned}
-\tag{18}\]</span></span> where <span class="math inline">\(C_{1-\alpha_0,n}^{0}\)</span> is the <span class="math inline">\((1-\alpha_0)\)</span> confidence set for <span class="math inline">\(\overline{y}_{0,n}\)</span>. Combining the inclusion in (<a href="#eq-baseline-minus-inclusion" class="quarto-xref">18</a>) with the bound in (<a href="#eq-coverage-lower-bound" class="quarto-xref">17</a>) gives</p>
+\tag{19}\]</span></span> where <span class="math inline">\(C_{1-\alpha_0,n}^{0}\)</span> is the <span class="math inline">\((1-\alpha_0)\)</span> confidence set for <span class="math inline">\(\overline{y}_{0,n}\)</span>. Combining the inclusion in (<a href="#eq-baseline-minus-inclusion" class="quarto-xref">19</a>) with the bound in (<a href="#eq-coverage-lower-bound" class="quarto-xref">18</a>) gives</p>
 <p><span class="math display">\[
 \mathbb{P}_\theta\left(
 \rho_n\notin I_{1-\alpha,n}
@@ -626,14 +650,14 @@ T_{0,n}&lt;-z_{1-\alpha_0/2}
 </section>
 <section id="illustration" class="level3">
 <h3 class="anchored" data-anchor-id="illustration">Illustration</h3>
-<p><a href="#fig-uniform-noncoverage" class="quarto-xref">Figure&nbsp;6</a> recreates the bottom panels of <a href="#fig-scaled-ate-noncoverage" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-lift-skewness" class="quarto-xref">Figure&nbsp;3</a>, but reports non-coverage for the uniformly-valid confidence interval in (<a href="#eq-final-confidence-set" class="quarto-xref">16</a>). In the top panel, the lift varies while the baseline is fixed at <span class="math inline">\(\overline{y}_{0,n}=1\)</span>. Like the delta-method interval, the uniformly-valid confidence interval maintains nominal coverage across the range of lifts. In the bottom panel, the baseline varies while the lift is fixed at <span class="math inline">\(\rho_n=10\%\)</span>. This panel also reports non-coverage for the known-sign intervals <span class="math inline">\(I_{1-\alpha,n}^{+}\)</span> and <span class="math inline">\(I_{1-\alpha,n}^{-}\)</span>. Near zero, the uniformly-valid confidence intervals are conservative because the sign tests often return the real line. Across the full range of baseline values, their non-coverage rate remains below the nominal level.</p>
+<p><a href="#fig-uniform-noncoverage" class="quarto-xref">Figure&nbsp;6</a> recreates the bottom panels of <a href="#fig-scaled-ate-noncoverage" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-lift-skewness" class="quarto-xref">Figure&nbsp;3</a>, but reports non-coverage for the uniformly-valid confidence interval in (<a href="#eq-final-confidence-set" class="quarto-xref">17</a>). In the top panel, the lift varies while the baseline is fixed at <span class="math inline">\(\overline{y}_{0,n}=1\)</span>. Like the delta-method interval, the uniformly-valid confidence interval maintains nominal coverage across the range of lifts. In the bottom panel, the baseline varies while the lift is fixed at <span class="math inline">\(\rho_n=10\%\)</span>. This panel also reports non-coverage for the known-sign intervals <span class="math inline">\(I_{1-\alpha,n}^{+}\)</span> and <span class="math inline">\(I_{1-\alpha,n}^{-}\)</span>. Near zero, the uniformly-valid confidence intervals are conservative because the sign tests often return the real line. Across the full range of baseline values, their non-coverage rate remains below the nominal level.</p>
 <div id="fig-uniform-noncoverage" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-uniform-noncoverage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="lift_uniform_noncoverage.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-uniform-noncoverage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Empirical non-coverage of the nominal <span class="math inline">\(95\%\)</span> uniformly-valid confidence interval in (<a href="#eq-final-confidence-set" class="quarto-xref">16</a>), with <span class="math inline">\(\alpha_0=0.001\)</span> and <span class="math inline">\(\alpha^{\mathrm{Fieller}}=0.049\)</span>, along with the known-positive and known-negative baseline intervals <span class="math inline">\(I_{1-\alpha,n}^{+}\)</span> and <span class="math inline">\(I_{1-\alpha,n}^{-}\)</span> from the known-baseline-sign construction. Top: as a function of the percentage lift <span class="math inline">\(\rho_n\)</span> at fixed baseline <span class="math inline">\(\overline{y}_{0,n}=1\)</span>. Bottom: as a function of the number of standard errors <span class="math inline">\(\sqrt{n}\,\overline{y}_{0,n}/\sigma_{0,n}\)</span> separating the baseline from zero at fixed lift <span class="math inline">\(\rho_n=10\%\)</span>.
+Figure&nbsp;6: Empirical non-coverage of the nominal <span class="math inline">\(95\%\)</span> uniformly-valid confidence interval in (<a href="#eq-final-confidence-set" class="quarto-xref">17</a>), with <span class="math inline">\(\alpha_0=0.001\)</span> and <span class="math inline">\(\alpha^{\mathrm{Fieller}}=0.049\)</span>, along with the known-positive and known-negative baseline intervals <span class="math inline">\(I_{1-\alpha,n}^{+}\)</span> and <span class="math inline">\(I_{1-\alpha,n}^{-}\)</span> from the known-baseline-sign construction. Top: as a function of the percentage lift <span class="math inline">\(\rho_n\)</span> at fixed baseline <span class="math inline">\(\overline{y}_{0,n}=1\)</span>. Bottom: as a function of the number of standard errors <span class="math inline">\(\sqrt{n}\,\overline{y}_{0,n}/\sigma_{0,n}\)</span> separating the baseline from zero at fixed lift <span class="math inline">\(\rho_n=10\%\)</span>.
 </figcaption>
 </figure>
 </div>
@@ -655,7 +679,7 @@ Figure&nbsp;6: Empirical non-coverage of the nominal <span class="math inline">\
 <p><span id="eq-full-relative-effect-definition"><span class="math display">\[
 \rho_n^{\mathrm{full}}
 = \frac{\psi_n^{\mathrm{full}}}{|\overline{y}_{0,n}^{\mathrm{full}}|}
-\tag{19}\]</span></span></p>
+\tag{20}\]</span></span></p>
 <p>To construct a confidence set for <span class="math inline">\(\rho_n^{\mathrm{full}}\)</span>, define</p>
 <p><span class="math display">\[
 q_n = \frac{N_n^{\mathrm{untreated}}}{n},
@@ -664,13 +688,13 @@ B_n = \overline{y}_{0,n}+q_n\overline{y}_n^{\mathrm{untreated}},
 \qquad
 \widehat{B}_n = \widehat{y}_{0,n}+q_n\overline{y}_n^{\mathrm{untreated}}.
 \]</span></p>
-<p>Dividing the numerator and denominator in (<a href="#eq-full-relative-effect-definition" class="quarto-xref">19</a>) by <span class="math inline">\(n/(N_n^{\mathrm{untreated}}+n)\)</span> gives <span id="eq-full-relative-effect-shifted-denominator"><span class="math display">\[
+<p>Dividing the numerator and denominator in (<a href="#eq-full-relative-effect-definition" class="quarto-xref">20</a>) by <span class="math inline">\(n/(N_n^{\mathrm{untreated}}+n)\)</span> gives <span id="eq-full-relative-effect-shifted-denominator"><span class="math display">\[
 \rho_n^{\mathrm{full}}=\frac{\psi_n^{\mathrm{ATE}}}{|B_n|}
-\tag{20}\]</span></span> Since</p>
+\tag{21}\]</span></span> Since</p>
 <p><span class="math display">\[
 \sqrt n(\widehat{B}_n-B_n)=\sqrt n(\widehat{y}_{0,n}-\overline{y}_{0,n}),
 \]</span></p>
-<p>the standard-error term for the denominator in (<a href="#eq-full-relative-effect-shifted-denominator" class="quarto-xref">20</a>) equals <span class="math inline">\(\widehat{\sigma}_{0,n}/\sqrt n\)</span>. Define the sign-specific targets</p>
+<p>the standard-error term for the denominator in (<a href="#eq-full-relative-effect-shifted-denominator" class="quarto-xref">21</a>) equals <span class="math inline">\(\widehat{\sigma}_{0,n}/\sqrt n\)</span>. Define the sign-specific targets</p>
 <p><span class="math display">\[
 \rho_n^{\mathrm{full},s}=m^s\frac{\psi_n^{\mathrm{ATE}}}{B_n}
 \]</span></p>
@@ -697,7 +721,7 @@ r:
 \frac{z_{1-\alpha/2}}{\sqrt n}
 \left(\left|1+m^sr\right|\widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}\right)
 \right\}.
-\tag{21}\]</span></span></p>
+\tag{22}\]</span></span></p>
 <p>Inverting this set, we obtain</p>
 <p><span id="eq-full-fieller-sets-inverted"><span class="math display">\[
 \begin{aligned}
@@ -708,8 +732,8 @@ C_{1-\alpha,n}^{\mathrm{full},s}
 - \frac{2z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}\,\widehat{\sigma}_{1,n}\left(\left|1+m^sr\right| - 1\right) \\
 &amp;\qquad + (\widehat{\psi}_n^{\mathrm{ATE}})^2 - \frac{z_{1-\alpha/2}^2}{n}\,(\widehat{\sigma}_n^{\mathrm{ATE}})^2 \leq 0\Bigg\}.
 \end{aligned}
-\tag{22}\]</span></span></p>
-<p>These confidence sets have the same form as the confidence sets in (<a href="#eq-fieller-sets" class="quarto-xref">9</a>), with <span class="math inline">\(\widehat{B}_n\)</span> replacing <span class="math inline">\(\widehat{y}_{0,n}\)</span>.</p>
+\tag{23}\]</span></span></p>
+<p>These confidence sets have the same form as the confidence sets in (<a href="#eq-fieller-sets" class="quarto-xref">10</a>), with <span class="math inline">\(\widehat{B}_n\)</span> replacing <span class="math inline">\(\widehat{y}_{0,n}\)</span>.</p>
 <p>As in the control-baseline case, the sign-specific confidence sets may fail to be intervals when the denominator is not statistically distinguishable from zero. Define the full-population denominator statistic <span class="math display">\[
 T_{0,n}^{\mathrm{full}}
 =
@@ -731,7 +755,7 @@ C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{full},s}\cap(-\infty,0],
 &amp; |T_{0,n}^{\mathrm{full}}|\leq z_{1-\alpha^{\mathrm{Fieller}}/2},
 \quad |T_n^{\mathrm{ATE}}|\leq z_{1-\alpha^{\mathrm{ATE}}/2}.
 \end{cases}
-\tag{23}\]</span></span></p>
+\tag{24}\]</span></span></p>
 <p>When the sign of <span class="math inline">\(B_n\)</span> is unknown, we use the statistic <span class="math inline">\(T_{0,n}^{\mathrm{full}}\)</span> to determine which sign-specific set to use:</p>
 <p><span id="eq-full-final-confidence-set"><span class="math display">\[
 I_{1-\alpha,n}^{\mathrm{full}}
@@ -744,8 +768,8 @@ C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{full},-},
 \mathbb{R},
 &amp; |T_{0,n}^{\mathrm{full}}|\leq z_{1-\alpha_0/2}.
 \end{cases}
-\tag{24}\]</span></span></p>
-<p>The proof of uniform validity is the same as the proof for (<a href="#eq-final-confidence-set" class="quarto-xref">16</a>), with <span class="math inline">\(\widehat{y}_{0,n}\)</span> replaced by <span class="math inline">\(\widehat{B}_n\)</span>. The sign-pretest error is controlled because <span class="math inline">\(\widehat{B}_n-B_n=\widehat{y}_{0,n}-\overline{y}_{0,n}\)</span>, and the sign-specific sets in (<a href="#eq-full-fieller-sets" class="quarto-xref">21</a>) are valid confidence sets for <span class="math inline">\(\psi_n^{\mathrm{full},s}\)</span>. Thus, over parameter sequences with <span class="math inline">\(B_n\neq0\)</span>,</p>
+\tag{25}\]</span></span></p>
+<p>The proof of uniform validity is the same as the proof for (<a href="#eq-final-confidence-set" class="quarto-xref">17</a>), with <span class="math inline">\(\widehat{y}_{0,n}\)</span> replaced by <span class="math inline">\(\widehat{B}_n\)</span>. The sign-pretest error is controlled because <span class="math inline">\(\widehat{B}_n-B_n=\widehat{y}_{0,n}-\overline{y}_{0,n}\)</span>, and the sign-specific sets in (<a href="#eq-full-fieller-sets" class="quarto-xref">22</a>) are valid confidence sets for <span class="math inline">\(\psi_n^{\mathrm{full},s}\)</span>. Thus, over parameter sequences with <span class="math inline">\(B_n\neq0\)</span>,</p>
 <p><span class="math display">\[
 \liminf_{n\to\infty}
 \inf_{\theta\in\Theta:\,B_n\neq0}
@@ -760,7 +784,7 @@ C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{full},-},
 <h1>Appendix</h1>
 <section id="sec-fieller-delta-equivalence" class="level2">
 <h2 class="anchored" data-anchor-id="sec-fieller-delta-equivalence">Comparison of the sign-specific and delta-method confidence sets</h2>
-<p>We take <span class="math inline">\(s\)</span> such that <span class="math inline">\(m^s = \operatorname{sgn}(\widehat{y}_{0,n})\)</span> and compare the sign-specific confidence set in (<a href="#eq-fieller-sign-specific-form" class="quarto-xref">12</a>) to the delta-method confidence interval in (<a href="#eq-delta-method-form" class="quarto-xref">13</a>). Define</p>
+<p>We take <span class="math inline">\(s\)</span> such that <span class="math inline">\(m^s = \operatorname{sgn}(\widehat{y}_{0,n})\)</span> and compare the sign-specific confidence set in (<a href="#eq-fieller-sign-specific-form" class="quarto-xref">13</a>) to the delta-method confidence interval in (<a href="#eq-delta-method-form" class="quarto-xref">14</a>). Define</p>
 <p><span class="math display">\[
 \begin{gathered}
 T_{0,n}
@@ -812,7 +836,7 @@ C_{1-\alpha,n}^{s}
 \left\{
 r: \left|r-\widehat{\rho}_n\right|\leq\frac{h}{1-b}
 \right\}.
-\tag{25}\]</span></span></p>
+\tag{26}\]</span></span></p>
 <p>Conversely, the reverse triangle inequality gives <span class="math display">\[
 \left|1+m^sr\right|
 \geq
@@ -845,8 +869,8 @@ r: \left|r-\widehat{\rho}_n\right|\leq\frac{h}{1+b}
 \right\}
 \subseteq
 C_{1-\alpha,n}^{s}.
-\tag{26}\]</span></span></p>
-<p>Since the delta-method confidence interval can be written as <span class="math inline">\(\{r: |r-\widehat{\rho}_n|\leq h\}\)</span>, (<a href="#eq-fieller-delta-outer-inclusion" class="quarto-xref">25</a>) and (<a href="#eq-fieller-delta-inner-inclusion" class="quarto-xref">26</a>) imply that the sign-specific confidence set is squeezed between a contraction and expansion of the delta-method confidence interval. Therefore,</p>
+\tag{27}\]</span></span></p>
+<p>Since the delta-method confidence interval can be written as <span class="math inline">\(\{r: |r-\widehat{\rho}_n|\leq h\}\)</span>, (<a href="#eq-fieller-delta-outer-inclusion" class="quarto-xref">26</a>) and (<a href="#eq-fieller-delta-inner-inclusion" class="quarto-xref">27</a>) imply that the sign-specific confidence set is squeezed between a contraction and expansion of the delta-method confidence interval. Therefore,</p>
 <p><span class="math display">\[
 \frac{\lambda\left(C_{1-\alpha,n}^{s}\triangle C_{1-\alpha,n}^{\mathrm{DM}}\right)}
 {\lambda\left(C_{1-\alpha,n}^{\mathrm{DM}}\right)}

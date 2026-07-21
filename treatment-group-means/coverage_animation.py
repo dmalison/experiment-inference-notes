@@ -21,13 +21,14 @@ N_UNITS = 1000
 N_TABLE_ROWS = 20  # units shown in the table (of N_UNITS total)
 TREATMENT_PROBABILITY = 0.5
 N_EXPERIMENTS = 10
-SEED = 3
+SEED = 8
 CI_LEVEL = 0.95
+ANIMATION_DPI = 60
 
 # Shared x-axis range and ticks across the homogeneous/heterogeneous figures
 # so the two animations are visually comparable.
-CI_XLIM = (-0.4, 2.4)
-CI_XTICKS = [0.0, 0.5, 1.0, 1.5, 2.0]
+CI_XLIM = (0.5, 1.5)
+CI_XTICKS = [0.5, 0.75, 1.0, 1.25, 1.5]
 
 TRUTH_COLOR = "#555"
 
@@ -120,7 +121,7 @@ def make_coverage_animation(
     FIG_HEIGHT = 9.5 * TABLE_DATA_RANGE / 40.0  # 40 = original data range
     HIST_HEIGHT = 4.0  # full-width histogram strip below the table and CI panels
 
-    fig = plt.figure(figsize=(13, FIG_HEIGHT + HIST_HEIGHT))
+    fig = plt.figure(figsize=(13, FIG_HEIGHT + HIST_HEIGHT), dpi=ANIMATION_DPI)
     gs = fig.add_gridspec(
         2, 2,
         width_ratios=[1.4, 1.3],
@@ -268,7 +269,7 @@ def make_coverage_animation(
 
     anim = FuncAnimation(fig, update, frames=TOTAL, interval=800, blit=False)
     out = str(Path(__file__).parent / out_name)
-    anim.save(out, writer=PillowWriter(fps=1.25))
+    anim.save(out, writer=PillowWriter(fps=1.25), dpi=ANIMATION_DPI)
     plt.close(fig)
     print(f"wrote {out}")
     print(f"y0.mean = {y0.mean():.4f}, y1.mean = {y1.mean():.4f}, psi = {ate:.4f}")

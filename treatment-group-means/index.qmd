@@ -35,47 +35,49 @@ crossref:
   ref-hyperlink: true
 ---
 
-This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence interval's finite-sample behavior using a Monte Carlo simulation.
+This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence intervals' finite-sample behavior using a Monte Carlo simulation.
 
 # Model
 
 Experimental units are indexed by $i = 1, 2, \ldots$.
 Each unit is assigned to either treatment or control.
 Let $D_i$ denote a treatment indicator, with $D_i = 1$ if unit $i$ is assigned to treatment and $D_i = 0$ otherwise.
+
 Let $y_{i,d}$ denote the **potential outcome** for unit $i$ under treatment $d \in \{0, 1\}$.
-We condition on the full potential outcome sequences $\{y_{i,0}\}_{i \geq 1}$ and $\{y_{i,1}\}_{i \geq 1}$, so probabilities are computed only over the randomized treatment assignments.
+We condition on the potential outcomes, so probabilities are computed only over the randomized treatment assignments.
 
-Let
-
+For $d\in\{0,1\}$, define the potential outcome mean, centered potential outcomes, and potential outcome variance by
 $$
-  \overline{y}_{0,n} = \frac{1}{n}\sum_{i=1}^n y_{i,0}, \qquad \overline{y}_{1,n} = \frac{1}{n}\sum_{i=1}^n y_{i,1}, \qquad \overline{\mathbf{y}}_n = \begin{pmatrix} \overline{y}_{0,n} \\[1ex] \overline{y}_{1,n}\end{pmatrix}.
+\overline y_{d,n}
+=
+\frac{1}{n}\sum_{i=1}^n y_{i,d},
+\qquad
+u_{i,d,n}
+=
+y_{i,d}-\overline y_{d,n},
+\qquad
+S_{d,n}^2
+=
+\frac{1}{n}\sum_{i=1}^n u_{i,d,n}^2.
 $$
 
-Also define the centered potential outcomes
-
+Collect the means and centered potential outcomes into the vectors
 $$
-u_{i, 0, n} = y_{i,0} - \overline{y}_{0,n}, \qquad
-u_{i, 1, n} = y_{i,1} - \overline{y}_{1,n}, \qquad
-\mathbf{u}_{i, n} =
+\overline{\mathbf y}_n
+=
+\begin{pmatrix}
+\overline y_{0,n} \\
+\overline y_{1,n}
+\end{pmatrix},
+\qquad
+\mathbf u_{i,n}
+=
 \begin{pmatrix}
 u_{i,0,n} \\
 u_{i,1,n}
-\end{pmatrix}
+\end{pmatrix},
 $$
-
-
-the potential outcome variances
-
-$$
-S_{0,n}^2
-=
-\frac{1}{n}\sum_{i=1}^n u_{i,0,n}^2, \qquad
-S_{1,n}^2
-=
-\frac{1}{n}\sum_{i=1}^n u_{i,1,n}^2
-$$
-
-and the covariance matrix
+and define the covariance matrix
 
 $$
 \mathbf{V}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i, n} \mathbf{u}_{i, n}'.
@@ -87,7 +89,8 @@ We are interested in performing inference on a linear combination of the potenti
 $$\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n$$
 
 for a nonzero, non-random coefficient vector $\mathbf{a}_n = (a_{0,n}, a_{1,n})'$.
-Setting $\mathbf{a}_n = (1, 0)'$ or $\mathbf{a}_n = (0, 1)'$ yields the control or treatment group mean, respectively, while setting $\mathbf{a}_n = (-1, 1)'$ yields the **average treatment effect (ATE)**. 
+Setting $\mathbf{a}_n = (1, 0)'$ or $\mathbf{a}_n = (0, 1)'$ yields the control or treatment group mean, respectively, while setting $\mathbf{a}_n = (-1, 1)'$ yields the **average treatment effect (ATE)**.
+Although these examples use coefficient vectors that are fixed across $n$, we allow $\mathbf a_n$ to vary with $n$ to accommodate other applications. For example, the [sign-specific contrasts in the relative treatment effects note](../lift/#splitting-by-the-control-mean-sign) have coefficients that depend on $n$.
 
 Collect the model primitives into the parameter vector
 
@@ -99,7 +102,7 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 $$
 
 and let $\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}$ denote the set of parameters under consideration.
-We impose the following assumptions on $\Theta$:
+We impose the following assumptions on the data-generating process:
 
 ::: {.assumption #asm-random}
 **Assumption 1.** $D_1, D_2, \ldots$ are independent Bernoulli random variables with common treatment probability $p$, and there exists $\underline p>0$ such that $\underline p\leq p\leq1-\underline p$ for every $\theta\in\Theta$.
@@ -107,7 +110,7 @@ We impose the following assumptions on $\Theta$:
 
 
 ::: {.assumption #asm-sutva}
-**Assumption 2.** The observed outcome $Y_i$ is determined by
+**Assumption 2.** The observed outcome $Y_i$ satisfies
 
 $$Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}.$$ {#eq-observed-outcome}
 :::
@@ -152,14 +155,51 @@ $$ {#eq-scalar-be-condition}
 
 Assumption 1 requires the treatment assignment probability $p$ to be bounded away from zero and one.
 In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups.
-In this case, Assumption 1 holds by taking $\underline p$ to be the smallest permitted bucket fraction.
+In this case, Assumption 1 holds by taking $\underline{p}$ to be the smallest permitted fraction of buckets that can be allocated to a group.
 
 Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units. This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption) and can be restrictive in some settings. For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions.
 In practice, such spillovers can often be handled by randomizing at a coarser level.
 
 
-Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation, while Assumption 3(ii) ensures the [Berry--Esseen bound](https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem) for the target contrast vanishes uniformly over $\Theta$.
-In the [Appendix](#sec-stationary-ergodic-conditions), we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process, then for any $\epsilon>0$ there is a set of potential outcome paths occurring with probability at least $1-\epsilon$ such that Assumption 3 holds after restricting the potential outcome paths in $\Theta$ to that set.
+Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation.
+Assumption 3(ii) ensures the [Berry--Esseen bound](https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem) for the target contrast vanishes uniformly over $\Theta$.
+In the [Appendix](#sec-stationary-ergodic-conditions), we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process with a finite third moment and positive definite covariance, then for any $\epsilon>0$ there is a set of potential outcome paths occurring with probability at least $1-\epsilon$ such that Assumption 3 holds after restricting $\Theta$ to parameters whose potential outcome paths lie in that set.
+
+The positivity requirement in Assumption 3(ii) follows if $\mathbf V_n$ is positive definite for all sufficiently large $n$ and every $\theta\in\Theta$.
+However, requiring positive definiteness is stronger than necessary and excludes natural cases such as $y_{i,1}=y_{i,0}$ for every $i$.
+Weaker, target-specific conditions suffice in several cases of interest. For a single treatment group mean, Assumption 3(i) implies Assumption 3(ii) without any further restrictions.
+In this case, the quadratic form $\mathbf b_n'\mathbf V_n\mathbf b_n$ is a positive multiple of $S_{d,n}^2$ and is therefore eventually positive by Assumption 3(i).
+The scale factors in $\mathbf b_n'\mathbf u_{i,n}$ and $\mathbf b_n'\mathbf V_n\mathbf b_n$ also cancel, so the expression in (-@eq-scalar-be-condition) reduces to
+$$
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
+$$
+Since $n^{-1}\sum_{i=1}^n u_{i,d,n}^2/S_{d,n}^2=1$, this expression satisfies
+$$
+\begin{aligned}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}
+&\leq
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\frac{u_{i,d,n}^2}{S_{d,n}^2}
+\right) \\
+&=
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
+\end{aligned}
+$$
+which converges uniformly to zero by Assumption 3(i).
+In the [Appendix](#sec-ate-regularity), we show that Assumption 3(i) also implies Assumption 3(ii) for the ATE as long as
+$$
+\liminf_{n\to\infty} \inf_{\theta\in\Theta} \frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
+{S_{0,n}S_{1,n}} > -1.
+$$ {#eq-ate-correlation-condition}
+This condition requires the potential outcome correlation to remain uniformly bounded away from $-1$.
 
 We assume access to a finite sample $\{(D_i, Y_i)\}_{i=1}^n$.
 For $\theta\in\Theta$, we let $\mathbb{P}_\theta$ denote probability of the observed sample under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2.
@@ -298,12 +338,28 @@ If (-@eq-asymptotic-p) holds, then for any $\epsilon > 0$, there exists an index
 
 ## Estimator
 
-We estimate $\psi_n$ by replacing the potential outcome means with the control and treatment sample means. Define
-
+We estimate $\psi_n$ by replacing the potential outcome means with the control and treatment sample means.
+Let $D_{i,1}=D_i$ and $D_{i,0}=1-D_i$.
+For $d\in\{0,1\}$, define
 $$
-\begin{gathered}
-\widehat{y}_{0,n} = \frac{\overline{Y(1 - D)}_n}{1 - \overline{D}_n}, \qquad \widehat{y}_{1,n} = \frac{\overline{YD}_n}{\overline{D}_n}, \qquad \widehat{\mathbf{y}}_n = \begin{pmatrix} \widehat{y}_{0,n} \\ \widehat{y}_{1,n} \end{pmatrix}
-\end{gathered}
+\overline D_{d,n}
+=
+\frac{1}{n}\sum_{i=1}^nD_{i,d}.
+$$
+
+Whenever $\overline D_{d,n}>0$, define the sample means
+$$
+\widehat y_{d,n}
+=
+\frac{1}{n\overline D_{d,n}}
+\sum_{i=1}^nD_{i,d}Y_i,
+\qquad
+\widehat{\mathbf y}_n
+=
+\begin{pmatrix}
+\widehat y_{0,n} \\
+\widehat y_{1,n}
+\end{pmatrix}
 $$ {#eq-estimators}
 
 and set
@@ -317,21 +373,22 @@ We estimate the sampling variance of $\widehat{\psi}_n$ using
 $$
 \widehat{\sigma}_n^2
 =
-\overline{D}_n(1-\overline{D}_n)
+\overline D_{1,n}\overline D_{0,n}
 \left(
-\frac{|a_{0,n}|\widehat{S}_{0,n}}{1-\overline{D}_n}
+\frac{|a_{0,n}|\widehat S_{0,n}}{\overline D_{0,n}}
 +
-\frac{|a_{1,n}|\widehat{S}_{1,n}}{\overline{D}_n}
+\frac{|a_{1,n}|\widehat S_{1,n}}{\overline D_{1,n}}
 \right)^2,
 $$ {#eq-sigma-hat}
 
 where
 
 $$
-\begin{aligned}
-\widehat{S}_{0,n}^2 &= \frac{1}{n(1-\overline{D}_n)} \sum_{i=1}^n (1-D_i)\left(Y_i - \widehat{y}_{0,n}\right)^2, \\
-\widehat{S}_{1,n}^2 &= \frac{1}{n\overline{D}_n} \sum_{i=1}^n D_i\left(Y_i - \widehat{y}_{1,n}\right)^2
-\end{aligned}
+\widehat S_{d,n}^2
+=
+\frac{1}{n\overline D_{d,n}}
+\sum_{i=1}^nD_{i,d}\left(Y_i-\widehat y_{d,n}\right)^2,
+\qquad d\in\{0,1\},
 $$ {#eq-S-hat}
 
 denote the observed within-group variances.
@@ -402,7 +459,7 @@ $$
 \end{aligned}
 $$
 
-The Berry--Esseen theorem for independent, non-identically distributed summands therefore gives the uniform bound
+The Berry--Esseen theorem for independent, non-identically distributed summands gives the uniform bound
 
 $$
 \begin{aligned}
@@ -585,23 +642,17 @@ Therefore $\{C_{1-\alpha,n}\}_{n \geq 1}$ is asymptotically valid for $\{\psi_n\
 
 # Illustration
 
-The animations below illustrate the sampling behavior of the confidence interval in (-@eq-wald-ci).
-The left panel in each figure displays a fixed set of potential outcomes for the first 20 observations of a sample of $n = 1{,}000$ units.
+The animation below illustrates the sampling behavior of the confidence interval in (-@eq-wald-ci).
+The left panel displays a fixed set of potential outcomes for the first 20 observations of a sample of $n = 1{,}000$ units.
 In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown.
 The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws.
 The top-right panel displays the resulting estimator for the average treatment effect $\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}$ and its corresponding $95\%$ confidence interval, colored green when the interval contains $\psi_n$ and red otherwise.
 The bottom-right panel shows the sampling distribution of the studentized estimator $\sqrt{n}(\widehat{\psi}_n-\psi_n)/\widehat{\sigma}_n$ across 50,000 assignment draws, together with the standard normal density.
 
-In the first animation, $y_{i,1} = y_{i,0} + 1$ for every $i$.
-In this case, the conservative bound in (-@eq-conservative-variance) coincides with the true variance. Therefore the studentized estimator closely tracks the standard normal and the empirical coverage is close to the nominal $95\%$ level.
+In the animation, $y_{i,1} = y_{i,0} + 1$ for every $i$.
+In this case, the conservative bound in (-@eq-conservative-variance) coincides with the true variance. The studentized estimator closely tracks the standard normal and the empirical coverage is close to the nominal $95\%$ level.
 
 ![Coverage of the confidence interval under homogeneous treatment effects.](homogeneous_coverage_animation.gif){#fig-homogeneous-coverage}
-
-The second animation uses $y_{i,1} = -y_{i,0} + 1$.
-Here the two potential outcome sequences are negatively correlated, making the conservative variance bound in (-@eq-conservative-variance) loose.
-The estimator variance is much lower than the bound, so the studentized estimator is under-dispersed relative to the standard normal and the interval covers $\psi_n$ more often than the nominal level.
-
-![Coverage of the confidence interval under heterogeneous treatment effects.](heterogeneous_coverage_animation.gif){#fig-heterogeneous-coverage}
 
 # Appendix
 
@@ -649,6 +700,7 @@ with $\mathbb{P}_\mathbf{Y}$-probability one.
 Fix $\epsilon > 0$.
 By [Egorov's theorem](https://en.wikipedia.org/wiki/Egorov%27s_theorem), there exists a set $E$ of paths with $\mathbb{P}_\mathbf{Y}(E)>1-\epsilon$ such that these convergences hold uniformly on $E$.
 Let $\Theta$ be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential outcome path lies in $E$.
+For a realized path, write $\mathbf y_i=(y_{i,0},y_{i,1})'$.
 
 We now verify $\Theta$ satisfies Assumption 3(i).
 The uniform convergence of the first and second empirical moments implies
@@ -838,6 +890,84 @@ $$
 {(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}
 = 0.
 $$
+
+## ATE regularity {#sec-ate-regularity}
+
+For all sufficiently large $n$, define the correlation between the control and treatment potential outcomes by
+$$
+\rho_n
+=
+\frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
+{S_{0,n}S_{1,n}}.
+$$
+Under (-@eq-ate-correlation-condition), there exist $\delta\in(0,1]$ and an index $N$ such that $\rho_n\geq-1+\delta$ for every $n\geq N$ and $\theta\in\Theta$.
+For the ATE,
+$$
+\mathbf b_n
+=
+\begin{pmatrix}
+1/(1-p) \\
+1/p
+\end{pmatrix}.
+$$
+We then have
+$$
+\begin{aligned}
+\mathbf b_n'\mathbf V_n\mathbf b_n
+&=
+\frac{S_{0,n}^2}{(1-p)^2}
++\frac{S_{1,n}^2}{p^2}
++2\rho_n\frac{S_{0,n}S_{1,n}}{p(1-p)} \\
+&\geq
+\frac{S_{0,n}^2}{(1-p)^2}
++\frac{S_{1,n}^2}{p^2}
+-2(1-\delta)\frac{S_{0,n}S_{1,n}}{p(1-p)} \\
+&\geq
+\delta\left(
+\frac{S_{0,n}^2}{(1-p)^2}
++\frac{S_{1,n}^2}{p^2}
+\right).
+\end{aligned}
+$$ {#eq-ate-variance-lower-bound}
+The Cauchy--Schwarz inequality and (-@eq-ate-variance-lower-bound) imply
+$$
+\max_{1\leq i\leq n}
+\frac{|\mathbf b_n'\mathbf u_{i,n}|}
+{\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}}
+\leq
+\frac{1}{\sqrt\delta}
+\left\{
+\sum_{d=0}^1
+\left(
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+\right)^2
+\right\}^{1/2},
+$$
+which converges uniformly to zero by Assumption 3(i).
+Therefore
+$$
+\begin{aligned}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|\mathbf b_n'\mathbf u_{i,n}|^3}
+{(\mathbf b_n'\mathbf V_n\mathbf b_n)^{3/2}}
+&\leq
+\max_{1\leq i\leq n}
+\frac{|\mathbf b_n'\mathbf u_{i,n}|}
+{\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\frac{(\mathbf b_n'\mathbf u_{i,n})^2}
+{\mathbf b_n'\mathbf V_n\mathbf b_n}
+\right) \\
+&=
+\max_{1\leq i\leq n}
+\frac{|\mathbf b_n'\mathbf u_{i,n}|}
+{\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}},
+\end{aligned}
+$$
+so Assumption 3(ii) follows.
 
 ## Proofs of the asymptotic propositions {#sec-proposition-proofs}
 
@@ -1285,11 +1415,7 @@ $$
 
 ### Notation and auxiliary lemma
 
-Let $D_{i,1}=D_i$, $D_{i,0}=1-D_i$, $p_1=p$, $p_0=1-p$, and
-
-$$
-\overline{D}_{d,n}=\frac{1}{n}\sum_{i=1}^n D_{i,d}.
-$$
+Let $p_1=p$ and $p_0=1-p$.
 
 Also define
 
@@ -1307,9 +1433,9 @@ We will use the following lemma:
 For each $d\in\{0,1\}$,
 
 $$
-\overline{D}_{d,n}\stackrel{\mathcal{P}}{\to}p_d,
+\overline D_{d,n}\stackrel{\mathcal{P}}{\to}p_d,
 \qquad
-\sqrt n(\overline{D}_{d,n}-p_d)=O_{\mathcal{P}}(1).
+\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal{P}}(1).
 $$
 :::
 
@@ -1317,9 +1443,9 @@ $$
 *Proof.* Under Assumption 1, $D_{1,d},\ldots,D_{n,d}$ are independent Bernoulli random variables with probability $p_d$. Hence
 
 $$
-\mathbb{E}_\theta(\overline{D}_{d,n})=p_d,
+\mathbb{E}_\theta(\overline D_{d,n})=p_d,
 \qquad
-\mathbb{V}_\theta(\overline{D}_{d,n})=\frac{p_d(1-p_d)}{n}.
+\mathbb{V}_\theta(\overline D_{d,n})=\frac{p_d(1-p_d)}{n}.
 $$
 
 For every $\epsilon>0$, Chebyshev's inequality gives
@@ -1328,7 +1454,7 @@ $$
 \begin{aligned}
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
-\left|\overline{D}_{d,n}-p_d\right|>\epsilon
+\left|\overline D_{d,n}-p_d\right|>\epsilon
 \right)
 &\leq
 \frac{1}{\epsilon^2}
@@ -1340,14 +1466,14 @@ $$
 \end{aligned}
 $$
 
-Thus $\overline{D}_{d,n}\stackrel{\mathcal{P}}{\to}p_d$.
+Thus $\overline D_{d,n}\stackrel{\mathcal{P}}{\to}p_d$.
 Also, for every $M>0$,
 
 $$
 \begin{aligned}
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
-\left|\sqrt n(\overline{D}_{d,n}-p_d)\right|>M
+\left|\sqrt n(\overline D_{d,n}-p_d)\right|>M
 \right)
 &\leq
 \frac{1}{M^2}
@@ -1357,7 +1483,7 @@ $$
 \end{aligned}
 $$
 
-Therefore $\sqrt n(\overline{D}_{d,n}-p_d)=O_{\mathcal{P}}(1)$. $\square$
+Therefore $\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal{P}}(1)$. $\square$
 :::
 
 ### Derivation of (-@eq-variance-ratio-consistency) {#sec-variance-ratio-consistency}
@@ -1376,21 +1502,21 @@ $$
 \begin{aligned}
 \widehat{S}_{d,n}^2
 &=
-\frac{\overline{(D_d u_{d,n}^2)}_n}{\overline{D}_{d,n}}
-- \left(\frac{\overline{(D_d u_{d,n})}_n}{\overline{D}_{d,n}}\right)^2 \\
-&= \frac{\overline{(D_d u_{d,n}^2)}_n - p_d\,S_{d,n}^2}{\overline{D}_{d,n}}
-+ \frac{p_d\,S_{d,n}^2}{\overline{D}_{d,n}}
-- \left(\frac{\overline{(D_d u_{d,n})}_n}{\overline{D}_{d,n}}\right)^2.
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2}{\overline D_{d,n}}
+- \left(\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{\overline D_{d,n}}\right)^2 \\
+&= \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d\,S_{d,n}^2}{\overline D_{d,n}}
++ \frac{p_d\,S_{d,n}^2}{\overline D_{d,n}}
+- \left(\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{\overline D_{d,n}}\right)^2.
 \end{aligned}
 $$ {#eq-Shat-decomposition}
 
 By Assumption 3(i), there exists an index $N$ for which $S_{d,n}^2>0$ for all $n\geq N$, $d\in\{0,1\}$, and $\theta\in\Theta$.
 Together with Lemma 2 and Propositions 3 and 4, (-@eq-Shat-consistency) will follow from (-@eq-Shat-decomposition) if we can show
 $$
-\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d S_{d,n}^2}{S_{d,n}^2}
 \stackrel{\mathcal{P}}{\to} 0,
 \qquad
-\frac{\overline{(D_d u_{d,n})}_n}{S_{d,n}}
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{S_{d,n}}
 \stackrel{\mathcal{P}}{\to} 0.
 $$ {#eq-Shat-remainder-bounds}
 
@@ -1421,7 +1547,7 @@ $$
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d S_{d,n}^2}{S_{d,n}^2}
 \right|>
 \epsilon
 \right)
@@ -1448,12 +1574,12 @@ Now by (-@eq-sigma-tilde) and (-@eq-sigma-hat), we have
 $$
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2}
 =
-\frac{\overline{D}_n(1-\overline{D}_n)}{p(1-p)}
+\frac{\overline D_{1,n}\overline D_{0,n}}{p(1-p)}
 \left[
 \frac{
-\frac{|a_{0,n}|S_{0,n}}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{|a_{0,n}|S_{0,n}}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 +
-\frac{|a_{1,n}|S_{1,n}}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{|a_{1,n}|S_{1,n}}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 }{
 \frac{|a_{0,n}|S_{0,n}}{1-p}
 +
@@ -1470,33 +1596,33 @@ $$
 \begin{aligned}
 &\left|
 \frac{b_{0,n}}{B_n}
-\left(\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
+\left(\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
 +
 \frac{b_{1,n}}{B_n}
-\left(\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
+\left(\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
 -1
 \right| \\
 &\leq
 \frac{b_{0,n}}{B_n}
 \left|
-\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 -1
 \right|
 +
 \frac{b_{1,n}}{B_n}
 \left|
-\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 -1
 \right|
 \\
 &\leq
 \left|
-\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 -1
 \right|
 +
 \left|
-\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 -1
 \right|
 \end{aligned}
@@ -1508,10 +1634,10 @@ $$
 \mathbb{P}_\theta\left(
 \left|
 \frac{b_{0,n}}{B_n}
-\left(\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
+\left(\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
 +
 \frac{b_{1,n}}{B_n}
-\left(\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
+\left(\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
 -1
 \right|>
 \epsilon
@@ -1520,7 +1646,7 @@ $$
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 -1
 \right|>
 \epsilon/2
@@ -1528,7 +1654,7 @@ $$
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 -1
 \right|>
 \epsilon/2
@@ -1556,11 +1682,11 @@ Using $\sum_{i=1}^n (y_{i,d} - \overline{y}_{d,n}) = 0$, we can write
 $$
 \begin{aligned}
 \widehat{y}_{0,n} - \overline{y}_{0,n}
-&= -\frac{1}{n(1-\overline{D}_n)}\sum_{i=1}^n (D_i - p)(y_{i,0} - \overline{y}_{0,n})\\[2ex]
-&= -\dfrac{U_{0,n}}{1-\overline{D}_n}, \\[2ex]
+&= -\frac{1}{n\overline D_{0,n}}\sum_{i=1}^n (D_i - p)(y_{i,0} - \overline{y}_{0,n})\\[2ex]
+&= -\dfrac{U_{0,n}}{\overline D_{0,n}}, \\[2ex]
 \widehat{y}_{1,n} - \overline{y}_{1,n}
-&= \frac{1}{n\,\overline{D}_n}\sum_{i=1}^n (D_i - p)(y_{i,1} - \overline{y}_{1,n}) \\[2ex]
-&= \dfrac{U_{1,n}}{\overline{D}_n}
+&= \frac{1}{n\overline D_{1,n}}\sum_{i=1}^n (D_i - p)(y_{i,1} - \overline{y}_{1,n}) \\[2ex]
+&= \dfrac{U_{1,n}}{\overline D_{1,n}}
 \end{aligned}
 $$
 
@@ -1570,9 +1696,9 @@ $$
 \begin{aligned}
 \sqrt{n}\left(\widehat{\psi}_n-\psi_n\right)
 &= \sqrt{n}\left(a_{0,n}\left(\widehat{y}_{0,n}-\overline{y}_{0,n}\right) + a_{1,n}\left(\widehat{y}_{1,n}-\overline{y}_{1,n}\right)\right) \\[2ex]
-&= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-\overline{D}_n} + \frac{a_{1,n} U_{1,n}}{\overline{D}_n}\right) \\[2ex]
+&= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}}\right) \\[2ex]
 &= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right)
-+ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{1-\overline{D}_n} + \frac{a_{1,n} U_{1,n}}{\overline{D}_n} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
++ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
 &= \sum_{i=1}^n X_{i,n} + R_n,
 \end{aligned}
 $$ {#eq-exact-decomposition}
@@ -1585,11 +1711,11 @@ $$
 &=
 \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right), \\[2ex]
 R_n
-&= -\sqrt{n}\left(\overline{D}_n-p\right)
+&= -\sqrt{n}\left(\overline D_{1,n}-p\right)
 \left[
-\frac{a_{0,n}}{(1-\overline{D}_n)(1-p)}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}(1-p)}U_{0,n}
 +
-\frac{a_{1,n}}{\overline{D}_n\,p}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p}U_{1,n}
 \right].
 \end{aligned}
 $$
@@ -1614,32 +1740,32 @@ $$
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
 &=
-\frac{\left|\sqrt n(\overline{D}_n-p)\right|}{\sqrt{p(1-p)}B_n}
+\frac{\left|\sqrt n(\overline D_{1,n}-p)\right|}{\sqrt{p(1-p)}B_n}
 \left|
-\frac{a_{0,n}}{(1-\overline{D}_n)(1-p)}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}(1-p)}U_{0,n}
 +
-\frac{a_{1,n}}{\overline{D}_n p}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p}U_{1,n}
 \right| \\[2ex]
 &\leq
-\frac{\left|\sqrt n(\overline{D}_n-p)\right|}{\sqrt{p(1-p)}}
+\frac{\left|\sqrt n(\overline D_{1,n}-p)\right|}{\sqrt{p(1-p)}}
 \left[
 \frac{b_{0,n}}{B_n}
-\frac{1}{1-\overline{D}_n}
+\frac{1}{\overline D_{0,n}}
 \left|\frac{U_{0,n}}{S_{0,n}}\right|
 +
 \frac{b_{1,n}}{B_n}
-\frac{1}{\overline{D}_n}
+\frac{1}{\overline D_{1,n}}
 \left|\frac{U_{1,n}}{S_{1,n}}\right|
 \right].
 \end{aligned}
 $$
 
-On the event $\left\{|\overline{D}_n-p|\leq\underline p/2\right\}$, $1 - \overline{D}_n \geq \underline p/2$ and $\overline{D}_n \geq \underline p/2$ so that
+On the event $\left\{|\overline D_{1,n}-p|\leq\underline p/2\right\}$, $\overline D_{0,n}\geq\underline p/2$ and $\overline D_{1,n}\geq\underline p/2$, so
 $$
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
 &\leq
-C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
+C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \left[
 \frac{b_{0,n}}{B_n}
 \left|\frac{U_{0,n}}{S_{0,n}}\right|
@@ -1667,7 +1793,7 @@ $$
 \right)
 &\leq
 \sup_{\theta\in\Theta}\mathbb{P}_\theta\left(
-C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
+C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \left[
 \frac{b_{0,n}}{B_n}
 \left|\frac{U_{0,n}}{S_{0,n}}\right|
@@ -1678,7 +1804,7 @@ C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
 > \epsilon
 \right) \\
 &\quad+
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline{D}_n-p|>\underline p/2\right).
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline D_{1,n}-p|>\underline p/2\right).
 \end{aligned}
 $$
 
@@ -1695,7 +1821,7 @@ $$
 
 Thus $U_{d,n}/S_{d,n}=o_{\mathcal{P}}(1)$ by Chebyshev's inequality.
 The weights $b_{0,n}/B_n$ and $b_{1,n}/B_n$ lie in $[0,1]$, so the bracketed term in (-@eq-Rn-bound) is also $o_{\mathcal{P}}(1)$.
-By Lemma 2, $\sqrt n(\overline{D}_n-p)=O_{\mathcal{P}}(1)$.
+By Lemma 2, $\sqrt n(\overline D_{1,n}-p)=O_{\mathcal{P}}(1)$.
 Therefore, by Proposition 2, the product inside the first probability on the right-hand side is $o_{\mathcal{P}}(1)$.
 Thus
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-10">
+<meta name="dcterms.date" content="2026-07-20">
 
 <title>Uniform Inference on Treatment Group Means</title>
 <style>
@@ -117,7 +117,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 10, 2026</p>
+      <p class="date">July 20, 2026</p>
     </div>
   </div>
   
@@ -129,40 +129,45 @@ window.Quarto = {
 </header>
 
 
-<p>This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence interval’s finite-sample behavior using a Monte Carlo simulation.</p>
+<p>This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence intervals’ finite-sample behavior using a Monte Carlo simulation.</p>
 <section id="model" class="level1">
 <h1>Model</h1>
-<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote a treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise. Let <span class="math inline">\(y_{i,d}\)</span> denote the <strong>potential outcome</strong> for unit <span class="math inline">\(i\)</span> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We condition on the full potential outcome sequences <span class="math inline">\(\{y_{i,0}\}_{i \geq 1}\)</span> and <span class="math inline">\(\{y_{i,1}\}_{i \geq 1}\)</span>, so probabilities are computed only over the randomized treatment assignments.</p>
-<p>Let</p>
-<p><span class="math display">\[
-  \overline{y}_{0,n} = \frac{1}{n}\sum_{i=1}^n y_{i,0}, \qquad \overline{y}_{1,n} = \frac{1}{n}\sum_{i=1}^n y_{i,1}, \qquad \overline{\mathbf{y}}_n = \begin{pmatrix} \overline{y}_{0,n} \\[1ex] \overline{y}_{1,n}\end{pmatrix}.
+<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote a treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise.</p>
+<p>Let <span class="math inline">\(y_{i,d}\)</span> denote the <strong>potential outcome</strong> for unit <span class="math inline">\(i\)</span> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We condition on the potential outcomes, so probabilities are computed only over the randomized treatment assignments.</p>
+<p>For <span class="math inline">\(d\in\{0,1\}\)</span>, define the potential outcome mean, centered potential outcomes, and potential outcome variance by <span class="math display">\[
+\overline y_{d,n}
+=
+\frac{1}{n}\sum_{i=1}^n y_{i,d},
+\qquad
+u_{i,d,n}
+=
+y_{i,d}-\overline y_{d,n},
+\qquad
+S_{d,n}^2
+=
+\frac{1}{n}\sum_{i=1}^n u_{i,d,n}^2.
 \]</span></p>
-<p>Also define the centered potential outcomes</p>
-<p><span class="math display">\[
-u_{i, 0, n} = y_{i,0} - \overline{y}_{0,n}, \qquad
-u_{i, 1, n} = y_{i,1} - \overline{y}_{1,n}, \qquad
-\mathbf{u}_{i, n} =
+<p>Collect the means and centered potential outcomes into the vectors <span class="math display">\[
+\overline{\mathbf y}_n
+=
+\begin{pmatrix}
+\overline y_{0,n} \\
+\overline y_{1,n}
+\end{pmatrix},
+\qquad
+\mathbf u_{i,n}
+=
 \begin{pmatrix}
 u_{i,0,n} \\
 u_{i,1,n}
-\end{pmatrix}
-\]</span></p>
-<p>the potential outcome variances</p>
-<p><span class="math display">\[
-S_{0,n}^2
-=
-\frac{1}{n}\sum_{i=1}^n u_{i,0,n}^2, \qquad
-S_{1,n}^2
-=
-\frac{1}{n}\sum_{i=1}^n u_{i,1,n}^2
-\]</span></p>
-<p>and the covariance matrix</p>
+\end{pmatrix},
+\]</span> and define the covariance matrix</p>
 <p><span id="eq-Vn-def"><span class="math display">\[
 \mathbf{V}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i, n} \mathbf{u}_{i, n}'.
 \tag{1}\]</span></span></p>
 <p>We are interested in performing inference on a linear combination of the potential outcome means. Define</p>
 <p><span class="math display">\[\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n\]</span></p>
-<p>for a nonzero, non-random coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the <strong>average treatment effect (ATE)</strong>.</p>
+<p>for a nonzero, non-random coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the <strong>average treatment effect (ATE)</strong>. Although these examples use coefficient vectors that are fixed across <span class="math inline">\(n\)</span>, we allow <span class="math inline">\(\mathbf a_n\)</span> to vary with <span class="math inline">\(n\)</span> to accommodate other applications. For example, the <a href="../lift/#splitting-by-the-control-mean-sign">sign-specific contrasts in the relative treatment effects note</a> have coefficients that depend on <span class="math inline">\(n\)</span>.</p>
 <p>Collect the model primitives into the parameter vector</p>
 <p><span class="math display">\[
 \theta =
@@ -170,12 +175,12 @@ S_{1,n}^2
 p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 \right)
 \]</span></p>
-<p>and let <span class="math inline">\(\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}\)</span> denote the set of parameters under consideration. We impose the following assumptions on <span class="math inline">\(\Theta\)</span>:</p>
+<p>and let <span class="math inline">\(\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}\)</span> denote the set of parameters under consideration. We impose the following assumptions on the data-generating process:</p>
 <div id="asm-random" class="assumption">
 <p><strong>Assumption 1.</strong> <span class="math inline">\(D_1, D_2, \ldots\)</span> are independent Bernoulli random variables with common treatment probability <span class="math inline">\(p\)</span>, and there exists <span class="math inline">\(\underline p&gt;0\)</span> such that <span class="math inline">\(\underline p\leq p\leq1-\underline p\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
 </div>
 <div id="asm-sutva" class="assumption">
-<p><strong>Assumption 2.</strong> The observed outcome <span class="math inline">\(Y_i\)</span> is determined by</p>
+<p><strong>Assumption 2.</strong> The observed outcome <span class="math inline">\(Y_i\)</span> satisfies</p>
 <p><span id="eq-observed-outcome"><span class="math display">\[Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}. \tag{2}\]</span></span></p>
 </div>
 <div id="asm-nondegenerate" class="assumption">
@@ -206,9 +211,33 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 = 0.
 \tag{3}\]</span></span></p>
 </div>
-<p>Assumption 1 requires the treatment assignment probability <span class="math inline">\(p\)</span> to be bounded away from zero and one. In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups. In this case, Assumption 1 holds by taking <span class="math inline">\(\underline p\)</span> to be the smallest permitted bucket fraction.</p>
+<p>Assumption 1 requires the treatment assignment probability <span class="math inline">\(p\)</span> to be bounded away from zero and one. In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups. In this case, Assumption 1 holds by taking <span class="math inline">\(\underline{p}\)</span> to be the smallest permitted fraction of buckets that can be allocated to a group.</p>
 <p>Assumption 2 requires unit <span class="math inline">\(i\)</span>’s observed outcome to depend only on unit <span class="math inline">\(i\)</span>’s treatment assignment and not on the treatment assignments of other units. This is a form of the <a href="https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption">stable unit treatment value assumption (SUTVA)</a> and can be restrictive in some settings. For example, if <span class="math inline">\(i\)</span> indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions. In practice, such spillovers can often be handled by randomizing at a coarser level.</p>
-<p>Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation, while Assumption 3(ii) ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> for the target contrast vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumption 3 holds after restricting the potential outcome paths in <span class="math inline">\(\Theta\)</span> to that set.</p>
+<p>Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation. Assumption 3(ii) ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> for the target contrast vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process with a finite third moment and positive definite covariance, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumption 3 holds after restricting <span class="math inline">\(\Theta\)</span> to parameters whose potential outcome paths lie in that set.</p>
+<p>The positivity requirement in Assumption 3(ii) follows if <span class="math inline">\(\mathbf V_n\)</span> is positive definite for all sufficiently large <span class="math inline">\(n\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>. However, requiring positive definiteness is stronger than necessary and excludes natural cases such as <span class="math inline">\(y_{i,1}=y_{i,0}\)</span> for every <span class="math inline">\(i\)</span>. Weaker, target-specific conditions suffice in several cases of interest. For a single treatment group mean, Assumption 3(i) implies Assumption 3(ii) without any further restrictions. In this case, the quadratic form <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> is a positive multiple of <span class="math inline">\(S_{d,n}^2\)</span> and is therefore eventually positive by Assumption 3(i). The scale factors in <span class="math inline">\(\mathbf b_n'\mathbf u_{i,n}\)</span> and <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> also cancel, so the expression in (<a href="#eq-scalar-be-condition" class="quarto-xref">3</a>) reduces to <span class="math display">\[
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
+\]</span> Since <span class="math inline">\(n^{-1}\sum_{i=1}^n u_{i,d,n}^2/S_{d,n}^2=1\)</span>, this expression satisfies <span class="math display">\[
+\begin{aligned}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}
+&amp;\leq
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\frac{u_{i,d,n}^2}{S_{d,n}^2}
+\right) \\
+&amp;=
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
+\end{aligned}
+\]</span> which converges uniformly to zero by Assumption 3(i). In the <a href="#sec-ate-regularity">Appendix</a>, we show that Assumption 3(i) also implies Assumption 3(ii) for the ATE as long as <span id="eq-ate-correlation-condition"><span class="math display">\[
+\liminf_{n\to\infty} \inf_{\theta\in\Theta} \frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
+{S_{0,n}S_{1,n}} &gt; -1.
+\tag{4}\]</span></span> This condition requires the potential outcome correlation to remain uniformly bounded away from <span class="math inline">\(-1\)</span>.</p>
 <p>We assume access to a finite sample <span class="math inline">\(\{(D_i, Y_i)\}_{i=1}^n\)</span>. For <span class="math inline">\(\theta\in\Theta\)</span>, we let <span class="math inline">\(\mathbb{P}_\theta\)</span> denote probability of the observed sample under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2. We let <span class="math inline">\(\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}\)</span> denote the set of possible probability measures.</p>
 </section>
 <section id="inference" class="level1">
@@ -288,26 +317,38 @@ X_nY_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} cX, \\
 </div>
 <p>Proofs of these propositions can be found in the <a href="#sec-proposition-proofs">Appendix</a>.</p>
 <p>Now for <span class="math inline">\(\alpha \in (0, 1)\)</span>, let</p>
-<p><span id="eq-ci-form"><span class="math display">\[C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n) \tag{4}\]</span></span></p>
+<p><span id="eq-ci-form"><span class="math display">\[C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n) \tag{5}\]</span></span></p>
 <p>denote a confidence set for <span class="math inline">\(\psi_n\)</span> with nominal coverage level <span class="math inline">\(1-\alpha\)</span>. The sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>finite-sample valid</strong> for <span class="math inline">\(\{\psi_n\}_{n \geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if</p>
-<p><span id="eq-fixed-horizon-p"><span class="math display">\[\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right) \geq 1 - \alpha \quad \text{ for all } n \geq 1 \text{ and } \theta \in \Theta. \tag{5}\]</span></span></p>
+<p><span id="eq-fixed-horizon-p"><span class="math display">\[\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right) \geq 1 - \alpha \quad \text{ for all } n \geq 1 \text{ and } \theta \in \Theta. \tag{6}\]</span></span></p>
 <p>This condition is typically too demanding, so we use an asymptotic criterion instead. The sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>asymptotically valid</strong> for <span class="math inline">\(\{\psi_n\}_{n\geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if</p>
 <p><span id="eq-asymptotic-p"><span class="math display">\[
 \liminf_{n \to \infty}
 \inf_{\theta\in\Theta}
 \mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right)
 \geq 1 - \alpha.
-\tag{6}\]</span></span></p>
-<p>If (<a href="#eq-asymptotic-p" class="quarto-xref">6</a>) holds, then for any <span class="math inline">\(\epsilon &gt; 0\)</span>, there exists an index <span class="math inline">\(N\)</span> such that <span class="math inline">\(C_{1-\alpha,n}\)</span> contains <span class="math inline">\(\psi_n\)</span> with probability at least <span class="math inline">\(1-\alpha-\epsilon\)</span> for every <span class="math inline">\(n\geq N\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
+\tag{7}\]</span></span></p>
+<p>If (<a href="#eq-asymptotic-p" class="quarto-xref">7</a>) holds, then for any <span class="math inline">\(\epsilon &gt; 0\)</span>, there exists an index <span class="math inline">\(N\)</span> such that <span class="math inline">\(C_{1-\alpha,n}\)</span> contains <span class="math inline">\(\psi_n\)</span> with probability at least <span class="math inline">\(1-\alpha-\epsilon\)</span> for every <span class="math inline">\(n\geq N\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
 </section>
 <section id="estimator" class="level2">
 <h2 class="anchored" data-anchor-id="estimator">Estimator</h2>
-<p>We estimate <span class="math inline">\(\psi_n\)</span> by replacing the potential outcome means with the control and treatment sample means. Define</p>
-<p><span id="eq-estimators"><span class="math display">\[
-\begin{gathered}
-\widehat{y}_{0,n} = \frac{\overline{Y(1 - D)}_n}{1 - \overline{D}_n}, \qquad \widehat{y}_{1,n} = \frac{\overline{YD}_n}{\overline{D}_n}, \qquad \widehat{\mathbf{y}}_n = \begin{pmatrix} \widehat{y}_{0,n} \\ \widehat{y}_{1,n} \end{pmatrix}
-\end{gathered}
-\tag{7}\]</span></span></p>
+<p>We estimate <span class="math inline">\(\psi_n\)</span> by replacing the potential outcome means with the control and treatment sample means. Let <span class="math inline">\(D_{i,1}=D_i\)</span> and <span class="math inline">\(D_{i,0}=1-D_i\)</span>. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span class="math display">\[
+\overline D_{d,n}
+=
+\frac{1}{n}\sum_{i=1}^nD_{i,d}.
+\]</span></p>
+<p>Whenever <span class="math inline">\(\overline D_{d,n}&gt;0\)</span>, define the sample means <span id="eq-estimators"><span class="math display">\[
+\widehat y_{d,n}
+=
+\frac{1}{n\overline D_{d,n}}
+\sum_{i=1}^nD_{i,d}Y_i,
+\qquad
+\widehat{\mathbf y}_n
+=
+\begin{pmatrix}
+\widehat y_{0,n} \\
+\widehat y_{1,n}
+\end{pmatrix}
+\tag{8}\]</span></span></p>
 <p>and set</p>
 <p><span class="math display">\[
 \widehat{\psi}_n = \mathbf{a}_n'\widehat{\mathbf{y}}_n.
@@ -316,20 +357,21 @@ X_nY_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} cX, \\
 <p><span id="eq-sigma-hat"><span class="math display">\[
 \widehat{\sigma}_n^2
 =
-\overline{D}_n(1-\overline{D}_n)
+\overline D_{1,n}\overline D_{0,n}
 \left(
-\frac{|a_{0,n}|\widehat{S}_{0,n}}{1-\overline{D}_n}
+\frac{|a_{0,n}|\widehat S_{0,n}}{\overline D_{0,n}}
 +
-\frac{|a_{1,n}|\widehat{S}_{1,n}}{\overline{D}_n}
+\frac{|a_{1,n}|\widehat S_{1,n}}{\overline D_{1,n}}
 \right)^2,
-\tag{8}\]</span></span></p>
+\tag{9}\]</span></span></p>
 <p>where</p>
 <p><span id="eq-S-hat"><span class="math display">\[
-\begin{aligned}
-\widehat{S}_{0,n}^2 &amp;= \frac{1}{n(1-\overline{D}_n)} \sum_{i=1}^n (1-D_i)\left(Y_i - \widehat{y}_{0,n}\right)^2, \\
-\widehat{S}_{1,n}^2 &amp;= \frac{1}{n\overline{D}_n} \sum_{i=1}^n D_i\left(Y_i - \widehat{y}_{1,n}\right)^2
-\end{aligned}
-\tag{9}\]</span></span></p>
+\widehat S_{d,n}^2
+=
+\frac{1}{n\overline D_{d,n}}
+\sum_{i=1}^nD_{i,d}\left(Y_i-\widehat y_{d,n}\right)^2,
+\qquad d\in\{0,1\},
+\tag{10}\]</span></span></p>
 <p>denote the observed within-group variances. Let <span id="eq-sigma-tilde"><span class="math display">\[
 \widetilde{\sigma}_n^2 = p(1-p)
 \left(
@@ -337,15 +379,15 @@ X_nY_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} cX, \\
 +
 \frac{|a_{1,n}|S_{1,n}}{p}
 \right)^2
-\tag{10}\]</span></span></p>
+\tag{11}\]</span></span></p>
 <p>In the <a href="#sec-estimator-asymptotics">Appendix</a>, we show <span id="eq-variance-ratio-consistency"><span class="math display">\[
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2} \stackrel{\mathcal{P}}{\to} 1
-\tag{11}\]</span></span></p>
+\tag{12}\]</span></span></p>
 <p>We also show</p>
 <p><span id="eq-means-asymptotic-linearization"><span class="math display">\[
 \sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
 = \frac{\sum_{i=1}^n X_{i,n}}{\widehat{\sigma}_n} + o_{\mathcal{P}}(1),
-\tag{12}\]</span></span></p>
+\tag{13}\]</span></span></p>
 <p>where</p>
 <p><span class="math display">\[
 X_{i,n} = \frac{D_i - p}{\sqrt{n}}
@@ -354,7 +396,7 @@ X_{i,n} = \frac{D_i - p}{\sqrt{n}}
 <p>Under Assumption 1, the summands <span class="math inline">\(X_{i,n}\)</span> form a triangular array of row-wise independent, mean-zero random variables. Define the variance of the sum as</p>
 <p><span id="eq-sigma"><span class="math display">\[
 \sigma_n^2 = \sum_{i=1}^n \mathbb{V}(X_{i,n}) = p(1-p)\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n.
-\tag{13}\]</span></span></p>
+\tag{14}\]</span></span></p>
 <p>By Assumption 3(ii), there exists an index <span class="math inline">\(N\)</span> for which <span class="math inline">\(\sigma_n^2 &gt; 0\)</span> for all <span class="math inline">\(n \geq N\)</span> and all <span class="math inline">\(\theta \in \Theta\)</span>. The absolute third moment of the standardized summand is <span class="math display">\[
 \begin{aligned}
 \mathbb{E}_\theta\left|\frac{X_{i,n}}{\sigma_n}\right|^3
@@ -381,7 +423,7 @@ X_{i,n} = \frac{D_i - p}{\sqrt{n}}
 {(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}.
 \end{aligned}
 \]</span></p>
-<p>The Berry–Esseen theorem for independent, non-identically distributed summands therefore gives the uniform bound</p>
+<p>The Berry–Esseen theorem for independent, non-identically distributed summands gives the uniform bound</p>
 <p><span id="eq-dim-clt"><span class="math display">\[
 \begin{aligned}
 \sup_{\theta\in\Theta}
@@ -404,7 +446,7 @@ C\sup_{\theta\in\Theta}
 \frac{|\mathbf{b}_n'\mathbf{u}_{i,n}|^3}
 {(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}},
 \end{aligned}
-\tag{14}\]</span></span></p>
+\tag{15}\]</span></span></p>
 <p>where <span class="math inline">\(C\)</span> is a finite universal constant. Therefore, by Assumption 3(ii),</p>
 <p><span id="eq-normal-approx"><span class="math display">\[
 \lim_{n\to\infty}
@@ -418,7 +460,7 @@ C\sup_{\theta\in\Theta}
 \Phi(t)
 \right|
 =0
-\tag{15}\]</span></span> for every <span class="math inline">\(t\in\mathbb{R}\)</span>. Thus <span class="math display">\[
+\tag{16}\]</span></span> for every <span class="math inline">\(t\in\mathbb{R}\)</span>. Thus <span class="math display">\[
 \frac{\sum_{i=1}^n X_{i,n}}{\sigma_n} \stackrel{\mathcal{P}}{\rightsquigarrow} N(0, 1).
 \]</span></p>
 </section>
@@ -432,7 +474,7 @@ C_{1-\alpha,n}
 \widehat{\psi}_n - z_{1-\alpha/2}\sqrt{\frac{\widehat{\sigma}_n^2}{n}},
 \widehat{\psi}_n + z_{1-\alpha/2}\sqrt{\frac{\widehat{\sigma}_n^2}{n}}
 \right],
-\tag{16}\]</span></span></p>
+\tag{17}\]</span></span></p>
 <p>where <span class="math inline">\(z_{1-\alpha/2}\)</span> is the <span class="math inline">\((1-\alpha/2)\)</span> quantile of the standard normal distribution. The event that this interval covers <span class="math inline">\(\psi_n\)</span> can be expressed as</p>
 <p><span class="math display">\[
 \sqrt{n}\left|\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right|\leq z_{1-\alpha/2}.
@@ -469,7 +511,7 @@ a_{0,n}^2\frac{p}{1-p}S_{0,n}^2
 a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 &amp;= \widetilde{\sigma}_n^2.
 \end{aligned}
-\tag{17}\]</span></span></p>
+\tag{18}\]</span></span></p>
 <p>Therefore</p>
 <p><span class="math display">\[
 \left\{
@@ -512,8 +554,8 @@ a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(\left|r_n\right|&gt;\epsilon\right).
 \end{aligned}
-\tag{18}\]</span></span></p>
-<p>The second term tends to zero because of (<a href="#eq-variance-ratio-consistency" class="quarto-xref">11</a>). The third term tends to zero by (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">12</a>). For the first term, (<a href="#eq-normal-approx" class="quarto-xref">15</a>) gives</p>
+\tag{19}\]</span></span></p>
+<p>The second term tends to zero because of (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>). The third term tends to zero by (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">13</a>). For the first term, (<a href="#eq-normal-approx" class="quarto-xref">16</a>) gives</p>
 <p><span class="math display">\[
 \begin{aligned}
 \liminf_{n\to\infty}
@@ -530,14 +572,14 @@ a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 \mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right)
 \geq
 \Phi(z_{1-\alpha/2}) - \Phi(-z_{1-\alpha/2}) = 1-\alpha.
-\tag{19}\]</span></span></p>
+\tag{20}\]</span></span></p>
 <p>Therefore <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is asymptotically valid for <span class="math inline">\(\{\psi_n\}_{n \geq 1}\)</span> over <span class="math inline">\(\Theta\)</span>.</p>
 </section>
 </section>
 <section id="illustration" class="level1">
 <h1>Illustration</h1>
-<p>The animations below illustrate the sampling behavior of the confidence interval in (<a href="#eq-wald-ci" class="quarto-xref">16</a>). The left panel in each figure displays a fixed set of potential outcomes for the first 20 observations of a sample of <span class="math inline">\(n = 1{,}000\)</span> units. In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown. The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws. The top-right panel displays the resulting estimator for the average treatment effect <span class="math inline">\(\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}\)</span> and its corresponding <span class="math inline">\(95\%\)</span> confidence interval, colored green when the interval contains <span class="math inline">\(\psi_n\)</span> and red otherwise. The bottom-right panel shows the sampling distribution of the studentized estimator <span class="math inline">\(\sqrt{n}(\widehat{\psi}_n-\psi_n)/\widehat{\sigma}_n\)</span> across 50,000 assignment draws, together with the standard normal density.</p>
-<p>In the first animation, <span class="math inline">\(y_{i,1} = y_{i,0} + 1\)</span> for every <span class="math inline">\(i\)</span>. In this case, the conservative bound in (<a href="#eq-conservative-variance" class="quarto-xref">17</a>) coincides with the true variance. Therefore the studentized estimator closely tracks the standard normal and the empirical coverage is close to the nominal <span class="math inline">\(95\%\)</span> level.</p>
+<p>The animation below illustrates the sampling behavior of the confidence interval in (<a href="#eq-wald-ci" class="quarto-xref">17</a>). The left panel displays a fixed set of potential outcomes for the first 20 observations of a sample of <span class="math inline">\(n = 1{,}000\)</span> units. In each frame, a new treatment assignment is drawn and the corresponding observed outcomes are shown. The potential outcomes do not change; all variation in the confidence intervals comes from the randomized assignment draws. The top-right panel displays the resulting estimator for the average treatment effect <span class="math inline">\(\psi_n = \overline{y}_{1,n} - \overline{y}_{0,n}\)</span> and its corresponding <span class="math inline">\(95\%\)</span> confidence interval, colored green when the interval contains <span class="math inline">\(\psi_n\)</span> and red otherwise. The bottom-right panel shows the sampling distribution of the studentized estimator <span class="math inline">\(\sqrt{n}(\widehat{\psi}_n-\psi_n)/\widehat{\sigma}_n\)</span> across 50,000 assignment draws, together with the standard normal density.</p>
+<p>In the animation, <span class="math inline">\(y_{i,1} = y_{i,0} + 1\)</span> for every <span class="math inline">\(i\)</span>. In this case, the conservative bound in (<a href="#eq-conservative-variance" class="quarto-xref">18</a>) coincides with the true variance. The studentized estimator closely tracks the standard normal and the empirical coverage is close to the nominal <span class="math inline">\(95\%\)</span> level.</p>
 <div id="fig-homogeneous-coverage" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-homogeneous-coverage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -545,17 +587,6 @@ a_{1,n}^2\frac{1-p}{p}S_{1,n}^2 + 2|a_{0,n}a_{1,n}|S_{0,n}S_{1,n} \\
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-homogeneous-coverage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Coverage of the confidence interval under homogeneous treatment effects.
-</figcaption>
-</figure>
-</div>
-<p>The second animation uses <span class="math inline">\(y_{i,1} = -y_{i,0} + 1\)</span>. Here the two potential outcome sequences are negatively correlated, making the conservative variance bound in (<a href="#eq-conservative-variance" class="quarto-xref">17</a>) loose. The estimator variance is much lower than the bound, so the studentized estimator is under-dispersed relative to the standard normal and the interval covers <span class="math inline">\(\psi_n\)</span> more often than the nominal level.</p>
-<div id="fig-heterogeneous-coverage" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-heterogeneous-coverage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="heterogeneous_coverage_animation.gif" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heterogeneous-coverage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Coverage of the confidence interval under heterogeneous treatment effects.
 </figcaption>
 </figure>
 </div>
@@ -593,7 +624,7 @@ Figure&nbsp;2: Coverage of the confidence interval under heterogeneous treatment
 \end{gathered}
 \]</span></p>
 <p>with <span class="math inline">\(\mathbb{P}_\mathbf{Y}\)</span>-probability one.</p>
-<p>Fix <span class="math inline">\(\epsilon &gt; 0\)</span>. By <a href="https://en.wikipedia.org/wiki/Egorov%27s_theorem">Egorov’s theorem</a>, there exists a set <span class="math inline">\(E\)</span> of paths with <span class="math inline">\(\mathbb{P}_\mathbf{Y}(E)&gt;1-\epsilon\)</span> such that these convergences hold uniformly on <span class="math inline">\(E\)</span>. Let <span class="math inline">\(\Theta\)</span> be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential outcome path lies in <span class="math inline">\(E\)</span>.</p>
+<p>Fix <span class="math inline">\(\epsilon &gt; 0\)</span>. By <a href="https://en.wikipedia.org/wiki/Egorov%27s_theorem">Egorov’s theorem</a>, there exists a set <span class="math inline">\(E\)</span> of paths with <span class="math inline">\(\mathbb{P}_\mathbf{Y}(E)&gt;1-\epsilon\)</span> such that these convergences hold uniformly on <span class="math inline">\(E\)</span>. Let <span class="math inline">\(\Theta\)</span> be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential outcome path lies in <span class="math inline">\(E\)</span>. For a realized path, write <span class="math inline">\(\mathbf y_i=(y_{i,0},y_{i,1})'\)</span>.</p>
 <p>We now verify <span class="math inline">\(\Theta\)</span> satisfies Assumption 3(i). The uniform convergence of the first and second empirical moments implies</p>
 <p><span id="eq-Vn-uniform-convergence"><span class="math display">\[
 \lim_{n\to\infty}
@@ -602,7 +633,7 @@ Figure&nbsp;2: Coverage of the confidence interval under heterogeneous treatment
 \mathbf{V}_n-\mathbf{V}
 \right\|
 =0.
-\tag{20}\]</span></span></p>
+\tag{21}\]</span></span></p>
 <p>Since <span class="math inline">\(\mathbf{V}\)</span> is positive definite, there exists <span class="math inline">\(c&gt;0\)</span> such that</p>
 <p><span class="math display">\[
 \mathbf{x}'\mathbf{V}\mathbf{x}
@@ -623,13 +654,13 @@ c\|\mathbf{x}\|^2
 -
 \|\mathbf{V}_n-\mathbf{V}\|\,\|\mathbf{x}\|^2
 \end{aligned}
-\]</span> for any <span class="math inline">\(\theta\in\Theta\)</span> and <span class="math inline">\(\mathbf{x}\in\mathbb{R}^2\)</span>, (<a href="#eq-Vn-uniform-convergence" class="quarto-xref">20</a>) implies the existence of an index <span class="math inline">\(N\)</span> for which</p>
+\]</span> for any <span class="math inline">\(\theta\in\Theta\)</span> and <span class="math inline">\(\mathbf{x}\in\mathbb{R}^2\)</span>, (<a href="#eq-Vn-uniform-convergence" class="quarto-xref">21</a>) implies the existence of an index <span class="math inline">\(N\)</span> for which</p>
 <p><span id="eq-quadratic-form-bound"><span class="math display">\[
 \mathbf{x}'\mathbf{V}_n\mathbf{x}
 \geq
 \frac{c}{2}\|\mathbf{x}\|^2
-\tag{21}\]</span></span></p>
-<p>for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(\theta\in\Theta\)</span>, and <span class="math inline">\(\mathbf{x}\in\mathbb{R}^2\)</span>. Since <span class="math inline">\(S_{d,n}^2=\mathbf{e}_d'\mathbf{V}_n\mathbf{e}_d\)</span>, where <span class="math inline">\(\mathbf{e}_d\)</span> is the coordinate vector corresponding to treatment state <span class="math inline">\(d\)</span>, (<a href="#eq-quadratic-form-bound" class="quarto-xref">21</a>) implies</p>
+\tag{22}\]</span></span></p>
+<p>for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(\theta\in\Theta\)</span>, and <span class="math inline">\(\mathbf{x}\in\mathbb{R}^2\)</span>. Since <span class="math inline">\(S_{d,n}^2=\mathbf{e}_d'\mathbf{V}_n\mathbf{e}_d\)</span>, where <span class="math inline">\(\mathbf{e}_d\)</span> is the coordinate vector corresponding to treatment state <span class="math inline">\(d\)</span>, (<a href="#eq-quadratic-form-bound" class="quarto-xref">22</a>) implies</p>
 <p><span class="math display">\[
 S_{d,n}^2
 \geq \frac{c}{2} &gt; 0
@@ -650,7 +681,7 @@ S_{d,n}^2
 S_{d,n}
 \left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|.
 \end{aligned}
-\tag{22}\]</span></span></p>
+\tag{23}\]</span></span></p>
 <p>Therefore, using <span class="math inline">\(\max_i z_i^3\leq\sum_i z_i^3\)</span> for nonnegative <span class="math inline">\(z_i\)</span>,</p>
 <p><span id="eq-marginal-leverage-via-full-vector"><span class="math display">\[
 \begin{aligned}
@@ -665,7 +696,7 @@ S_{d,n}
 \left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|^3
 \right)^{1/3}.
 \end{aligned}
-\tag{23}\]</span></span></p>
+\tag{24}\]</span></span></p>
 <p>Now using submultiplicativity of the operator norm, together with the triangle inequality and Jensen’s inequality, we obtain</p>
 <p><span id="eq-be-bound"><span class="math display">\[
 \begin{aligned}
@@ -701,15 +732,15 @@ S_{d,n}
 \right\|^3
 \right].
 \end{aligned}
-\tag{24}\]</span></span></p>
-<p>The bound in (<a href="#eq-quadratic-form-bound" class="quarto-xref">21</a>) implies</p>
+\tag{25}\]</span></span></p>
+<p>The bound in (<a href="#eq-quadratic-form-bound" class="quarto-xref">22</a>) implies</p>
 <p><span class="math display">\[
 \sup_{\theta\in\Theta}
 \left\|\mathbf{V}_n^{-1/2}\right\|
 \leq
 \left(\frac{2}{c}\right)^{1/2}
 \]</span></p>
-<p>for <span class="math inline">\(n \geq N\)</span>. The bracketed term in (<a href="#eq-be-bound" class="quarto-xref">24</a>) is also bounded uniformly for all sufficiently large <span class="math inline">\(n\)</span> by the uniform convergence of the first and third empirical moments. Therefore</p>
+<p>for <span class="math inline">\(n \geq N\)</span>. The bracketed term in (<a href="#eq-be-bound" class="quarto-xref">25</a>) is also bounded uniformly for all sufficiently large <span class="math inline">\(n\)</span> by the uniform convergence of the first and third empirical moments. Therefore</p>
 <p><span id="eq-full-vector-be-vanishing"><span class="math display">\[
 \lim_{n\to\infty}
 \sup_{\theta\in\Theta}
@@ -719,8 +750,8 @@ S_{d,n}
 \mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}
 \right\|^3
 = 0.
-\tag{25}\]</span></span></p>
-<p>Combining (<a href="#eq-full-vector-be-vanishing" class="quarto-xref">25</a>) with (<a href="#eq-marginal-leverage-via-full-vector" class="quarto-xref">23</a>) gives</p>
+\tag{26}\]</span></span></p>
+<p>Combining (<a href="#eq-full-vector-be-vanishing" class="quarto-xref">26</a>) with (<a href="#eq-marginal-leverage-via-full-vector" class="quarto-xref">24</a>) gives</p>
 <p><span class="math display">\[
 \lim_{n\to\infty}
 \sup_{\theta\in\Theta}
@@ -728,16 +759,16 @@ S_{d,n}
 \frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
 = 0.
 \]</span></p>
-<p>We next verify Assumption 3(ii). Since <span class="math inline">\(\mathbf{a}_n\)</span> is nonzero, so is <span class="math inline">\(\mathbf{b}_n\)</span>. Applying (<a href="#eq-quadratic-form-bound" class="quarto-xref">21</a>) with <span class="math inline">\(\mathbf{x}=\mathbf{b}_n\)</span> gives</p>
+<p>We next verify Assumption 3(ii). Since <span class="math inline">\(\mathbf{a}_n\)</span> is nonzero, so is <span class="math inline">\(\mathbf{b}_n\)</span>. Applying (<a href="#eq-quadratic-form-bound" class="quarto-xref">22</a>) with <span class="math inline">\(\mathbf{x}=\mathbf{b}_n\)</span> gives</p>
 <p><span class="math display">\[\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n&gt;0\]</span></p>
 <p>for all <span class="math inline">\(n \geq N\)</span> and <span class="math inline">\(\theta\in\Theta\)</span>.</p>
-<p>For the scalar Berry–Esseen condition, using the same Cauchy–Schwarz argument as in (<a href="#eq-coordinate-cauchy-schwarz" class="quarto-xref">22</a>) with <span class="math inline">\(\mathbf{b}_n\)</span> in place of <span class="math inline">\(\mathbf{e}_d\)</span>, we obtain</p>
+<p>For the scalar Berry–Esseen condition, using the same Cauchy–Schwarz argument as in (<a href="#eq-coordinate-cauchy-schwarz" class="quarto-xref">23</a>) with <span class="math inline">\(\mathbf{b}_n\)</span> in place of <span class="math inline">\(\mathbf{e}_d\)</span>, we obtain</p>
 <p><span class="math display">\[
 \frac{|\mathbf{b}_n'\mathbf{u}_{i,n}|^3}{(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}
 \leq
 \left\|\mathbf{V}_n^{-1/2}\mathbf{u}_{i,n}\right\|^3.
 \]</span></p>
-<p>After summing over <span class="math inline">\(i\)</span> and applying (<a href="#eq-full-vector-be-vanishing" class="quarto-xref">25</a>), we obtain</p>
+<p>After summing over <span class="math inline">\(i\)</span> and applying (<a href="#eq-full-vector-be-vanishing" class="quarto-xref">26</a>), we obtain</p>
 <p><span class="math display">\[
 \lim_{n\to\infty}
 \sup_{\theta\in\Theta}
@@ -747,6 +778,72 @@ S_{d,n}
 {(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}
 = 0.
 \]</span></p>
+</section>
+<section id="sec-ate-regularity" class="level2">
+<h2 class="anchored" data-anchor-id="sec-ate-regularity">ATE regularity</h2>
+<p>For all sufficiently large <span class="math inline">\(n\)</span>, define the correlation between the control and treatment potential outcomes by <span class="math display">\[
+\rho_n
+=
+\frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
+{S_{0,n}S_{1,n}}.
+\]</span> Under (<a href="#eq-ate-correlation-condition" class="quarto-xref">4</a>), there exist <span class="math inline">\(\delta\in(0,1]\)</span> and an index <span class="math inline">\(N\)</span> such that <span class="math inline">\(\rho_n\geq-1+\delta\)</span> for every <span class="math inline">\(n\geq N\)</span> and <span class="math inline">\(\theta\in\Theta\)</span>. For the ATE, <span class="math display">\[
+\mathbf b_n
+=
+\begin{pmatrix}
+1/(1-p) \\
+1/p
+\end{pmatrix}.
+\]</span> We then have <span id="eq-ate-variance-lower-bound"><span class="math display">\[
+\begin{aligned}
+\mathbf b_n'\mathbf V_n\mathbf b_n
+&amp;=
+\frac{S_{0,n}^2}{(1-p)^2}
++\frac{S_{1,n}^2}{p^2}
++2\rho_n\frac{S_{0,n}S_{1,n}}{p(1-p)} \\
+&amp;\geq
+\frac{S_{0,n}^2}{(1-p)^2}
++\frac{S_{1,n}^2}{p^2}
+-2(1-\delta)\frac{S_{0,n}S_{1,n}}{p(1-p)} \\
+&amp;\geq
+\delta\left(
+\frac{S_{0,n}^2}{(1-p)^2}
++\frac{S_{1,n}^2}{p^2}
+\right).
+\end{aligned}
+\tag{27}\]</span></span> The Cauchy–Schwarz inequality and (<a href="#eq-ate-variance-lower-bound" class="quarto-xref">27</a>) imply <span class="math display">\[
+\max_{1\leq i\leq n}
+\frac{|\mathbf b_n'\mathbf u_{i,n}|}
+{\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}}
+\leq
+\frac{1}{\sqrt\delta}
+\left\{
+\sum_{d=0}^1
+\left(
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+\right)^2
+\right\}^{1/2},
+\]</span> which converges uniformly to zero by Assumption 3(i). Therefore <span class="math display">\[
+\begin{aligned}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|\mathbf b_n'\mathbf u_{i,n}|^3}
+{(\mathbf b_n'\mathbf V_n\mathbf b_n)^{3/2}}
+&amp;\leq
+\max_{1\leq i\leq n}
+\frac{|\mathbf b_n'\mathbf u_{i,n}|}
+{\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\frac{(\mathbf b_n'\mathbf u_{i,n})^2}
+{\mathbf b_n'\mathbf V_n\mathbf b_n}
+\right) \\
+&amp;=
+\max_{1\leq i\leq n}
+\frac{|\mathbf b_n'\mathbf u_{i,n}|}
+{\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}},
+\end{aligned}
+\]</span> so Assumption 3(ii) follows.</p>
 </section>
 <section id="sec-proposition-proofs" class="level2">
 <h2 class="anchored" data-anchor-id="sec-proposition-proofs">Proofs of the asymptotic propositions</h2>
@@ -905,7 +1002,7 @@ R_{+,j}=\prod_{\ell=1}^k(a_{j\ell},b_{j\ell}],
 \right|
 \to 0.
 \end{gathered}
-\tag{26}\]</span></span></p>
+\tag{28}\]</span></span></p>
 <p>The same argument applied to <span class="math inline">\(A_-\)</span> gives</p>
 <p><span id="eq-lower-bracketing-set-convergence"><span class="math display">\[
 \begin{gathered}
@@ -915,7 +1012,7 @@ R_{+,j}=\prod_{\ell=1}^k(a_{j\ell},b_{j\ell}],
 \right|
 \to 0.
 \end{gathered}
-\tag{27}\]</span></span></p>
+\tag{29}\]</span></span></p>
 <p>Since <span class="math inline">\(A\subseteq A_+\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -927,7 +1024,7 @@ R_{+,j}=\prod_{\ell=1}^k(a_{j\ell},b_{j\ell}],
 &amp;&lt;\left\{\mathbb{P}_\theta(X_n\in A_+)-\mathbb{P}(X\in A_+)\right\} + \gamma.
 \end{aligned}
 \]</span></p>
-<p>Taking the supremum over <span class="math inline">\(\theta\)</span> and using (<a href="#eq-upper-bracketing-set-convergence" class="quarto-xref">26</a>), we can conclude</p>
+<p>Taking the supremum over <span class="math inline">\(\theta\)</span> and using (<a href="#eq-upper-bracketing-set-convergence" class="quarto-xref">28</a>), we can conclude</p>
 <p><span class="math display">\[
 \limsup_{n\to\infty}
 \sup_{\theta\in\Theta}
@@ -948,7 +1045,7 @@ R_{+,j}=\prod_{\ell=1}^k(a_{j\ell},b_{j\ell}],
 \left\{\mathbb{P}(X\in A_-)-\mathbb{P}_\theta(X_n\in A_-)\right\}+\gamma.
 \end{aligned}
 \]</span></p>
-<p>Using (<a href="#eq-lower-bracketing-set-convergence" class="quarto-xref">27</a>) gives</p>
+<p>Using (<a href="#eq-lower-bracketing-set-convergence" class="quarto-xref">29</a>) gives</p>
 <p><span class="math display">\[
 \limsup_{n\to\infty}
 \sup_{\theta\in\Theta}
@@ -1081,10 +1178,7 @@ H(s,t)=F(s)\mathbf{1}\{c\leq t\}.
 <h2 class="anchored" data-anchor-id="sec-estimator-asymptotics">Estimator asymptotics</h2>
 <section id="notation-and-auxiliary-lemma" class="level3">
 <h3 class="anchored" data-anchor-id="notation-and-auxiliary-lemma">Notation and auxiliary lemma</h3>
-<p>Let <span class="math inline">\(D_{i,1}=D_i\)</span>, <span class="math inline">\(D_{i,0}=1-D_i\)</span>, <span class="math inline">\(p_1=p\)</span>, <span class="math inline">\(p_0=1-p\)</span>, and</p>
-<p><span class="math display">\[
-\overline{D}_{d,n}=\frac{1}{n}\sum_{i=1}^n D_{i,d}.
-\]</span></p>
+<p>Let <span class="math inline">\(p_1=p\)</span> and <span class="math inline">\(p_0=1-p\)</span>.</p>
 <p>Also define</p>
 <p><span class="math display">\[
 b_{0,n}=\frac{|a_{0,n}|S_{0,n}}{1-p},
@@ -1097,24 +1191,24 @@ B_n=b_{0,n}+b_{1,n}.
 <div id="lem-treatment-share-convergence" class="lemma theorem">
 <p><span class="theorem-title"><strong>Lemma 2</strong></span> For each <span class="math inline">\(d\in\{0,1\}\)</span>,</p>
 <p><span class="math display">\[
-\overline{D}_{d,n}\stackrel{\mathcal{P}}{\to}p_d,
+\overline D_{d,n}\stackrel{\mathcal{P}}{\to}p_d,
 \qquad
-\sqrt n(\overline{D}_{d,n}-p_d)=O_{\mathcal{P}}(1).
+\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal{P}}(1).
 \]</span></p>
 </div>
 <div class="proof-block">
 <p><em>Proof.</em> Under Assumption 1, <span class="math inline">\(D_{1,d},\ldots,D_{n,d}\)</span> are independent Bernoulli random variables with probability <span class="math inline">\(p_d\)</span>. Hence</p>
 <p><span class="math display">\[
-\mathbb{E}_\theta(\overline{D}_{d,n})=p_d,
+\mathbb{E}_\theta(\overline D_{d,n})=p_d,
 \qquad
-\mathbb{V}_\theta(\overline{D}_{d,n})=\frac{p_d(1-p_d)}{n}.
+\mathbb{V}_\theta(\overline D_{d,n})=\frac{p_d(1-p_d)}{n}.
 \]</span></p>
 <p>For every <span class="math inline">\(\epsilon&gt;0\)</span>, Chebyshev’s inequality gives</p>
 <p><span class="math display">\[
 \begin{aligned}
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
-\left|\overline{D}_{d,n}-p_d\right|&gt;\epsilon
+\left|\overline D_{d,n}-p_d\right|&gt;\epsilon
 \right)
 &amp;\leq
 \frac{1}{\epsilon^2}
@@ -1125,12 +1219,12 @@ B_n=b_{0,n}+b_{1,n}.
 &amp;\to 0.
 \end{aligned}
 \]</span></p>
-<p>Thus <span class="math inline">\(\overline{D}_{d,n}\stackrel{\mathcal{P}}{\to}p_d\)</span>. Also, for every <span class="math inline">\(M&gt;0\)</span>,</p>
+<p>Thus <span class="math inline">\(\overline D_{d,n}\stackrel{\mathcal{P}}{\to}p_d\)</span>. Also, for every <span class="math inline">\(M&gt;0\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
-\left|\sqrt n(\overline{D}_{d,n}-p_d)\right|&gt;M
+\left|\sqrt n(\overline D_{d,n}-p_d)\right|&gt;M
 \right)
 &amp;\leq
 \frac{1}{M^2}
@@ -1139,36 +1233,36 @@ B_n=b_{0,n}+b_{1,n}.
 \frac{1}{4M^2}.
 \end{aligned}
 \]</span></p>
-<p>Therefore <span class="math inline">\(\sqrt n(\overline{D}_{d,n}-p_d)=O_{\mathcal{P}}(1)\)</span>. <span class="math inline">\(\square\)</span></p>
+<p>Therefore <span class="math inline">\(\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal{P}}(1)\)</span>. <span class="math inline">\(\square\)</span></p>
 </div>
 </section>
 <section id="sec-variance-ratio-consistency" class="level3">
-<h3 class="anchored" data-anchor-id="sec-variance-ratio-consistency">Derivation of (<a href="#eq-variance-ratio-consistency" class="quarto-xref">11</a>)</h3>
+<h3 class="anchored" data-anchor-id="sec-variance-ratio-consistency">Derivation of (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>)</h3>
 <p>We first show that</p>
 <p><span id="eq-Shat-consistency"><span class="math display">\[
 \frac{\widehat{S}_{d,n}^2}{S_{d,n}^2}
 \stackrel{\mathcal{P}}{\to}1.
-\tag{28}\]</span></span></p>
+\tag{30}\]</span></span></p>
 <p>for <span class="math inline">\(d \in \{0,1\}\)</span>. Observe that</p>
 <p><span id="eq-Shat-decomposition"><span class="math display">\[
 \begin{aligned}
 \widehat{S}_{d,n}^2
 &amp;=
-\frac{\overline{(D_d u_{d,n}^2)}_n}{\overline{D}_{d,n}}
-- \left(\frac{\overline{(D_d u_{d,n})}_n}{\overline{D}_{d,n}}\right)^2 \\
-&amp;= \frac{\overline{(D_d u_{d,n}^2)}_n - p_d\,S_{d,n}^2}{\overline{D}_{d,n}}
-+ \frac{p_d\,S_{d,n}^2}{\overline{D}_{d,n}}
-- \left(\frac{\overline{(D_d u_{d,n})}_n}{\overline{D}_{d,n}}\right)^2.
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2}{\overline D_{d,n}}
+- \left(\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{\overline D_{d,n}}\right)^2 \\
+&amp;= \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d\,S_{d,n}^2}{\overline D_{d,n}}
++ \frac{p_d\,S_{d,n}^2}{\overline D_{d,n}}
+- \left(\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{\overline D_{d,n}}\right)^2.
 \end{aligned}
-\tag{29}\]</span></span></p>
-<p>By Assumption 3(i), there exists an index <span class="math inline">\(N\)</span> for which <span class="math inline">\(S_{d,n}^2&gt;0\)</span> for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(d\in\{0,1\}\)</span>, and <span class="math inline">\(\theta\in\Theta\)</span>. Together with Lemma 2 and Propositions 3 and 4, (<a href="#eq-Shat-consistency" class="quarto-xref">28</a>) will follow from (<a href="#eq-Shat-decomposition" class="quarto-xref">29</a>) if we can show <span id="eq-Shat-remainder-bounds"><span class="math display">\[
-\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\tag{31}\]</span></span></p>
+<p>By Assumption 3(i), there exists an index <span class="math inline">\(N\)</span> for which <span class="math inline">\(S_{d,n}^2&gt;0\)</span> for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(d\in\{0,1\}\)</span>, and <span class="math inline">\(\theta\in\Theta\)</span>. Together with Lemma 2 and Propositions 3 and 4, (<a href="#eq-Shat-consistency" class="quarto-xref">30</a>) will follow from (<a href="#eq-Shat-decomposition" class="quarto-xref">31</a>) if we can show <span id="eq-Shat-remainder-bounds"><span class="math display">\[
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d S_{d,n}^2}{S_{d,n}^2}
 \stackrel{\mathcal{P}}{\to} 0,
 \qquad
-\frac{\overline{(D_d u_{d,n})}_n}{S_{d,n}}
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{S_{d,n}}
 \stackrel{\mathcal{P}}{\to} 0.
-\tag{30}\]</span></span></p>
-<p>The first term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">30</a>) has mean zero and variance</p>
+\tag{32}\]</span></span></p>
+<p>The first term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">32</a>) has mean zero and variance</p>
 <p><span class="math display">\[
 \frac{p_d(1-p_d)}{n^2 S_{d,n}^4}\sum_{i=1}^n u_{i,d,n}^4
 \leq
@@ -1190,7 +1284,7 @@ p_d(1-p_d)
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{\overline{(D_d u_{d,n}^2)}_n - p_d S_{d,n}^2}{S_{d,n}^2}
+\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d S_{d,n}^2}{S_{d,n}^2}
 \right|&gt;
 \epsilon
 \right)
@@ -1199,59 +1293,59 @@ p_d(1-p_d)
 \sup_{\theta\in\Theta}
 \left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} S_{d,n}}\right)^2
 \end{aligned}
-\]</span> by Chebyshev’s inequality. Therefore the first term converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Assumption 3(i). Since the second term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">30</a>) has mean zero and variance <span class="math inline">\(p_d(1-p_d)/n\)</span>, it also converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Chebyshev’s inequality. This proves (<a href="#eq-Shat-consistency" class="quarto-xref">28</a>).</p>
+\]</span> by Chebyshev’s inequality. Therefore the first term converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Assumption 3(i). Since the second term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">32</a>) has mean zero and variance <span class="math inline">\(p_d(1-p_d)/n\)</span>, it also converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Chebyshev’s inequality. This proves (<a href="#eq-Shat-consistency" class="quarto-xref">30</a>).</p>
 <p>Since <span class="math inline">\(\widehat{S}_{d,n}\)</span> and <span class="math inline">\(S_{d,n}\)</span> are nonnegative, Proposition 3 also gives</p>
 <p><span id="eq-Shat-root-consistency"><span class="math display">\[
 \frac{\widehat{S}_{d,n}}{S_{d,n}}
 \stackrel{\mathcal{P}}{\to}1.
-\tag{31}\]</span></span></p>
-<p>Now by (<a href="#eq-sigma-tilde" class="quarto-xref">10</a>) and (<a href="#eq-sigma-hat" class="quarto-xref">8</a>), we have <span id="eq-sigma-ratio-expansion"><span class="math display">\[
+\tag{33}\]</span></span></p>
+<p>Now by (<a href="#eq-sigma-tilde" class="quarto-xref">11</a>) and (<a href="#eq-sigma-hat" class="quarto-xref">9</a>), we have <span id="eq-sigma-ratio-expansion"><span class="math display">\[
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2}
 =
-\frac{\overline{D}_n(1-\overline{D}_n)}{p(1-p)}
+\frac{\overline D_{1,n}\overline D_{0,n}}{p(1-p)}
 \left[
 \frac{
-\frac{|a_{0,n}|S_{0,n}}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{|a_{0,n}|S_{0,n}}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 +
-\frac{|a_{1,n}|S_{1,n}}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{|a_{1,n}|S_{1,n}}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 }{
 \frac{|a_{0,n}|S_{0,n}}{1-p}
 +
 \frac{|a_{1,n}|S_{1,n}}{p}
 }
 \right]^2.
-\tag{32}\]</span></span></p>
+\tag{34}\]</span></span></p>
 <p>The unbracketed term converges to one in <span class="math inline">\(\mathcal{P}\)</span> by Lemma 2 and Proposition 3. It therefore suffices to show that the bracketed ratio also converges to one. For all <span class="math inline">\(n \geq N\)</span>, <span class="math inline">\(B_n&gt;0\)</span> and the ratios <span class="math inline">\(b_{0,n}/B_n\)</span> and <span class="math inline">\(b_{1,n}/B_n\)</span> are nonnegative and sum to one. The difference between the bracketed ratio and one can therefore be bounded by <span class="math display">\[
 \begin{aligned}
 &amp;\left|
 \frac{b_{0,n}}{B_n}
-\left(\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
+\left(\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
 +
 \frac{b_{1,n}}{B_n}
-\left(\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
+\left(\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
 -1
 \right| \\
 &amp;\leq
 \frac{b_{0,n}}{B_n}
 \left|
-\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 -1
 \right|
 +
 \frac{b_{1,n}}{B_n}
 \left|
-\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 -1
 \right|
 \\
 &amp;\leq
 \left|
-\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 -1
 \right|
 +
 \left|
-\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 -1
 \right|
 \end{aligned}
@@ -1261,10 +1355,10 @@ p_d(1-p_d)
 \mathbb{P}_\theta\left(
 \left|
 \frac{b_{0,n}}{B_n}
-\left(\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
+\left(\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}\right)
 +
 \frac{b_{1,n}}{B_n}
-\left(\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
+\left(\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}\right)
 -1
 \right|&gt;
 \epsilon
@@ -1273,7 +1367,7 @@ p_d(1-p_d)
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{1-p}{1-\overline{D}_n}\frac{\widehat{S}_{0,n}}{S_{0,n}}
+\frac{1-p}{\overline D_{0,n}}\frac{\widehat{S}_{0,n}}{S_{0,n}}
 -1
 \right|&gt;
 \epsilon/2
@@ -1281,17 +1375,17 @@ p_d(1-p_d)
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{p}{\overline{D}_n}\frac{\widehat{S}_{1,n}}{S_{1,n}}
+\frac{p}{\overline D_{1,n}}\frac{\widehat{S}_{1,n}}{S_{1,n}}
 -1
 \right|&gt;
 \epsilon/2
 \right)
 \end{aligned}
 \]</span></p>
-<p>The two probabilities on the right-hand side tend to zero by (<a href="#eq-Shat-root-consistency" class="quarto-xref">31</a>), Lemma 2, and Propositions 3 and 4. Therefore the bracketed ratio in (<a href="#eq-sigma-ratio-expansion" class="quarto-xref">32</a>) converges to one in <span class="math inline">\(\mathcal{P}\)</span>. Combining this with the convergence of the unbracketed term proves (<a href="#eq-variance-ratio-consistency" class="quarto-xref">11</a>) by Propositions 3 and 4.</p>
+<p>The two probabilities on the right-hand side tend to zero by (<a href="#eq-Shat-root-consistency" class="quarto-xref">33</a>), Lemma 2, and Propositions 3 and 4. Therefore the bracketed ratio in (<a href="#eq-sigma-ratio-expansion" class="quarto-xref">34</a>) converges to one in <span class="math inline">\(\mathcal{P}\)</span>. Combining this with the convergence of the unbracketed term proves (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) by Propositions 3 and 4.</p>
 </section>
 <section id="sec-residual-appendix" class="level3">
-<h3 class="anchored" data-anchor-id="sec-residual-appendix">Derivation of (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">12</a>)</h3>
+<h3 class="anchored" data-anchor-id="sec-residual-appendix">Derivation of (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">13</a>)</h3>
 <p>Define <span class="math display">\[
 U_{d,n}
 =
@@ -1302,11 +1396,11 @@ U_{d,n}
 <p><span class="math display">\[
 \begin{aligned}
 \widehat{y}_{0,n} - \overline{y}_{0,n}
-&amp;= -\frac{1}{n(1-\overline{D}_n)}\sum_{i=1}^n (D_i - p)(y_{i,0} - \overline{y}_{0,n})\\[2ex]
-&amp;= -\dfrac{U_{0,n}}{1-\overline{D}_n}, \\[2ex]
+&amp;= -\frac{1}{n\overline D_{0,n}}\sum_{i=1}^n (D_i - p)(y_{i,0} - \overline{y}_{0,n})\\[2ex]
+&amp;= -\dfrac{U_{0,n}}{\overline D_{0,n}}, \\[2ex]
 \widehat{y}_{1,n} - \overline{y}_{1,n}
-&amp;= \frac{1}{n\,\overline{D}_n}\sum_{i=1}^n (D_i - p)(y_{i,1} - \overline{y}_{1,n}) \\[2ex]
-&amp;= \dfrac{U_{1,n}}{\overline{D}_n}
+&amp;= \frac{1}{n\overline D_{1,n}}\sum_{i=1}^n (D_i - p)(y_{i,1} - \overline{y}_{1,n}) \\[2ex]
+&amp;= \dfrac{U_{1,n}}{\overline D_{1,n}}
 \end{aligned}
 \]</span></p>
 <p>We therefore have</p>
@@ -1314,12 +1408,12 @@ U_{d,n}
 \begin{aligned}
 \sqrt{n}\left(\widehat{\psi}_n-\psi_n\right)
 &amp;= \sqrt{n}\left(a_{0,n}\left(\widehat{y}_{0,n}-\overline{y}_{0,n}\right) + a_{1,n}\left(\widehat{y}_{1,n}-\overline{y}_{1,n}\right)\right) \\[2ex]
-&amp;= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-\overline{D}_n} + \frac{a_{1,n} U_{1,n}}{\overline{D}_n}\right) \\[2ex]
+&amp;= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}}\right) \\[2ex]
 &amp;= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right)
-+ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{1-\overline{D}_n} + \frac{a_{1,n} U_{1,n}}{\overline{D}_n} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
++ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
 &amp;= \sum_{i=1}^n X_{i,n} + R_n,
 \end{aligned}
-\tag{33}\]</span></span></p>
+\tag{35}\]</span></span></p>
 <p>where</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -1327,15 +1421,15 @@ U_{d,n}
 &amp;=
 \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right), \\[2ex]
 R_n
-&amp;= -\sqrt{n}\left(\overline{D}_n-p\right)
+&amp;= -\sqrt{n}\left(\overline D_{1,n}-p\right)
 \left[
-\frac{a_{0,n}}{(1-\overline{D}_n)(1-p)}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}(1-p)}U_{0,n}
 +
-\frac{a_{1,n}}{\overline{D}_n\,p}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p}U_{1,n}
 \right].
 \end{aligned}
 \]</span></p>
-<p>Dividing (<a href="#eq-exact-decomposition" class="quarto-xref">33</a>) by <span class="math inline">\(\widehat{\sigma}_n\)</span> gives</p>
+<p>Dividing (<a href="#eq-exact-decomposition" class="quarto-xref">35</a>) by <span class="math inline">\(\widehat{\sigma}_n\)</span> gives</p>
 <p><span id="eq-standardized-decomposition"><span class="math display">\[
 \begin{aligned}
 \sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
@@ -1345,36 +1439,36 @@ R_n
 &amp;= \frac{\sum_{i=1}^n X_{i,n}}{\widehat{\sigma}_n} + \frac{R_n}{\widetilde{\sigma}_n}
 \frac{\widetilde{\sigma}_n}{\widehat{\sigma}_n}.
 \end{aligned}
-\tag{34}\]</span></span></p>
-<p>Since (<a href="#eq-variance-ratio-consistency" class="quarto-xref">11</a>) implies <span class="math inline">\(\widetilde{\sigma}_n/\widehat{\sigma}_n\stackrel{\mathcal{P}}{\to}1\)</span>, it suffices by Propositions 3 and 4 to show <span class="math inline">\(R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0\)</span>.</p>
+\tag{36}\]</span></span></p>
+<p>Since (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) implies <span class="math inline">\(\widetilde{\sigma}_n/\widehat{\sigma}_n\stackrel{\mathcal{P}}{\to}1\)</span>, it suffices by Propositions 3 and 4 to show <span class="math inline">\(R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0\)</span>.</p>
 <p>Toward this end, observe that <span class="math display">\[
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
 &amp;=
-\frac{\left|\sqrt n(\overline{D}_n-p)\right|}{\sqrt{p(1-p)}B_n}
+\frac{\left|\sqrt n(\overline D_{1,n}-p)\right|}{\sqrt{p(1-p)}B_n}
 \left|
-\frac{a_{0,n}}{(1-\overline{D}_n)(1-p)}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}(1-p)}U_{0,n}
 +
-\frac{a_{1,n}}{\overline{D}_n p}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p}U_{1,n}
 \right| \\[2ex]
 &amp;\leq
-\frac{\left|\sqrt n(\overline{D}_n-p)\right|}{\sqrt{p(1-p)}}
+\frac{\left|\sqrt n(\overline D_{1,n}-p)\right|}{\sqrt{p(1-p)}}
 \left[
 \frac{b_{0,n}}{B_n}
-\frac{1}{1-\overline{D}_n}
+\frac{1}{\overline D_{0,n}}
 \left|\frac{U_{0,n}}{S_{0,n}}\right|
 +
 \frac{b_{1,n}}{B_n}
-\frac{1}{\overline{D}_n}
+\frac{1}{\overline D_{1,n}}
 \left|\frac{U_{1,n}}{S_{1,n}}\right|
 \right].
 \end{aligned}
 \]</span></p>
-<p>On the event <span class="math inline">\(\left\{|\overline{D}_n-p|\leq\underline p/2\right\}\)</span>, <span class="math inline">\(1 - \overline{D}_n \geq \underline p/2\)</span> and <span class="math inline">\(\overline{D}_n \geq \underline p/2\)</span> so that <span id="eq-Rn-bound"><span class="math display">\[
+<p>On the event <span class="math inline">\(\left\{|\overline D_{1,n}-p|\leq\underline p/2\right\}\)</span>, <span class="math inline">\(\overline D_{0,n}\geq\underline p/2\)</span> and <span class="math inline">\(\overline D_{1,n}\geq\underline p/2\)</span>, so <span id="eq-Rn-bound"><span class="math display">\[
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
 &amp;\leq
-C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
+C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \left[
 \frac{b_{0,n}}{B_n}
 \left|\frac{U_{0,n}}{S_{0,n}}\right|
@@ -1383,7 +1477,7 @@ C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
 \left|\frac{U_{1,n}}{S_{1,n}}\right|
 \right],
 \end{aligned}
-\tag{35}\]</span></span></p>
+\tag{37}\]</span></span></p>
 <p>where</p>
 <p><span class="math display">\[
 C_{\underline p}
@@ -1397,7 +1491,7 @@ C_{\underline p}
 \right)
 &amp;\leq
 \sup_{\theta\in\Theta}\mathbb{P}_\theta\left(
-C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
+C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \left[
 \frac{b_{0,n}}{B_n}
 \left|\frac{U_{0,n}}{S_{0,n}}\right|
@@ -1408,7 +1502,7 @@ C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
 &gt; \epsilon
 \right) \\
 &amp;\quad+
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline{D}_n-p|&gt;\underline p/2\right).
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline D_{1,n}-p|&gt;\underline p/2\right).
 \end{aligned}
 \]</span></p>
 <p>The second term on the right-hand side converges to zero by Lemma 2. For the first term, observe that for each <span class="math inline">\(d \in \{0,1\}\)</span>,</p>
@@ -1419,11 +1513,11 @@ C_{\underline p}\left|\sqrt n(\overline{D}_n-p)\right|
 =
 \frac{p(1-p)}{n}.
 \]</span></p>
-<p>Thus <span class="math inline">\(U_{d,n}/S_{d,n}=o_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. The weights <span class="math inline">\(b_{0,n}/B_n\)</span> and <span class="math inline">\(b_{1,n}/B_n\)</span> lie in <span class="math inline">\([0,1]\)</span>, so the bracketed term in (<a href="#eq-Rn-bound" class="quarto-xref">35</a>) is also <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. By Lemma 2, <span class="math inline">\(\sqrt n(\overline{D}_n-p)=O_{\mathcal{P}}(1)\)</span>. Therefore, by Proposition 2, the product inside the first probability on the right-hand side is <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. Thus</p>
+<p>Thus <span class="math inline">\(U_{d,n}/S_{d,n}=o_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. The weights <span class="math inline">\(b_{0,n}/B_n\)</span> and <span class="math inline">\(b_{1,n}/B_n\)</span> lie in <span class="math inline">\([0,1]\)</span>, so the bracketed term in (<a href="#eq-Rn-bound" class="quarto-xref">37</a>) is also <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. By Lemma 2, <span class="math inline">\(\sqrt n(\overline D_{1,n}-p)=O_{\mathcal{P}}(1)\)</span>. Therefore, by Proposition 2, the product inside the first probability on the right-hand side is <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. Thus</p>
 <p><span class="math display">\[
 \frac{R_n}{\widetilde{\sigma}_n}=o_{\mathcal{P}}(1),
 \]</span></p>
-<p>which by (<a href="#eq-standardized-decomposition" class="quarto-xref">34</a>) proves (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">12</a>).</p>
+<p>which by (<a href="#eq-standardized-decomposition" class="quarto-xref">36</a>) proves (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">13</a>).</p>
 </section>
 </section>
 </section>

@@ -172,7 +172,7 @@ In the [Appendix](#sec-stationary-ergodic-conditions), we show that if candidate
 The positivity requirement in Assumption 3(ii) follows if $\mathbf V_n$ is positive definite for all sufficiently large $n$ and every $\theta\in\Theta$.
 However, requiring positive definiteness is stronger than necessary and excludes natural cases such as $y_{i,1}=y_{i,0}$ for every $i$.
 Weaker, target-specific conditions suffice in many cases of interest.
-In the [Appendix](#sec-treatment-group-mean-regularity), we show that Assumption 3(i) implies Assumption 3(ii) for a single treatment group mean immediately.
+In the [Appendix](#sec-treatment-group-mean-regularity), we show that Assumption 3(i) implies Assumption 3(ii) for a single treatment group mean.
 We also show in the [Appendix](#sec-ate-regularity) that the same implication holds for the ATE as long as
 $$
 \liminf_{n\to\infty} \inf_{\theta\in\Theta} \frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
@@ -875,8 +875,9 @@ $$
 = 0.
 $$
 
-## Treatment group mean regularity {#sec-treatment-group-mean-regularity}
+## Regularity conditions for treatment group means and ATE  {#sec-treatment-group-mean-regularity}
 
+**Treatment group mean.**
 For a single treatment group mean under treatment state $d\in\{0,1\}$, only coordinate $d$ of $\mathbf b_n$ is nonzero.
 Consequently, the quadratic form $\mathbf b_n'\mathbf V_n\mathbf b_n$ is a positive multiple of $S_{d,n}^2$ and is therefore eventually positive by Assumption 3(i).
 The scale factors in $\mathbf b_n'\mathbf u_{i,n}$ and $\mathbf b_n'\mathbf V_n\mathbf b_n$ also cancel, so the expression in (-@eq-scalar-be-condition) reduces to
@@ -906,7 +907,8 @@ $$
 which converges uniformly to zero by Assumption 3(i).
 Therefore, Assumption 3(ii) follows.
 
-## ATE regularity {#sec-ate-regularity}
+::: {#sec-ate-regularity}
+**Average treatment effect.**
 
 For all sufficiently large $n$, define the correlation between the control and treatment potential outcomes by
 $$
@@ -983,6 +985,7 @@ $$
 \end{aligned}
 $$
 so Assumption 3(ii) follows.
+:::
 
 ## Proofs of the asymptotic propositions {#sec-proposition-proofs}
 

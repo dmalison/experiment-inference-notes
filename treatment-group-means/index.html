@@ -215,7 +215,7 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 \tag{3}\]</span></span></p>
 </div>
 <p>Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation. Assumption 3(ii) ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> for the target contrast vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process with a finite third moment and positive definite covariance, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumption 3 holds after restricting <span class="math inline">\(\Theta\)</span> to parameters whose potential outcome paths lie in that set.</p>
-<p>The positivity requirement in Assumption 3(ii) follows if <span class="math inline">\(\mathbf V_n\)</span> is positive definite for all sufficiently large <span class="math inline">\(n\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>. However, requiring positive definiteness is stronger than necessary and excludes natural cases such as <span class="math inline">\(y_{i,1}=y_{i,0}\)</span> for every <span class="math inline">\(i\)</span>. Weaker, target-specific conditions suffice in many cases of interest. In the <a href="#sec-treatment-group-mean-regularity">Appendix</a>, we show that Assumption 3(i) implies Assumption 3(ii) for a single treatment group mean immediately. We also show in the <a href="#sec-ate-regularity">Appendix</a> that the same implication holds for the ATE as long as <span id="eq-ate-correlation-condition"><span class="math display">\[
+<p>The positivity requirement in Assumption 3(ii) follows if <span class="math inline">\(\mathbf V_n\)</span> is positive definite for all sufficiently large <span class="math inline">\(n\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>. However, requiring positive definiteness is stronger than necessary and excludes natural cases such as <span class="math inline">\(y_{i,1}=y_{i,0}\)</span> for every <span class="math inline">\(i\)</span>. Weaker, target-specific conditions suffice in many cases of interest. In the <a href="#sec-treatment-group-mean-regularity">Appendix</a>, we show that Assumption 3(i) implies Assumption 3(ii) for a single treatment group mean. We also show in the <a href="#sec-ate-regularity">Appendix</a> that the same implication holds for the ATE as long as <span id="eq-ate-correlation-condition"><span class="math display">\[
 \liminf_{n\to\infty} \inf_{\theta\in\Theta} \frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
 {S_{0,n}S_{1,n}} &gt; -1.
 \tag{4}\]</span></span> This condition requires the potential outcome correlation to remain uniformly bounded away from <span class="math inline">\(-1\)</span>.</p>
@@ -766,8 +766,8 @@ S_{d,n}
 \]</span></p>
 </section>
 <section id="sec-treatment-group-mean-regularity" class="level2">
-<h2 class="anchored" data-anchor-id="sec-treatment-group-mean-regularity">Treatment group mean regularity</h2>
-<p>For a single treatment group mean under treatment state <span class="math inline">\(d\in\{0,1\}\)</span>, only coordinate <span class="math inline">\(d\)</span> of <span class="math inline">\(\mathbf b_n\)</span> is nonzero. Consequently, the quadratic form <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> is a positive multiple of <span class="math inline">\(S_{d,n}^2\)</span> and is therefore eventually positive by Assumption 3(i). The scale factors in <span class="math inline">\(\mathbf b_n'\mathbf u_{i,n}\)</span> and <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> also cancel, so the expression in (<a href="#eq-scalar-be-condition" class="quarto-xref">3</a>) reduces to <span class="math display">\[
+<h2 class="anchored" data-anchor-id="sec-treatment-group-mean-regularity">Regularity conditions for treatment group means and ATE</h2>
+<p><strong>Treatment group mean.</strong> For a single treatment group mean under treatment state <span class="math inline">\(d\in\{0,1\}\)</span>, only coordinate <span class="math inline">\(d\)</span> of <span class="math inline">\(\mathbf b_n\)</span> is nonzero. Consequently, the quadratic form <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> is a positive multiple of <span class="math inline">\(S_{d,n}^2\)</span> and is therefore eventually positive by Assumption 3(i). The scale factors in <span class="math inline">\(\mathbf b_n'\mathbf u_{i,n}\)</span> and <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> also cancel, so the expression in (<a href="#eq-scalar-be-condition" class="quarto-xref">3</a>) reduces to <span class="math display">\[
 \frac{1}{n^{3/2}}
 \sum_{i=1}^n
 \frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
@@ -788,9 +788,8 @@ S_{d,n}
 \frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
 \end{aligned}
 \]</span> which converges uniformly to zero by Assumption 3(i). Therefore, Assumption 3(ii) follows.</p>
-</section>
-<section id="sec-ate-regularity" class="level2">
-<h2 class="anchored" data-anchor-id="sec-ate-regularity">ATE regularity</h2>
+<div id="sec-ate-regularity">
+<p><strong>Average treatment effect.</strong></p>
 <p>For all sufficiently large <span class="math inline">\(n\)</span>, define the correlation between the control and treatment potential outcomes by <span class="math display">\[
 \rho_n
 =
@@ -854,6 +853,7 @@ S_{d,n}
 {\sqrt n\,(\mathbf b_n'\mathbf V_n\mathbf b_n)^{1/2}},
 \end{aligned}
 \]</span> so Assumption 3(ii) follows.</p>
+</div>
 </section>
 <section id="sec-proposition-proofs" class="level2">
 <h2 class="anchored" data-anchor-id="sec-proposition-proofs">Proofs of the asymptotic propositions</h2>

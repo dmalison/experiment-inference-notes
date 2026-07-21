@@ -41,10 +41,34 @@ This note derives confidence intervals for linear combinations of treatment grou
 
 Experimental units are indexed by $i = 1, 2, \ldots$.
 Each unit is assigned to either treatment or control.
-Let $D_i$ denote a treatment indicator, with $D_i = 1$ if unit $i$ is assigned to treatment and $D_i = 0$ otherwise.
+Let $D_i$ denote an observed treatment indicator, with $D_i = 1$ if unit $i$ is assigned to treatment and $D_i = 0$ otherwise.
+We make the following assumption about the treatment assignment mechanism:
 
-Let $y_{i,d}$ denote the **potential outcome** for unit $i$ under treatment $d \in \{0, 1\}$.
-We condition on the potential outcomes, so probabilities are computed only over the randomized treatment assignments.
+::: {.assumption #asm-random}
+**Assumption 1.** $D_1, D_2, \ldots$ are independent Bernoulli random variables with common treatment probability $p$, and there exists $\underline p>0$ such that $\underline p\leq p\leq1-\underline p$ for every $\theta\in\Theta$.
+:::
+
+Assumption 1 excludes stratified designs that assign a fixed fraction of units to each treatment group.
+Such designs are less common in online experiments, where treatment groups are typically assigned on the fly.
+Assumption 1 also requires the treatment assignment probability $p$ to be bounded away from zero and one.
+In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups.
+In this case, Assumption 1 holds by taking $\underline{p}$ to be the smallest permitted fraction of buckets that can be allocated to one group.
+
+In addition to $D_i$, we observe an outcome of interest $Y_i$ which we model using potential outcomes.
+Let $y_{i,d}$ denote unit $i$'s **potential outcome** under treatment $d \in \{0, 1\}$.
+We treat the potential outcomes as fixed and assume the observed outcome is generated according to the following rule:
+
+::: {.assumption #asm-sutva}
+**Assumption 2.** The observed outcome $Y_i$ satisfies
+
+$$Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}.$$ {#eq-observed-outcome}
+:::
+
+Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units. This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption) and can be restrictive in some settings. For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions.
+In practice, such spillovers can often be handled by randomizing at a coarser level.
+
+Assumption 2 also implies that treatment assignment is the only source of randomness in the model.
+By treating the potential outcomes as fixed, we abstract from population sampling issues and conduct inference conditional on the experimental units and their potential outcomes.
 
 For $d\in\{0,1\}$, define the potential outcome mean, centered potential outcomes, and potential outcome variance by
 $$
@@ -90,7 +114,7 @@ $$\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n$$
 
 for a nonzero, non-random coefficient vector $\mathbf{a}_n = (a_{0,n}, a_{1,n})'$.
 Setting $\mathbf{a}_n = (1, 0)'$ or $\mathbf{a}_n = (0, 1)'$ yields the control or treatment group mean, respectively, while setting $\mathbf{a}_n = (-1, 1)'$ yields the **average treatment effect (ATE)**.
-Although these examples use coefficient vectors that are fixed across $n$, we allow $\mathbf a_n$ to vary with $n$ to accommodate other applications. For example, the [sign-specific contrasts in the relative treatment effects note](../lift/#splitting-by-the-control-mean-sign) have coefficients that depend on $n$.
+Although these examples use coefficient vectors that are fixed across $n$, we allow $\mathbf a_n$ to vary with $n$ to accommodate other applications (e.g.~the [sign-specific contrasts in the relative treatment effects note](../lift/#splitting-by-the-control-mean-sign)).
 
 Collect the model primitives into the parameter vector
 
@@ -102,19 +126,7 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 $$
 
 and let $\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}$ denote the set of parameters under consideration.
-We impose the following assumptions on the data-generating process:
-
-::: {.assumption #asm-random}
-**Assumption 1.** $D_1, D_2, \ldots$ are independent Bernoulli random variables with common treatment probability $p$, and there exists $\underline p>0$ such that $\underline p\leq p\leq1-\underline p$ for every $\theta\in\Theta$.
-:::
-
-
-::: {.assumption #asm-sutva}
-**Assumption 2.** The observed outcome $Y_i$ satisfies
-
-$$Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}.$$ {#eq-observed-outcome}
-:::
-
+We impose the following regularity conditions on $\Theta$:
 
 ::: {.assumption #asm-nondegenerate}
 **Assumption 3.** The following regularity conditions hold:
@@ -153,56 +165,22 @@ $$ {#eq-scalar-be-condition}
 :::
 
 
-Assumption 1 requires the treatment assignment probability $p$ to be bounded away from zero and one.
-In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups.
-In this case, Assumption 1 holds by taking $\underline{p}$ to be the smallest permitted fraction of buckets that can be allocated to a group.
-
-Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units. This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption) and can be restrictive in some settings. For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions.
-In practice, such spillovers can often be handled by randomizing at a coarser level.
-
-
 Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation.
 Assumption 3(ii) ensures the [Berry--Esseen bound](https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem) for the target contrast vanishes uniformly over $\Theta$.
 In the [Appendix](#sec-stationary-ergodic-conditions), we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process with a finite third moment and positive definite covariance, then for any $\epsilon>0$ there is a set of potential outcome paths occurring with probability at least $1-\epsilon$ such that Assumption 3 holds after restricting $\Theta$ to parameters whose potential outcome paths lie in that set.
 
 The positivity requirement in Assumption 3(ii) follows if $\mathbf V_n$ is positive definite for all sufficiently large $n$ and every $\theta\in\Theta$.
 However, requiring positive definiteness is stronger than necessary and excludes natural cases such as $y_{i,1}=y_{i,0}$ for every $i$.
-Weaker, target-specific conditions suffice in several cases of interest. For a single treatment group mean, Assumption 3(i) implies Assumption 3(ii) without any further restrictions.
-In this case, the quadratic form $\mathbf b_n'\mathbf V_n\mathbf b_n$ is a positive multiple of $S_{d,n}^2$ and is therefore eventually positive by Assumption 3(i).
-The scale factors in $\mathbf b_n'\mathbf u_{i,n}$ and $\mathbf b_n'\mathbf V_n\mathbf b_n$ also cancel, so the expression in (-@eq-scalar-be-condition) reduces to
-$$
-\frac{1}{n^{3/2}}
-\sum_{i=1}^n
-\frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
-$$
-Since $n^{-1}\sum_{i=1}^n u_{i,d,n}^2/S_{d,n}^2=1$, this expression satisfies
-$$
-\begin{aligned}
-\frac{1}{n^{3/2}}
-\sum_{i=1}^n
-\frac{|u_{i,d,n}|^3}{S_{d,n}^3}
-&\leq
-\max_{1\leq i\leq n}
-\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
-\left(
-\frac{1}{n}\sum_{i=1}^n
-\frac{u_{i,d,n}^2}{S_{d,n}^2}
-\right) \\
-&=
-\max_{1\leq i\leq n}
-\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
-\end{aligned}
-$$
-which converges uniformly to zero by Assumption 3(i).
-In the [Appendix](#sec-ate-regularity), we show that Assumption 3(i) also implies Assumption 3(ii) for the ATE as long as
+Weaker, target-specific conditions suffice in many cases of interest.
+In the [Appendix](#sec-treatment-group-mean-regularity), we show that Assumption 3(i) implies Assumption 3(ii) for a single treatment group mean immediately.
+We also show in the [Appendix](#sec-ate-regularity) that the same implication holds for the ATE as long as
 $$
 \liminf_{n\to\infty} \inf_{\theta\in\Theta} \frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
 {S_{0,n}S_{1,n}} > -1.
 $$ {#eq-ate-correlation-condition}
 This condition requires the potential outcome correlation to remain uniformly bounded away from $-1$.
 
-We assume access to a finite sample $\{(D_i, Y_i)\}_{i=1}^n$.
-For $\theta\in\Theta$, we let $\mathbb{P}_\theta$ denote probability of the observed sample under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2.
+For $\theta\in\Theta$, we let $\mathbb{P}_\theta$ denote probability of the observed sample $\{(D_i, Y_i)\}_{i=1}^n$ under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2.
 We let $\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}$ denote the set of possible probability measures.
 
 # Inference
@@ -210,6 +188,7 @@ We let $\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}$ denote the set o
 ## Uniform asymptotics
 
 Throughout this note, asymptotic statements are made uniformly over the family of distributions $\mathcal{P}$ induced by the parameters in $\Theta$.
+We focus on uniform validity because platforms performing online experiment analysis must produce reliable results across a wide range of data-generating processes.
 Because this framework differs slightly from canonical pointwise asymptotics, we first define the relevant modes of convergence and stochastic-order notation.
 We also record uniform analogues of a few pointwise asymptotic results and define the notion of uniform asymptotic validity for a sequence of confidence sets.
 
@@ -322,7 +301,12 @@ $$C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n)$$ {#eq-ci-
 denote a confidence set for $\psi_n$ with nominal coverage level $1-\alpha$.
 The sequence $\{C_{1-\alpha,n}\}_{n \geq 1}$ is **finite-sample valid** for $\{\psi_n\}_{n \geq 1}$ over $\Theta$ if
 
-$$\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right) \geq 1 - \alpha \quad \text{ for all } n \geq 1 \text{ and } \theta \in \Theta.$$ {#eq-fixed-horizon-p}
+$$
+\inf_{n\geq1}
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right)
+\geq 1-\alpha.
+$$ {#eq-fixed-horizon-p}
 
 This condition is typically too demanding, so we use an asymptotic criterion instead.
 The sequence $\{C_{1-\alpha,n}\}_{n \geq 1}$ is **asymptotically valid** for $\{\psi_n\}_{n\geq 1}$ over $\Theta$ if
@@ -890,6 +874,37 @@ $$
 {(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}
 = 0.
 $$
+
+## Treatment group mean regularity {#sec-treatment-group-mean-regularity}
+
+For a single treatment group mean under treatment state $d\in\{0,1\}$, only coordinate $d$ of $\mathbf b_n$ is nonzero.
+Consequently, the quadratic form $\mathbf b_n'\mathbf V_n\mathbf b_n$ is a positive multiple of $S_{d,n}^2$ and is therefore eventually positive by Assumption 3(i).
+The scale factors in $\mathbf b_n'\mathbf u_{i,n}$ and $\mathbf b_n'\mathbf V_n\mathbf b_n$ also cancel, so the expression in (-@eq-scalar-be-condition) reduces to
+$$
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
+$$
+Since $n^{-1}\sum_{i=1}^n u_{i,d,n}^2/S_{d,n}^2=1$, this expression satisfies
+$$
+\begin{aligned}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}
+&\leq
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\frac{u_{i,d,n}^2}{S_{d,n}^2}
+\right) \\
+&=
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
+\end{aligned}
+$$
+which converges uniformly to zero by Assumption 3(i).
+Therefore, Assumption 3(ii) follows.
 
 ## ATE regularity {#sec-ate-regularity}
 

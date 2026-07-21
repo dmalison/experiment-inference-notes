@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-20">
+<meta name="dcterms.date" content="2026-07-21">
 
 <title>Uniform Inference on Treatment Group Means</title>
 <style>
@@ -117,7 +117,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 20, 2026</p>
+      <p class="date">July 21, 2026</p>
     </div>
   </div>
   
@@ -132,8 +132,18 @@ window.Quarto = {
 <p>This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence intervals’ finite-sample behavior using a Monte Carlo simulation.</p>
 <section id="model" class="level1">
 <h1>Model</h1>
-<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote a treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise.</p>
-<p>Let <span class="math inline">\(y_{i,d}\)</span> denote the <strong>potential outcome</strong> for unit <span class="math inline">\(i\)</span> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We condition on the potential outcomes, so probabilities are computed only over the randomized treatment assignments.</p>
+<p>Experimental units are indexed by <span class="math inline">\(i = 1, 2, \ldots\)</span>. Each unit is assigned to either treatment or control. Let <span class="math inline">\(D_i\)</span> denote an observed treatment indicator, with <span class="math inline">\(D_i = 1\)</span> if unit <span class="math inline">\(i\)</span> is assigned to treatment and <span class="math inline">\(D_i = 0\)</span> otherwise. We make the following assumption about the treatment assignment mechanism:</p>
+<div id="asm-random" class="assumption">
+<p><strong>Assumption 1.</strong> <span class="math inline">\(D_1, D_2, \ldots\)</span> are independent Bernoulli random variables with common treatment probability <span class="math inline">\(p\)</span>, and there exists <span class="math inline">\(\underline p&gt;0\)</span> such that <span class="math inline">\(\underline p\leq p\leq1-\underline p\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
+</div>
+<p>Assumption 1 excludes stratified designs that assign a fixed fraction of units to each treatment group. Such designs are less common in online experiments, where treatment groups are typically assigned on the fly. Assumption 1 also requires the treatment assignment probability <span class="math inline">\(p\)</span> to be bounded away from zero and one. In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups. In this case, Assumption 1 holds by taking <span class="math inline">\(\underline{p}\)</span> to be the smallest permitted fraction of buckets that can be allocated to one group.</p>
+<p>In addition to <span class="math inline">\(D_i\)</span>, we observe an outcome of interest <span class="math inline">\(Y_i\)</span> which we model using potential outcomes. Let <span class="math inline">\(y_{i,d}\)</span> denote unit <span class="math inline">\(i\)</span>’s <strong>potential outcome</strong> under treatment <span class="math inline">\(d \in \{0, 1\}\)</span>. We treat the potential outcomes as fixed and assume the observed outcome is generated according to the following rule:</p>
+<div id="asm-sutva" class="assumption">
+<p><strong>Assumption 2.</strong> The observed outcome <span class="math inline">\(Y_i\)</span> satisfies</p>
+<p><span id="eq-observed-outcome"><span class="math display">\[Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}. \tag{1}\]</span></span></p>
+</div>
+<p>Assumption 2 requires unit <span class="math inline">\(i\)</span>’s observed outcome to depend only on unit <span class="math inline">\(i\)</span>’s treatment assignment and not on the treatment assignments of other units. This is a form of the <a href="https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption">stable unit treatment value assumption (SUTVA)</a> and can be restrictive in some settings. For example, if <span class="math inline">\(i\)</span> indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions. In practice, such spillovers can often be handled by randomizing at a coarser level.</p>
+<p>Assumption 2 also implies that treatment assignment is the only source of randomness in the model. By treating the potential outcomes as fixed, we abstract from population sampling issues and conduct inference conditional on the experimental units and their potential outcomes.</p>
 <p>For <span class="math inline">\(d\in\{0,1\}\)</span>, define the potential outcome mean, centered potential outcomes, and potential outcome variance by <span class="math display">\[
 \overline y_{d,n}
 =
@@ -164,10 +174,10 @@ u_{i,1,n}
 \]</span> and define the covariance matrix</p>
 <p><span id="eq-Vn-def"><span class="math display">\[
 \mathbf{V}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i, n} \mathbf{u}_{i, n}'.
-\tag{1}\]</span></span></p>
+\tag{2}\]</span></span></p>
 <p>We are interested in performing inference on a linear combination of the potential outcome means. Define</p>
 <p><span class="math display">\[\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n\]</span></p>
-<p>for a nonzero, non-random coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the <strong>average treatment effect (ATE)</strong>. Although these examples use coefficient vectors that are fixed across <span class="math inline">\(n\)</span>, we allow <span class="math inline">\(\mathbf a_n\)</span> to vary with <span class="math inline">\(n\)</span> to accommodate other applications. For example, the <a href="../lift/#splitting-by-the-control-mean-sign">sign-specific contrasts in the relative treatment effects note</a> have coefficients that depend on <span class="math inline">\(n\)</span>.</p>
+<p>for a nonzero, non-random coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the <strong>average treatment effect (ATE)</strong>. Although these examples use coefficient vectors that are fixed across <span class="math inline">\(n\)</span>, we allow <span class="math inline">\(\mathbf a_n\)</span> to vary with <span class="math inline">\(n\)</span> to accommodate other applications (e.g.~the <a href="../lift/#splitting-by-the-control-mean-sign">sign-specific contrasts in the relative treatment effects note</a>).</p>
 <p>Collect the model primitives into the parameter vector</p>
 <p><span class="math display">\[
 \theta =
@@ -175,14 +185,7 @@ u_{i,1,n}
 p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 \right)
 \]</span></p>
-<p>and let <span class="math inline">\(\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}\)</span> denote the set of parameters under consideration. We impose the following assumptions on the data-generating process:</p>
-<div id="asm-random" class="assumption">
-<p><strong>Assumption 1.</strong> <span class="math inline">\(D_1, D_2, \ldots\)</span> are independent Bernoulli random variables with common treatment probability <span class="math inline">\(p\)</span>, and there exists <span class="math inline">\(\underline p&gt;0\)</span> such that <span class="math inline">\(\underline p\leq p\leq1-\underline p\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>.</p>
-</div>
-<div id="asm-sutva" class="assumption">
-<p><strong>Assumption 2.</strong> The observed outcome <span class="math inline">\(Y_i\)</span> satisfies</p>
-<p><span id="eq-observed-outcome"><span class="math display">\[Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}. \tag{2}\]</span></span></p>
-</div>
+<p>and let <span class="math inline">\(\Theta \subseteq (0, 1) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}\)</span> denote the set of parameters under consideration. We impose the following regularity conditions on <span class="math inline">\(\Theta\)</span>:</p>
 <div id="asm-nondegenerate" class="assumption">
 <p><strong>Assumption 3.</strong> The following regularity conditions hold:</p>
 <p>(i) There exists an index <span class="math inline">\(N\)</span> for which <span class="math inline">\(S_{d,n}^2&gt;0\)</span> for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(d\in\{0,1\}\)</span>, and <span class="math inline">\(\theta\in\Theta\)</span>. In addition, for each <span class="math inline">\(d\in\{0,1\}\)</span>,</p>
@@ -211,40 +214,18 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 = 0.
 \tag{3}\]</span></span></p>
 </div>
-<p>Assumption 1 requires the treatment assignment probability <span class="math inline">\(p\)</span> to be bounded away from zero and one. In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets divided between treatment groups. In this case, Assumption 1 holds by taking <span class="math inline">\(\underline{p}\)</span> to be the smallest permitted fraction of buckets that can be allocated to a group.</p>
-<p>Assumption 2 requires unit <span class="math inline">\(i\)</span>’s observed outcome to depend only on unit <span class="math inline">\(i\)</span>’s treatment assignment and not on the treatment assignments of other units. This is a form of the <a href="https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption">stable unit treatment value assumption (SUTVA)</a> and can be restrictive in some settings. For example, if <span class="math inline">\(i\)</span> indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions. In practice, such spillovers can often be handled by randomizing at a coarser level.</p>
 <p>Assumption 3(i) rules out dominant units by requiring that no single unit accounts for a non-negligible share of potential outcome variation. Assumption 3(ii) ensures the <a href="https://en.wikipedia.org/wiki/Berry%E2%80%93Esseen_theorem">Berry–Esseen bound</a> for the target contrast vanishes uniformly over <span class="math inline">\(\Theta\)</span>. In the <a href="#sec-stationary-ergodic-conditions">Appendix</a>, we show that if candidate potential outcome paths are modeled as realizations of a stationary ergodic process with a finite third moment and positive definite covariance, then for any <span class="math inline">\(\epsilon&gt;0\)</span> there is a set of potential outcome paths occurring with probability at least <span class="math inline">\(1-\epsilon\)</span> such that Assumption 3 holds after restricting <span class="math inline">\(\Theta\)</span> to parameters whose potential outcome paths lie in that set.</p>
-<p>The positivity requirement in Assumption 3(ii) follows if <span class="math inline">\(\mathbf V_n\)</span> is positive definite for all sufficiently large <span class="math inline">\(n\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>. However, requiring positive definiteness is stronger than necessary and excludes natural cases such as <span class="math inline">\(y_{i,1}=y_{i,0}\)</span> for every <span class="math inline">\(i\)</span>. Weaker, target-specific conditions suffice in several cases of interest. For a single treatment group mean, Assumption 3(i) implies Assumption 3(ii) without any further restrictions. In this case, the quadratic form <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> is a positive multiple of <span class="math inline">\(S_{d,n}^2\)</span> and is therefore eventually positive by Assumption 3(i). The scale factors in <span class="math inline">\(\mathbf b_n'\mathbf u_{i,n}\)</span> and <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> also cancel, so the expression in (<a href="#eq-scalar-be-condition" class="quarto-xref">3</a>) reduces to <span class="math display">\[
-\frac{1}{n^{3/2}}
-\sum_{i=1}^n
-\frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
-\]</span> Since <span class="math inline">\(n^{-1}\sum_{i=1}^n u_{i,d,n}^2/S_{d,n}^2=1\)</span>, this expression satisfies <span class="math display">\[
-\begin{aligned}
-\frac{1}{n^{3/2}}
-\sum_{i=1}^n
-\frac{|u_{i,d,n}|^3}{S_{d,n}^3}
-&amp;\leq
-\max_{1\leq i\leq n}
-\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
-\left(
-\frac{1}{n}\sum_{i=1}^n
-\frac{u_{i,d,n}^2}{S_{d,n}^2}
-\right) \\
-&amp;=
-\max_{1\leq i\leq n}
-\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
-\end{aligned}
-\]</span> which converges uniformly to zero by Assumption 3(i). In the <a href="#sec-ate-regularity">Appendix</a>, we show that Assumption 3(i) also implies Assumption 3(ii) for the ATE as long as <span id="eq-ate-correlation-condition"><span class="math display">\[
+<p>The positivity requirement in Assumption 3(ii) follows if <span class="math inline">\(\mathbf V_n\)</span> is positive definite for all sufficiently large <span class="math inline">\(n\)</span> and every <span class="math inline">\(\theta\in\Theta\)</span>. However, requiring positive definiteness is stronger than necessary and excludes natural cases such as <span class="math inline">\(y_{i,1}=y_{i,0}\)</span> for every <span class="math inline">\(i\)</span>. Weaker, target-specific conditions suffice in many cases of interest. In the <a href="#sec-treatment-group-mean-regularity">Appendix</a>, we show that Assumption 3(i) implies Assumption 3(ii) for a single treatment group mean immediately. We also show in the <a href="#sec-ate-regularity">Appendix</a> that the same implication holds for the ATE as long as <span id="eq-ate-correlation-condition"><span class="math display">\[
 \liminf_{n\to\infty} \inf_{\theta\in\Theta} \frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
 {S_{0,n}S_{1,n}} &gt; -1.
 \tag{4}\]</span></span> This condition requires the potential outcome correlation to remain uniformly bounded away from <span class="math inline">\(-1\)</span>.</p>
-<p>We assume access to a finite sample <span class="math inline">\(\{(D_i, Y_i)\}_{i=1}^n\)</span>. For <span class="math inline">\(\theta\in\Theta\)</span>, we let <span class="math inline">\(\mathbb{P}_\theta\)</span> denote probability of the observed sample under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2. We let <span class="math inline">\(\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}\)</span> denote the set of possible probability measures.</p>
+<p>For <span class="math inline">\(\theta\in\Theta\)</span>, we let <span class="math inline">\(\mathbb{P}_\theta\)</span> denote probability of the observed sample <span class="math inline">\(\{(D_i, Y_i)\}_{i=1}^n\)</span> under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2. We let <span class="math inline">\(\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}\)</span> denote the set of possible probability measures.</p>
 </section>
 <section id="inference" class="level1">
 <h1>Inference</h1>
 <section id="uniform-asymptotics" class="level2">
 <h2 class="anchored" data-anchor-id="uniform-asymptotics">Uniform asymptotics</h2>
-<p>Throughout this note, asymptotic statements are made uniformly over the family of distributions <span class="math inline">\(\mathcal{P}\)</span> induced by the parameters in <span class="math inline">\(\Theta\)</span>. Because this framework differs slightly from canonical pointwise asymptotics, we first define the relevant modes of convergence and stochastic-order notation. We also record uniform analogues of a few pointwise asymptotic results and define the notion of uniform asymptotic validity for a sequence of confidence sets.</p>
+<p>Throughout this note, asymptotic statements are made uniformly over the family of distributions <span class="math inline">\(\mathcal{P}\)</span> induced by the parameters in <span class="math inline">\(\Theta\)</span>. We focus on uniform validity because platforms performing online experiment analysis must produce reliable results across a wide range of data-generating processes. Because this framework differs slightly from canonical pointwise asymptotics, we first define the relevant modes of convergence and stochastic-order notation. We also record uniform analogues of a few pointwise asymptotic results and define the notion of uniform asymptotic validity for a sequence of confidence sets.</p>
 <p>We say <span class="math inline">\(X_n\)</span> converges in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(X\)</span>, written as <span class="math inline">\(X_n \stackrel{\mathcal{P}}{\to} X\)</span>, if for every <span class="math inline">\(\epsilon &gt; 0\)</span>, <span class="math display">\[
 \lim_{n \to \infty} \sup_{\theta \in \Theta} \mathbb{P}_\theta(\|X_n - X\| &gt; \epsilon) = 0.
 \]</span></p>
@@ -319,7 +300,12 @@ X_nY_n &amp;\stackrel{\mathcal{P}}{\rightsquigarrow} cX, \\
 <p>Now for <span class="math inline">\(\alpha \in (0, 1)\)</span>, let</p>
 <p><span id="eq-ci-form"><span class="math display">\[C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n) \tag{5}\]</span></span></p>
 <p>denote a confidence set for <span class="math inline">\(\psi_n\)</span> with nominal coverage level <span class="math inline">\(1-\alpha\)</span>. The sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>finite-sample valid</strong> for <span class="math inline">\(\{\psi_n\}_{n \geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if</p>
-<p><span id="eq-fixed-horizon-p"><span class="math display">\[\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right) \geq 1 - \alpha \quad \text{ for all } n \geq 1 \text{ and } \theta \in \Theta. \tag{6}\]</span></span></p>
+<p><span id="eq-fixed-horizon-p"><span class="math display">\[
+\inf_{n\geq1}
+\inf_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\psi_n \in C_{1-\alpha,n}\right)
+\geq 1-\alpha.
+\tag{6}\]</span></span></p>
 <p>This condition is typically too demanding, so we use an asymptotic criterion instead. The sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>asymptotically valid</strong> for <span class="math inline">\(\{\psi_n\}_{n\geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if</p>
 <p><span id="eq-asymptotic-p"><span class="math display">\[
 \liminf_{n \to \infty}
@@ -778,6 +764,30 @@ S_{d,n}
 {(\mathbf{b}_n'\mathbf{V}_n\mathbf{b}_n)^{3/2}}
 = 0.
 \]</span></p>
+</section>
+<section id="sec-treatment-group-mean-regularity" class="level2">
+<h2 class="anchored" data-anchor-id="sec-treatment-group-mean-regularity">Treatment group mean regularity</h2>
+<p>For a single treatment group mean under treatment state <span class="math inline">\(d\in\{0,1\}\)</span>, only coordinate <span class="math inline">\(d\)</span> of <span class="math inline">\(\mathbf b_n\)</span> is nonzero. Consequently, the quadratic form <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> is a positive multiple of <span class="math inline">\(S_{d,n}^2\)</span> and is therefore eventually positive by Assumption 3(i). The scale factors in <span class="math inline">\(\mathbf b_n'\mathbf u_{i,n}\)</span> and <span class="math inline">\(\mathbf b_n'\mathbf V_n\mathbf b_n\)</span> also cancel, so the expression in (<a href="#eq-scalar-be-condition" class="quarto-xref">3</a>) reduces to <span class="math display">\[
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}.
+\]</span> Since <span class="math inline">\(n^{-1}\sum_{i=1}^n u_{i,d,n}^2/S_{d,n}^2=1\)</span>, this expression satisfies <span class="math display">\[
+\begin{aligned}
+\frac{1}{n^{3/2}}
+\sum_{i=1}^n
+\frac{|u_{i,d,n}|^3}{S_{d,n}^3}
+&amp;\leq
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\frac{u_{i,d,n}^2}{S_{d,n}^2}
+\right) \\
+&amp;=
+\max_{1\leq i\leq n}
+\frac{|u_{i,d,n}|}{\sqrt n\,S_{d,n}},
+\end{aligned}
+\]</span> which converges uniformly to zero by Assumption 3(i). Therefore, Assumption 3(ii) follows.</p>
 </section>
 <section id="sec-ate-regularity" class="level2">
 <h2 class="anchored" data-anchor-id="sec-ate-regularity">ATE regularity</h2>

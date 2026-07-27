@@ -56,7 +56,7 @@ $$
 $$ {#eq-percentage-lift}
 
 The absolute value in the denominator ensures $\rho_n$ and $\psi_n^{\mathrm{ATE}}$ share the same sign.
-Our goal in this note is to construct a uniformly asymptotically valid confidence set for $\rho_n$.
+Our goal in this note is to construct an asymptotically valid confidence set for $\rho_n$.
 
 ## Scaled ATE confidence interval
 
@@ -81,7 +81,7 @@ $$
 =
 \frac{\widehat{\sigma}_n^{\mathrm{ATE}}}{\sqrt{n}\,|\widehat{y}_{0,n}|},\\[1ex]
 \widehat{\sigma}_n^{\mathrm{ATE}} = \widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}, \qquad
-\widehat{\sigma}_{0,n}^2 = \frac{\overline{D}_n\,\widehat{S}_{0,n}^2}{1-\overline{D}_n}, \qquad \widehat{\sigma}_{1,n}^2 = \frac{(1-\overline{D}_n)\,\widehat{S}_{1,n}^2}{\overline{D}_n}.
+\widehat{\sigma}_{0,n}^2 = \frac{\overline{D}_n\,\widehat{s}_{00,n}^2}{1-\overline{D}_n}, \qquad \widehat{\sigma}_{1,n}^2 = \frac{(1-\overline{D}_n)\,\widehat{s}_{11,n}^2}{\overline{D}_n}.
 \end{gathered}
 $$
 
@@ -151,7 +151,7 @@ $$
 $$
 
 If we compare (-@eq-scaled-ate-interval) with (-@eq-delta-method-interval), we see that the delta-method standard error accounts for denominator uncertainty by replacing $\widehat{\sigma}_{0,n}$ with $\left|1+\operatorname{sgn}(\widehat{y}_{0,n})\widehat{\rho}_n\right|\widehat{\sigma}_{0,n}$.
-This difference explains the pattern in @fig-scaled-ate-noncoverage: the intervals are similar near $\rho_n=0$, but diverge as the lift moves away from zero. Because the baseline in this simulation is positive, the scaled-ATE interval understates sampling variance for positive lifts and overstates it for negative lifts.
+This difference explains the pattern in @fig-scaled-ate-noncoverage: the intervals are similar near $\rho_n=0$, but diverge as the lift moves away from zero.
 
 @fig-delta-studentized repeats the simulation in @fig-scaled-ate-noncoverage but with the delta-method standard error used in place of the scaled-ATE standard error.
 The studentized statistic is close to $N(0,1)$ at both lift values, and coverage remains near the nominal level across all values of $\rho_n$.
@@ -201,36 +201,17 @@ $$
 \psi_n^- = \overline{y}_{1,n} - (1-\rho_n^-)\,\overline{y}_{0,n},
 $$
 with sample analogues $\widehat{\psi}_n^+$ and $\widehat{\psi}_n^-$.
-Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment-group means, we can apply the results from the treatment group means note after verifying the regularity conditions for the target-specific coefficient vector
+Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment-group means, we can apply the results from the treatment group means note. The associated coefficient vector is
 $$
 \mathbf a_n^s
 =
 (\rho_n^s+m^s,-m^s)',
 $$
 where $s\in\{+,-\}$, $m^+=1$, and $m^-=-1$.
-Let
-$$
-\gamma_n
-=
-\frac{n^{-1}\sum_{i=1}^n u_{i,0,n}u_{i,1,n}}
-{S_{0,n}S_{1,n}},
-$$
-denote the correlation between the control and treatment potential-outcome sequences.
-A sufficient condition for Assumption 3(ii) is that Assumption 3(i) holds and
-$$
-\liminf_{n\to\infty}\inf_{\theta\in\Theta}
-\left[
-\operatorname{sgn}\left(
-\frac{\overline y_{1,n}}{\overline y_{0,n}}
-\right)\gamma_n
-\right]
-> -1.
-$$ {#eq-sign-specific-correlation-condition}
-When the two potential-outcome means have the same sign, (-@eq-sign-specific-correlation-condition) reduces to the ATE condition that $\gamma_n$ remain uniformly bounded away from $-1$.
-When the means have opposite signs, it instead requires $\gamma_n$ to remain uniformly bounded away from $1$.
+The second coordinate of $\mathbf a_n^s$ is nonzero, so this coefficient vector is nonzero for every $n$ and both signs $s$.
 
 Fix $\alpha\in(0,1)$, and let $C^s_{1-\alpha,n}$ denote the confidence set for $\psi_n^s$ defined in the treatment group means note.
-Under Assumption 3(i) and (-@eq-sign-specific-correlation-condition), we have
+Under Assumption 3, we have
 $$
 \liminf_{n\to \infty}
 \inf_{\theta \in \Theta}
@@ -402,7 +383,7 @@ $$
 \frac{2\left|T_{0,n}\right|/z_{1-\alpha/2}}
 {\left(\left|T_{0,n}\right|/z_{1-\alpha/2}\right)^2-1}
 $$
-where $\lambda$ denotes Lebesgue measure. Therefore, when $|T_{0,n}|$ is large, the right-hand side is close to zero and the two sets are approximately equal.
+where $\lambda$ denotes Lebesgue measure and $\triangle$ denotes the symmetric difference between sets. When $|T_{0,n}|$ is large, the right-hand side is close to zero and the two sets are approximately equal.
 
 ## Confidence interval for $\rho_n$
 

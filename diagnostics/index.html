@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-21">
+<meta name="dcterms.date" content="2026-07-27">
 
 <title>Regularity Diagnostics</title>
 <style>
@@ -112,7 +112,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 21, 2026</p>
+      <p class="date">July 27, 2026</p>
     </div>
   </div>
   
@@ -124,15 +124,15 @@ window.Quarto = {
 </header>
 
 
-<p>In our note on <a href="../treatment-group-means/">treatment group means</a>, we constructed confidence intervals that are uniformly valid under a set of regularity conditions. Here, we develop a finite-sample diagnostic for assessing whether those conditions are plausible.</p>
+<p>In our note on <a href="../treatment-group-means/">treatment group means</a>, we constructed confidence intervals that are uniformly valid under a regularity condition that rules out dominant units. Here, we develop a finite-sample diagnostic for assessing whether that condition is plausible.</p>
 <section id="variance-share-diagnostic" class="level1">
 <h1>Variance-share diagnostic</h1>
 <p>We use the notation from the treatment group means note. For <span class="math inline">\(d\in\{0,1\}\)</span>, define <span class="math display">\[
 \kappa_{d,n}
 =
-\frac{1}{n} \frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\,S_{d,n}^2}.
+\frac{1}{n} \frac{\max_{1\leq i\leq n}u_{i,d,n}^2}{\,s_{dd,n}^2}.
 \]</span></p>
-<p>Since <span class="math inline">\(S_{d,n}^2=n^{-1}\sum_{i=1}^n u_{i,d,n}^2\)</span>, we can equivalently write</p>
+<p>Since <span class="math inline">\(s_{dd,n}^2=n^{-1}\sum_{i=1}^n u_{i,d,n}^2\)</span>, we can equivalently write</p>
 <p><span class="math display">\[
 \kappa_{d,n}
 =
@@ -140,30 +140,33 @@ window.Quarto = {
 \]</span></p>
 <p>Thus, <span class="math inline">\(\kappa_{d,n}\)</span> is the largest share of variation in the sequence of potential outcomes under treatment <span class="math inline">\(d\)</span> attributable to any single unit. Let <span class="math display">\[
 \kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
-\]</span> <a href="../treatment-group-means/#asm-nondegenerate">Assumption 3(i)</a> is equivalent to requiring</p>
+\]</span> The negligibility condition in <a href="../treatment-group-means/#asm-nondegenerate">Assumption 3</a> is equivalent to requiring</p>
 <p><span class="math display">\[
 \lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0.
 \]</span></p>
-<p>In the <a href="../treatment-group-means/#sec-treatment-group-mean-regularity">appendix to the treatment group means note</a>, we show that Assumption 3(i) implies Assumption 3(ii) for a treatment-group mean. We also establish the same implication provided that the correlation between the two potential-outcome sequences remains uniformly bounded away from <span class="math inline">\(-1\)</span>. Thus, if <span class="math inline">\(\kappa_n\)</span> is large in a finite sample, the asymptotic approximations that rely on Assumption 3 may be unreliable.</p>
-<p>Because only one potential outcome is observed for each unit, <span class="math inline">\(\kappa_n\)</span> cannot be computed directly. A feasible sample analogue replaces the unobserved potential-outcome deviations with observed within-arm residuals. For <span class="math inline">\(d\in\{0,1\}\)</span>, let <span class="math display">\[
-n_d=n\overline{D}_{d,n},
+<p>Thus, if <span class="math inline">\(\kappa_n\)</span> is large in a finite sample, the asymptotic approximations that rely on Assumption 3 may be unreliable.</p>
+<p>Because only one potential outcome is observed for each unit, <span class="math inline">\(\kappa_n\)</span> cannot be computed directly. A feasible sample analogue uses observed within-arm residuals in place of the unobserved potential-outcome deviations. For <span class="math inline">\(d\in\{0,1\}\)</span>, let <span class="math display">\[
+n_d=n\overline{D}_{d,n}
 \]</span> denote the number of units assigned to treatment <span class="math inline">\(d\)</span>. Define <span id="eq-dominant-unit-diagnostic"><span class="math display">\[
 \widehat\kappa_{d,n}
 =
 \frac{1}{n_d}\frac{\max_{1\leq i\leq n}
-|Y_i-\widehat{y}_{d,n}|^2 D_{i,d}}{\widehat{S}_{d,n}^2},
+|Y_i-\widehat{y}_{d,n}|^2 D_{i,d}}{\widehat{s}_{dd,n}^2},
 \tag{1}\]</span></span> and let <span class="math display">\[
 \widehat\kappa_n
 =
 \max\{\widehat\kappa_{0,n},\widehat\kappa_{1,n}\}.
-\]</span> This statistic is easy to compute and retains the intuitive variance-share interpretation of <span class="math inline">\(\kappa_n\)</span>. A diagnostic warning can be triggered when <span class="math inline">\(\widehat\kappa_n\)</span> exceeds a maximum tolerance <span class="math inline">\(\overline\kappa\)</span>.</p>
+\]</span> This statistic is easy to compute and has the same intuitive variance-share interpretation as <span class="math inline">\(\kappa_n\)</span>. A warning can be triggered when <span class="math inline">\(\widehat\kappa_n\)</span> exceeds a maximum tolerance <span class="math inline">\(\overline\kappa\)</span>.</p>
+</section>
+<section id="choosing-the-maximum-tolerance" class="level1">
+<h1>Choosing the maximum tolerance</h1>
 <p>To motivate a choice of <span class="math inline">\(\overline\kappa\)</span>, suppose the strong null holds:</p>
 <p><span id="eq-strong-null"><span class="math display">\[
 y_{i,1}=y_{i,0}=y_i
 \qquad
-    \text{for every } i.
+\mathrm{for\ every}\ i.
 \tag{2}\]</span></span></p>
-<p>This is also the sharp null used to construct exact <span class="math inline">\(p\)</span>-values in Fisher randomization inference (see <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/fishers-exact-pvalues-for-completely-randomized-experiments/23AF990D2EF9C90D0A424D555FACE578">Imbens and Rubin, 2015, Chapter 5</a>). Define unit <span class="math inline">\(i\)</span>’s share of the total outcome variation as</p>
+<p>Define unit <span class="math inline">\(i\)</span>’s share of the total outcome variation as</p>
 <p><span class="math display">\[
 q_{i,n}
 =
@@ -172,18 +175,18 @@ q_{i,n}
 \qquad
 \overline y=\frac{1}{n}\sum_{i=1}^n y_i.
 \]</span></p>
-<p>Under the strong null, the quantity controlled by Assumption 3(ii) for the ATE is</p>
+<p>Also define the ratio</p>
 <p><span class="math display">\[
 \begin{aligned}
 \lambda_n
 &amp;=
 \frac{1}{n^{3/2}}
-\frac{\sum_{i=1}^n|y_i-\overline y|^3}{S_n^3} \\
+\frac{\sum_{i=1}^n|y_i-\overline y|^3}{s_n^3} \\
 &amp;=
 \sum_{i=1}^n q_{i,n}^{3/2},
 \end{aligned}
 \]</span></p>
-<p>where <span class="math inline">\(S_n^2=n^{-1}\sum_{i=1}^n(y_i-\overline y)^2\)</span>. Because <span class="math inline">\(\max_i q_{i,n}=\kappa_n\)</span>, <span class="math inline">\(\sum_i q_{i,n}=1\)</span>, and <span class="math inline">\(q_{i,n}\leq\kappa_n\)</span> for every unit, we have</p>
+<p>where <span class="math inline">\(s_n^2=n^{-1}\sum_{i=1}^n(y_i-\overline y)^2\)</span>. Because <span class="math inline">\(\max_i q_{i,n}=\kappa_n\)</span>, <span class="math inline">\(\sum_i q_{i,n}=1\)</span>, and <span class="math inline">\(q_{i,n}\leq\kappa_n\)</span> for every unit, we have</p>
 <p><span id="eq-lambda-kappa-bound"><span class="math display">\[
 \kappa_n^{3/2}
 \leq
@@ -193,16 +196,54 @@ q_{i,n}
 =
 \sqrt{\kappa_n}.
 \tag{3}\]</span></span></p>
-<p>The <a href="../treatment-group-means/#eq-dim-clt">Berry–Esseen bound</a> derived in the treatment group means note bounds the Kolmogorov distance between the standardized linearized ATE estimator and <span class="math inline">\(N(0,1)\)</span> by</p>
+<p>Now let <span class="math inline">\(\Phi\)</span> denote the standard normal distribution function. Define the ATE, its estimator, and its conservative standard-error scale by</p>
+<p><span class="math display">\[
+\psi_n^\mathrm{ATE}
+=
+\overline y_{1,n}-\overline y_{0,n},
+\qquad
+\widehat\psi_n^\mathrm{ATE}
+=
+\widehat y_{1,n}-\widehat y_{0,n},
+\qquad
+\widetilde\sigma_n^\mathrm{ATE}
+=
+\frac{s_n}{\sqrt{p(1-p)}}.
+\]</span></p>
+<p>Also define the linearization</p>
+<p><span class="math display">\[
+T_n
+=
+\frac{
+\sum_{i=1}^n(D_i-p)(y_i-\overline y)
+}{
+\sqrt{n p(1-p)}\,s_n
+}.
+\]</span></p>
+<p>Under the strong null, we can show</p>
+<p><span class="math display">\[
+\sqrt n\frac{\widehat\psi_n^\mathrm{ATE}-\psi_n^\mathrm{ATE}}{\widetilde\sigma_n^\mathrm{ATE}}
+=
+T_n+o_{\mathcal P}(1).
+\]</span></p>
+<p>The Berry–Esseen theorem gives</p>
 <p><span id="eq-kappa-be-bound"><span class="math display">\[
+\begin{aligned}
+\sup_{t\in\mathbb R}
+\left|
+\mathbb P_\theta(T_n\leq t)
+-\Phi(t)
+\right|
+&amp;\leq
 C
 \frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
-\lambda_n
-\leq
+\lambda_n \\
+&amp;\leq
 C
 \frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
 \sqrt{\kappa_n},
-\tag{4}\]</span></span> where <span class="math inline">\(C\)</span> is a universal constant. Therefore, to ensure that this bound is no greater than <span class="math inline">\(\overline\delta\)</span> whenever <span class="math inline">\(\kappa_n\leq\overline\kappa\)</span>, it suffices to set</p>
+\end{aligned}
+\tag{4}\]</span></span> where <span class="math inline">\(C\)</span> is a universal constant. Thus, as a heuristic for assessing the normal approximation to the standardized ATE estimator under the strong null, we can choose <span class="math inline">\(\overline\kappa\)</span> so that the Berry–Esseen bound in (<a href="#eq-kappa-be-bound" class="quarto-xref">4</a>) is no greater than a desired tolerance <span class="math inline">\(\overline\delta\)</span> whenever <span class="math inline">\(\kappa_n\leq\overline\kappa\)</span>. It suffices to set</p>
 <p><span id="eq-kappa-tolerance"><span class="math display">\[
 \overline\kappa
 =
@@ -214,7 +255,7 @@ C
 </section>
 <section id="simulation" class="level1">
 <h1>Simulation</h1>
-<p>To illustrate the diagnostic in finite samples, we examine the ATE estimator under two finite populations of potential outcomes. In both cases, the strong null holds, <span class="math inline">\(n=1{,}000\)</span>, and <span class="math inline">\(p=0.5\)</span>. Using <span class="math inline">\(\overline\delta=0.10\)</span> and the upper bound <span class="math inline">\(C\leq0.5583\)</span> from <a href="https://www.mathnet.ru/eng/ia252">Shevtsova (2013)</a>, (<a href="#eq-kappa-tolerance" class="quarto-xref">5</a>) gives the calibrated tolerance</p>
+<p>To illustrate the diagnostic’s finite-sample behavior, we simulate the sampling distribution of the ATE estimator under two different populations of potential outcomes. In both cases, the strong null holds, <span class="math inline">\(n=1{,}000\)</span>, and <span class="math inline">\(p=0.5\)</span>. Using <span class="math inline">\(\overline\delta=0.10\)</span> and the upper bound <span class="math inline">\(C\leq0.5583\)</span> from <a href="https://www.mathnet.ru/eng/ia252">Shevtsova (2013)</a>, (<a href="#eq-kappa-tolerance" class="quarto-xref">5</a>) gives the calibrated tolerance</p>
 <p><span id="eq-calibrated-kappa-tolerance"><span class="math display">\[
 \overline\kappa
 =
@@ -223,7 +264,7 @@ C
 \tag{6}\]</span></span></p>
 <section id="well-behaved-outcomes" class="level2">
 <h2 class="anchored" data-anchor-id="well-behaved-outcomes">Well-behaved potential outcomes</h2>
-<p>We generate the first population as <span class="math inline">\(1{,}000\)</span> draws from a log-normal distribution with <span class="math inline">\(\sigma=0.25\)</span>. <a href="#fig-log-normal-population" class="quarto-xref">Figure&nbsp;1</a> shows a histogram of the potential outcomes:</p>
+<p>We generate the first population by taking <span class="math inline">\(1{,}000\)</span> draws from a log-normal distribution with <span class="math inline">\(\sigma=0.25\)</span>. <a href="#fig-log-normal-population" class="quarto-xref">Figure&nbsp;1</a> shows a histogram of the potential outcomes:</p>
 <div id="fig-log-normal-population" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-log-normal-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -234,7 +275,7 @@ Figure&nbsp;1: Potential outcomes in the log-normal case.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-log-normal-sampling-distribution" class="quarto-xref">Figure&nbsp;2</a> shows the density (upper panel) and CDF (lower panel) of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span>. Both closely match their standard-normal counterparts, even though the potential outcomes are right-skewed. For this population, <span class="math inline">\(\kappa_n=0.030\)</span>, which is below the calibrated tolerance in (<a href="#eq-calibrated-kappa-tolerance" class="quarto-xref">6</a>).</p>
+<p><a href="#fig-log-normal-sampling-distribution" class="quarto-xref">Figure&nbsp;2</a> shows the density (upper panel) and CDF (lower panel) of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span>. Both closely match their standard normal counterparts, even though the potential outcomes are right-skewed. For this population, <span class="math inline">\(\kappa_n=0.030\)</span>, which is below the calibrated tolerance in (<a href="#eq-calibrated-kappa-tolerance" class="quarto-xref">6</a>).</p>
 <div id="fig-log-normal-sampling-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-log-normal-sampling-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -259,7 +300,7 @@ Figure&nbsp;3: Potential outcomes in the outlier case.
 </figcaption>
 </figure>
 </div>
-<p>For this population, <span class="math inline">\(\kappa_n=0.307\)</span>, which is nearly an order of magnitude above the calibrated tolerance in (<a href="#eq-calibrated-kappa-tolerance" class="quarto-xref">6</a>). <a href="#fig-outlier-sampling-distribution" class="quarto-xref">Figure&nbsp;4</a> shows the density (upper panel) and CDF (lower panel) of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span>. The density is multimodal, while the empirical CDF departs visibly from <span class="math inline">\(\Phi\)</span>. The modes reflect the number of outliers assigned to treatment. Thus, the standard normal is a poor approximation in this case.</p>
+<p>For this population, <span class="math inline">\(\kappa_n=0.307\)</span>, which is nearly an order of magnitude above the calibrated tolerance in (<a href="#eq-calibrated-kappa-tolerance" class="quarto-xref">6</a>). <a href="#fig-outlier-sampling-distribution" class="quarto-xref">Figure&nbsp;4</a> shows the density (upper panel) and CDF (lower panel) of <span class="math inline">\(\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n\)</span>. The density is multimodal, while the empirical CDF departs visibly from <span class="math inline">\(\Phi\)</span>. The modes reflect the number of outliers assigned to treatment. The standard normal is clearly a poor approximation in this case.</p>
 <div id="fig-outlier-sampling-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-outlier-sampling-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">

@@ -62,7 +62,7 @@ format:
 ---
 
 ::: {.intro}
-These notes develop tools for asymptotic inference in randomized experiments.
+These notes develop asymptotic inference tools for online experimentation platforms.
 We model the data using a fixed-potential-outcomes framework with a small set of transparent assumptions.
 The procedures we derive have coverage guarantees that hold uniformly over the parameter space. As a result, they can support reliable inference across a wide range of potential outcome configurations.
 

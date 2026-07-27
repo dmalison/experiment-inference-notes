@@ -25,7 +25,6 @@ format:
             text-align: center;
           }
           .intro {
-            max-width: 40rem;
             margin: 1.75rem auto 0;
             color: #333;
           }

@@ -23,7 +23,7 @@ TREATMENT_PROBABILITY = 0.5
 N_EXPERIMENTS = 10
 SEED = 8
 CI_LEVEL = 0.95
-ANIMATION_DPI = 60
+ANIMATION_DPI = 48
 
 # Shared x-axis range and ticks across the homogeneous/heterogeneous figures
 # so the two animations are visually comparable.

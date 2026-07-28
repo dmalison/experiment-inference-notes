@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-27">
+<meta name="dcterms.date" content="2026-07-28">
 
 <title>Uniform Inference on Treatment Group Means</title>
 <style>
@@ -117,7 +117,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2026</p>
+      <p class="date">July 28, 2026</p>
     </div>
   </div>
   
@@ -169,7 +169,7 @@ u_{i,1,n}
 \end{pmatrix},
 \]</span> and define the covariance matrix</p>
 <p><span id="eq-Sn-def"><span class="math display">\[
-\mathbf{S}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i, n} \mathbf{u}_{i, n}' = \begin{pmatrix}
+\mathbf{S}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i,n} \mathbf{u}_{i,n}' = \begin{pmatrix}
 s_{00,n}^2 &amp; s_{01,n} \\
 s_{01,n} &amp; s_{11,n}^2
 \end{pmatrix}.
@@ -199,7 +199,7 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 <h1>Inference</h1>
 <section id="uniform-asymptotics" class="level2">
 <h2 class="anchored" data-anchor-id="uniform-asymptotics">Uniform asymptotics</h2>
-<p>Throughout this note, asymptotic statements are made uniformly over the family of distributions <span class="math inline">\(\mathcal{P}\)</span> induced by the parameters in <span class="math inline">\(\Theta\)</span>. We use uniform asymptotics because experiment platforms must produce reliable results across a wide range of parameter configurations.</p>
+<p>Throughout this note, asymptotic statements are made uniformly over the family of distributions <span class="math inline">\(\mathcal{P}\)</span> induced by the parameters in <span class="math inline">\(\Theta\)</span>. We use uniform asymptotics to ensure the inferential guarantees remain valid across the wide range of parameter configurations found in online experiments.</p>
 <p>We first define notation for uniform convergence in probability. We say <span class="math inline">\(X_n \in \mathbb{R}^k\)</span> converges in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(X \in \mathbb{R}^k\)</span>, written as <span class="math inline">\(X_n \stackrel{\mathcal{P}}{\to} X\)</span>, if for every <span class="math inline">\(\epsilon &gt; 0\)</span>, <span class="math display">\[
 \lim_{n \to \infty} \sup_{\theta \in \Theta} \mathbb{P}_\theta(\|X_n - X\| &gt; \epsilon) = 0.
 \]</span> For a positive deterministic sequence <span class="math inline">\(r_n\)</span>, we write <span class="math inline">\(X_n=o_{\mathcal{P}}(r_n)\)</span> if <span class="math inline">\(X_n/r_n \stackrel{\mathcal{P}}{\to} 0\)</span>. We write <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n)\)</span> if, for every <span class="math inline">\(\epsilon &gt; 0\)</span>, there exist finite constants <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that <span class="math display">\[
@@ -226,33 +226,19 @@ X_n=o_{\mathcal{P}}(1).
 \end{aligned}
 \]</span></p>
 </div>
-<p>The next proposition is a uniform analogue of the <a href="https://en.wikipedia.org/wiki/Continuous_mapping_theorem">continuous mapping theorem</a>:</p>
-<div id="prp-continuous-mapping" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 2</strong></span> Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and there is a compact set <span class="math inline">\(K\subseteq\mathbb R^k\)</span> such that <span class="math inline">\(\mathbb{P}_\theta(X\in K)=1\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>. If <span class="math inline">\(g:\mathbb R^k\to\mathbb R^m\)</span> is continuous on an open set containing <span class="math inline">\(K\)</span>, then</p>
-<p><span class="math display">\[
-g(X_n)\stackrel{\mathcal{P}}{\to}g(X).
-\]</span></p>
-</div>
-<p>The next result records a useful joint-convergence rule:</p>
-<div id="prp-joint-convergence" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 3</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>, then</p>
-<p><span class="math display">\[
-(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
-\]</span></p>
-</div>
-<p>Now define the class of functions <span class="math display">\[
-\mathcal G
+<p>For each positive integer <span class="math inline">\(q\)</span>, define the class of functions <span class="math display">\[
+\mathcal G_q
 =
 \left\{
-g:\mathbb R^k\to\mathbb R:
+g:\mathbb R^q\to\mathbb R:
 |g(x)|\leq1,
 |g(x)-g(y)|\leq\|x-y\|
-\text{ for all }x,y\in\mathbb R^k
+    \text{ for all }x,y\in\mathbb R^q
 \right\}.
-\]</span> We say <span class="math inline">\(X_n\)</span> is asymptotically equivalent in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(Z_n\)</span>, written <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>, if <span class="math display">\[
+\]</span> When the dimension is clear, we write <span class="math inline">\(\mathcal G\)</span> for <span class="math inline">\(\mathcal G_q\)</span>. For <span class="math inline">\(X_n,Z_n\in\mathbb R^q\)</span>, we say <span class="math inline">\(X_n\)</span> is asymptotically equivalent in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(Z_n\)</span>, written <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>, if <span class="math display">\[
 \lim_{n\to\infty}
 \sup_{\theta\in\Theta}
-\sup_{g\in\mathcal G}
+\sup_{g\in\mathcal G_q}
 \left|
 \mathbb{E}_\theta[g(X_n)]
 -
@@ -260,15 +246,9 @@ g:\mathbb R^k\to\mathbb R:
 \right|
 =0.
 \]</span></p>
-<p>The next proposition shows that asymptotic equivalence is preserved under uniformly negligible perturbations:</p>
-<div id="prp-asymptotic-equivalence-perturbation" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 4</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> and <span class="math inline">\(Y_n-X_n=o_{\mathcal{P}}(1)\)</span>, then <span class="math display">\[
-Y_n\stackrel{\mathcal{P}}{\approx}Z_n.
-\]</span></p>
-</div>
 <p>The next proposition connects asymptotic equivalence and convergence to a fixed distribution:</p>
 <div id="prp-asymptotic-equivalence-cdf-limit" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 5</strong></span> For any sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> and any fixed distribution function <span class="math inline">\(F\)</span>, the following statements hold:</p>
+<p><span class="theorem-title"><strong>Proposition 2</strong></span> For any sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> and any fixed distribution function <span class="math inline">\(F\)</span>, the following statements hold:</p>
 <p>(i) If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> and <span class="math display">\[\lim_{k\to\infty}
 \left|
 \mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
@@ -306,22 +286,49 @@ Y_n\stackrel{\mathcal{P}}{\approx}Z_n.
 \right|
 =0.
 \]</span></p>
-</div>
-<p>If <span class="math inline">\(Z_n\)</span> has the same distribution function <span class="math inline">\(F\)</span> for every <span class="math inline">\(n\)</span> and <span class="math inline">\(\theta\)</span>, Proposition 5 implies that <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> if and only if, for every continuity point <span class="math inline">\(\mathbf t\in\mathbb R^k\)</span> of <span class="math inline">\(F\)</span>, <span class="math display">\[
+<p>(iii) Suppose <span class="math inline">\(Z_n\)</span> has distribution function <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb P_\theta\)</span> for every <span class="math inline">\(n\)</span> and <span class="math inline">\(\theta\)</span>. Then <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> if and only if, for every continuity point <span class="math inline">\(\mathbf t\in\mathbb R^q\)</span> of <span class="math inline">\(F\)</span>, <span class="math display">\[
 \lim_{n\to\infty}
 \sup_{\theta\in\Theta}
 \left|
 \mathbb{P}_\theta(X_n\leq\mathbf t)-F(\mathbf t)
 \right|
 =0.
-\]</span> Thus for a fixed target distribution, asymptotic equivalence is equivalent to uniform weak convergence to that distribution.</p>
+\]</span></p>
+</div>
+<p>Asymptotic equivalence therefore reduces to uniform weak convergence when the target distribution is fixed, but also accommodates comparisons between sequences that may not converge.</p>
+<p>The next proposition shows that asymptotic equivalence is preserved under uniformly negligible perturbations:</p>
+<div id="prp-asymptotic-equivalence-perturbation" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> and <span class="math inline">\(Y_n-X_n=o_{\mathcal{P}}(1)\)</span>, then <span class="math display">\[
+Y_n\stackrel{\mathcal{P}}{\approx}Z_n.
+\]</span></p>
+</div>
+<p>The next proposition records continuous mapping results:</p>
+<div id="prp-continuous-mapping" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4</strong></span> (i) Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and there is a compact set <span class="math inline">\(K\subseteq\mathbb R^k\)</span> such that <span class="math inline">\(\mathbb{P}_\theta(X\in K)=1\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>. If <span class="math inline">\(h:\mathbb R^k\to\mathbb R^m\)</span> is continuous on an open set containing <span class="math inline">\(K\)</span>, then</p>
+<p><span class="math display">\[
+h(X_n)\stackrel{\mathcal{P}}{\to}h(X).
+\]</span></p>
+<p>(ii) Suppose <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span> and <span class="math inline">\(Z_n=O_{\mathcal P}(1)\)</span>. If <span class="math inline">\(h:\mathbb R^k\to\mathbb R^m\)</span> is continuous, then</p>
+<p><span class="math display">\[
+h(X_n)
+\stackrel{\mathcal P}{\approx}
+h(Z_n).
+\]</span></p>
+</div>
+<p>The final result records a useful joint-convergence rule:</p>
+<div id="prp-joint-convergence" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 5</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>, then</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+\]</span></p>
+</div>
 <p>Proofs of these propositions can be found in the <a href="#sec-proposition-proofs">Appendix</a>.</p>
 </section>
 <section id="target" class="level2">
 <h2 class="anchored" data-anchor-id="target">Target</h2>
 <p>In this note, we are interested in performing inference on a linear combination of the potential outcome means. Define</p>
 <p><span class="math display">\[\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n\]</span></p>
-<p>for a nonzero, nonrandom coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the average treatment effect (ATE). Although these coefficient vectors are fixed, we allow the coefficients to vary with <span class="math inline">\(n\)</span> to accommodate other applications (see the <a href="../lift/#splitting-by-the-control-mean-sign">sign-specific contrasts in the relative treatment effects note</a> for an example).</p>
+<p>for a nonzero, nonrandom coefficient vector <span class="math inline">\(\mathbf{a}_n = (a_{0,n}, a_{1,n})'\)</span>. Setting <span class="math inline">\(\mathbf{a}_n = (1, 0)'\)</span> or <span class="math inline">\(\mathbf{a}_n = (0, 1)'\)</span> yields the control or treatment group mean, respectively, while setting <span class="math inline">\(\mathbf{a}_n = (-1, 1)'\)</span> yields the average treatment effect (ATE). Although each coefficient vector is nonrandom, we allow the coefficients to vary with <span class="math inline">\(n\)</span> to accommodate other applications (see the <a href="../lift/#splitting-by-the-control-mean-sign">sign-specific contrasts in the relative treatment effects note</a> for an example).</p>
 <p>For <span class="math inline">\(\alpha \in (0, 1)\)</span>, let</p>
 <p><span id="eq-ci-form"><span class="math display">\[C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n) \tag{3}\]</span></span></p>
 <p>denote a confidence set for <span class="math inline">\(\psi_n\)</span> with nominal coverage level <span class="math inline">\(1-\alpha\)</span>. The sequence <span class="math inline">\(\{C_{1-\alpha,n}\}_{n \geq 1}\)</span> is <strong>asymptotically valid</strong> for <span class="math inline">\(\{\psi_n\}_{n\geq 1}\)</span> over <span class="math inline">\(\Theta\)</span> if</p>
@@ -451,11 +458,11 @@ a_{1,n}^2\frac{1-p}{p}s_{11,n}^2
 \omega_n^2
 =
 \frac{\sigma_n^2}{\widetilde{\sigma}_n^2}
-\tag{14}\]</span></span> and let <span class="math inline">\(Z_n\)</span> have distribution <span class="math inline">\(N(0,\omega_n^2)\)</span>. In the <a href="#sec-scalar-normal-approximation">Appendix</a>, we use the Lyapunov central limit theorem and Proposition 5 to show <span id="eq-scalar-normal-approximation"><span class="math display">\[
+\tag{14}\]</span></span> and let <span class="math inline">\(Z_n\)</span> have distribution <span class="math inline">\(N(0,\omega_n^2)\)</span>. In the <a href="#sec-scalar-normal-approximation">Appendix</a>, we use the Lyapunov central limit theorem and Proposition 2 to show <span id="eq-scalar-normal-approximation"><span class="math display">\[
 \frac{\sum_{i=1}^n X_{i,n}}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\approx}
 Z_n.
-\tag{15}\]</span></span> Proposition 4 therefore implies</p>
+\tag{15}\]</span></span> Proposition 3 therefore implies</p>
 <p><span id="eq-feasible-normal-approximation"><span class="math display">\[
 \sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
 \stackrel{\mathcal{P}}{\approx}
@@ -499,7 +506,7 @@ C_{1-\alpha,n}
 -\mathbf 1\{t&gt;0\}
 \right|
 =0
-\]</span> for every <span class="math inline">\(t\neq0\)</span>. Part (i) of Proposition 5 and (<a href="#eq-feasible-normal-approximation" class="quarto-xref">16</a>) therefore imply <span id="eq-studentized-subsequence-cdf-convergence"><span class="math display">\[
+\]</span> for every <span class="math inline">\(t\neq0\)</span>. Part (i) of Proposition 2 and (<a href="#eq-feasible-normal-approximation" class="quarto-xref">16</a>) therefore imply <span id="eq-studentized-subsequence-cdf-convergence"><span class="math display">\[
 \lim_{j\to\infty}
 \mathbb P_{\theta_{k_j}}\left(
 \sqrt{n_{k_j}}
@@ -836,50 +843,119 @@ E'\cap
 <p><strong>Vanishing rate.</strong> Suppose <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n)\)</span> with <span class="math inline">\(r_n\to 0\)</span>, and fix <span class="math inline">\(\delta&gt;0\)</span> and <span class="math inline">\(\epsilon&gt;0\)</span>. Choose <span class="math inline">\(M\)</span> and <span class="math inline">\(N_0\)</span> with <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq N_0\)</span>. Since <span class="math inline">\(r_n\to 0\)</span>, there is <span class="math inline">\(N_1\)</span> with <span class="math inline">\(Mr_n&lt;\delta\)</span> for <span class="math inline">\(n\geq N_1\)</span>. Therefore <span class="math inline">\(\{\|X_n\|&gt;\delta\}\subseteq A_n^{M}\)</span> and <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_n\|&gt;\delta)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq\max(N_0,N_1)\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(X_n=o_{\mathcal{P}}(1)\)</span>.</p>
 </section>
 <section id="proposition-2" class="level3">
-<h3 class="anchored" data-anchor-id="proposition-2"><a href="#prp-continuous-mapping">Proposition 2</a></h3>
-<p>Fix <span class="math inline">\(\epsilon&gt;0\)</span>. By compactness of <span class="math inline">\(K\)</span> and continuity of <span class="math inline">\(g\)</span> on a neighborhood of <span class="math inline">\(K\)</span>, there exists <span class="math inline">\(\delta&gt;0\)</span> such that</p>
-<p><span class="math display">\[
-z\in\mathbb R^k,\ x\in K,\ \|z-x\|&lt;\delta
-\quad\Rightarrow\quad
-\|g(z)-g(x)\|&lt;\epsilon.
+<h3 class="anchored" data-anchor-id="proposition-2"><a href="#prp-asymptotic-equivalence-cdf-limit">Proposition 2</a></h3>
+<p>(i) The premise says that, under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>, <span class="math inline">\(Z_{n_k}\)</span> converges weakly to the fixed distribution with distribution function <span class="math inline">\(F\)</span>. By the bounded-Lipschitz characterization of weak convergence, this implies <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|
+=0.
+\]</span> Moreover, for every <span class="math inline">\(k\)</span>, the triangle inequality gives <span class="math display">\[
+\begin{aligned}
+&amp;\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right| \\
+&amp;\qquad\leq
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+\\
+&amp;\qquad\quad+
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|.
+\end{aligned}
+\]</span> The first term on the right tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>, and the second tends to zero by the preceding display. Therefore <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|
+=0.
+\]</span> Thus <span class="math inline">\(X_{n_k}\)</span> converges weakly to <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>. The claimed convergence of distribution functions at every continuity point of <span class="math inline">\(F\)</span> follows from the portmanteau theorem.</p>
+<p>(ii) The two premises imply that, under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>, both <span class="math inline">\(X_{n_k}\)</span> and <span class="math inline">\(Z_{n_k}\)</span> converge weakly to the fixed distribution with distribution function <span class="math inline">\(F\)</span>. The bounded-Lipschitz characterization of weak convergence therefore gives <span class="math display">\[
+\begin{aligned}
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|&amp;=0, \\
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|&amp;=0.
+\end{aligned}
+\]</span> By the triangle inequality, <span class="math display">\[
+\begin{aligned}
+&amp;\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right| \\
+&amp;\qquad\leq
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right| \\
+&amp;\qquad\quad+
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|.
+\end{aligned}
+\]</span> Both terms on the right tend to zero, so <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+=0.
 \]</span></p>
-<p>Since <span class="math inline">\(X\in K\)</span> almost surely under every <span class="math inline">\(\mathbb{P}_\theta\)</span>,</p>
-<p><span class="math display">\[
-\left\{
-\|g(X_n)-g(X)\|&gt;\epsilon
-\right\}
-\cap
-\{X\in K\}
-\subseteq
-\left\{
-\|X_n-X\|&gt;\delta/2
-\right\}.
-\]</span></p>
-<p>The right-hand side tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(g(X_n)\stackrel{\mathcal{P}}{\to}g(X)\)</span>.</p>
+<p>(iii) First suppose <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span>. If the asserted uniform convergence failed, there would be a continuity point <span class="math inline">\(\mathbf t\)</span> of <span class="math inline">\(F\)</span>, an <span class="math inline">\(\epsilon&gt;0\)</span>, and sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> such that <span class="math display">\[
+\left|
+\mathbb P_{\theta_k}(X_{n_k}\leq\mathbf t)
+-F(\mathbf t)
+\right|
+\geq\epsilon
+\]</span> for every <span class="math inline">\(k\)</span>. Because <span class="math inline">\(Z_{n_k}\)</span> has distribution function <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb P_{\theta_k}\)</span>, part (i) implies that the left-hand side converges to zero, a contradiction.</p>
+<p>Conversely, suppose the asserted uniform convergence holds. If <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span> failed, there would be an <span class="math inline">\(\epsilon&gt;0\)</span> and sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> such that <span class="math display">\[
+\sup_{g\in\mathcal G}
+\left|
+\mathbb E_{\theta_k}[g(X_{n_k})]
+-
+\mathbb E_{\theta_k}[g(Z_{n_k})]
+\right|
+\geq\epsilon
+\]</span> for every <span class="math inline">\(k\)</span>. The asserted uniform convergence implies that <span class="math inline">\(X_{n_k}\)</span> converges weakly to <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb P_{\theta_k}\)</span>, while <span class="math inline">\(Z_{n_k}\)</span> has distribution function <span class="math inline">\(F\)</span> for every <span class="math inline">\(k\)</span>. Part (ii) therefore implies that the preceding bounded-Lipschitz distance converges to zero, a contradiction.</p>
 </section>
 <section id="proposition-3" class="level3">
-<h3 class="anchored" data-anchor-id="proposition-3"><a href="#prp-joint-convergence">Proposition 3</a></h3>
-<p>Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>. For every <span class="math inline">\(\epsilon&gt;0\)</span>,</p>
-<p><span class="math display">\[
-\left\{
-\|(X_n,Y_n)-(X,Y)\|&gt;\epsilon
-\right\}
-\subseteq
-\left\{
-\|X_n-X\|&gt;\epsilon/2
-\right\}
-\cup
-\left\{
-\|Y_n-Y\|&gt;\epsilon/2
-\right\}.
-\]</span></p>
-<p>Taking probabilities, taking the supremum over <span class="math inline">\(\theta\in\Theta\)</span>, and using the two marginal convergences proves</p>
-<p><span class="math display">\[
-(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
-\]</span></p>
-</section>
-<section id="proposition-4" class="level3">
-<h3 class="anchored" data-anchor-id="proposition-4"><a href="#prp-asymptotic-equivalence-perturbation">Proposition 4</a></h3>
+<h3 class="anchored" data-anchor-id="proposition-3"><a href="#prp-asymptotic-equivalence-perturbation">Proposition 3</a></h3>
 <p>By the triangle inequality, we have <span class="math display">\[
 \begin{aligned}
 &amp;\sup_{\theta\in\Theta}
@@ -924,100 +1000,83 @@ z\in\mathbb R^k,\ x\in K,\ \|z-x\|&lt;\delta
 =0.
 \]</span></p>
 </section>
+<section id="proposition-4" class="level3">
+<h3 class="anchored" data-anchor-id="proposition-4"><a href="#prp-continuous-mapping">Proposition 4</a></h3>
+<p>(i) Fix <span class="math inline">\(\epsilon&gt;0\)</span>. By compactness of <span class="math inline">\(K\)</span> and continuity of <span class="math inline">\(h\)</span> on a neighborhood of <span class="math inline">\(K\)</span>, there exists <span class="math inline">\(\delta&gt;0\)</span> such that</p>
+<p><span class="math display">\[
+z\in\mathbb R^k,\ x\in K,\ \|z-x\|&lt;\delta
+\quad\Rightarrow\quad
+\|h(z)-h(x)\|&lt;\epsilon.
+\]</span></p>
+<p>Since <span class="math inline">\(X\in K\)</span> almost surely under every <span class="math inline">\(\mathbb{P}_\theta\)</span>,</p>
+<p><span class="math display">\[
+\left\{
+\|h(X_n)-h(X)\|&gt;\epsilon
+\right\}
+\cap
+\{X\in K\}
+\subseteq
+\left\{
+\|X_n-X\|&gt;\delta/2
+\right\}.
+\]</span></p>
+<p>The right-hand side tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(h(X_n)\stackrel{\mathcal{P}}{\to}h(X)\)</span>.</p>
+<p>(ii) Suppose the conclusion fails. Then there are <span class="math inline">\(\epsilon&gt;0\)</span> and sequences <span class="math inline">\(n_\ell\to\infty\)</span> and <span class="math inline">\(\theta_\ell\in\Theta\)</span> such that</p>
+<p><span class="math display">\[
+\sup_{g\in\mathcal G_m}
+\left|
+\mathbb E_{\theta_\ell}[g(h(X_{n_\ell}))]
+-
+\mathbb E_{\theta_\ell}[g(h(Z_{n_\ell}))]
+\right|
+\geq\epsilon
+\]</span></p>
+<p>for every <span class="math inline">\(\ell\)</span>. Let <span class="math inline">\(\mu_\ell\)</span> denote the law of <span class="math inline">\(Z_{n_\ell}\)</span> under <span class="math inline">\(\mathbb P_{\theta_\ell}\)</span>. We first show that <span class="math inline">\(\{\mu_\ell\}\)</span> is tight. To do so, fix <span class="math inline">\(\delta&gt;0\)</span>. Because <span class="math inline">\(Z_n=O_{\mathcal P}(1)\)</span>, there exist finite constants <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that <span id="eq-Zn-uniform-tail-bound"><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb P_\theta\left(\|Z_n\|&gt;M\right)
+&lt;\delta
+\tag{25}\]</span></span> for every <span class="math inline">\(n\geq N\)</span>. Since <span class="math inline">\(n_\ell\to\infty\)</span>, there exists an index <span class="math inline">\(L\)</span> such that <span class="math inline">\(n_\ell\geq N\)</span> for every <span class="math inline">\(\ell\geq L\)</span>. (<a href="#eq-Zn-uniform-tail-bound" class="quarto-xref">25</a>) then gives <span class="math display">\[
+\mu_\ell\left(\{z\in\mathbb R^k:\|z\|\leq M\}\right)
+&gt;1-\delta
+\]</span> for every <span class="math inline">\(\ell\geq L\)</span>. For each <span class="math inline">\(\ell&lt;L\)</span>, we can also construct a compact ball <span class="math inline">\(K_\ell\)</span> with <span class="math inline">\(\mu_\ell(K_\ell)&gt;1-\delta\)</span>. The finite union <span class="math display">\[
+K
+=
+\{z\in\mathbb R^k:\|z\|\leq M\}
+\cup
+\bigcup_{\ell=1}^{L-1}K_\ell
+\]</span> is compact and satisfies <span class="math inline">\(\mu_\ell(K)&gt;1-\delta\)</span> for every <span class="math inline">\(\ell\)</span>. Thus the sequence <span class="math inline">\(\{\mu_\ell\}\)</span> is tight.</p>
+<p>By Prokhorov’s theorem, there is a subsequence <span class="math inline">\(\{\mu_{\ell_j}\}\)</span> that converges weakly to the law of some random vector <span class="math inline">\(W\)</span> on <span class="math inline">\(\mathbb R^k\)</span>. Part (i) of Proposition 2 and <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span> imply that <span class="math inline">\(X_{n_{\ell_j}}\)</span> also converges weakly to <span class="math inline">\(W\)</span>. Because <span class="math inline">\(h\)</span> is continuous, the continuous mapping theorem implies that both <span class="math inline">\(h(X_{n_{\ell_j}})\)</span> and <span class="math inline">\(h(Z_{n_{\ell_j}})\)</span> converge weakly to <span class="math inline">\(h(W)\)</span>. Part (ii) of Proposition 2 then gives</p>
+<p><span class="math display">\[
+\lim_{j\to\infty}
+\sup_{g\in\mathcal G_m}
+\left|
+\mathbb E_{\theta_{\ell_j}}[g(h(X_{n_{\ell_j}}))]
+-
+\mathbb E_{\theta_{\ell_j}}[g(h(Z_{n_{\ell_j}}))]
+\right|
+=0,
+\]</span></p>
+<p>contradicting the preceding lower bound. Thus <span class="math inline">\(h(X_n)\stackrel{\mathcal P}{\approx}h(Z_n)\)</span>.</p>
+</section>
 <section id="proposition-5" class="level3">
-<h3 class="anchored" data-anchor-id="proposition-5"><a href="#prp-asymptotic-equivalence-cdf-limit">Proposition 5</a></h3>
-<p>(i) The premise says that, under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>, <span class="math inline">\(Z_{n_k}\)</span> converges weakly to the fixed distribution with distribution function <span class="math inline">\(F\)</span>. By the bounded-Lipschitz characterization of weak convergence, this implies <span class="math display">\[
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right|
-=0.
-\]</span> Moreover, for every <span class="math inline">\(k\)</span>, the triangle inequality gives <span class="math display">\[
-\begin{aligned}
-&amp;\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right| \\
-&amp;\qquad\leq
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right|
-\\
-&amp;\qquad\quad+
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right|.
-\end{aligned}
-\]</span> The first term on the right tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>, and the second tends to zero by the preceding display. Therefore <span class="math display">\[
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right|
-=0.
-\]</span> Thus <span class="math inline">\(X_{n_k}\)</span> converges weakly to <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>. The claimed convergence of distribution functions at every continuity point of <span class="math inline">\(F\)</span> follows from the portmanteau theorem.</p>
-<p>(ii) The two premises imply that, under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>, both <span class="math inline">\(X_{n_k}\)</span> and <span class="math inline">\(Z_{n_k}\)</span> converge weakly to the fixed distribution with distribution function <span class="math inline">\(F\)</span>. The bounded-Lipschitz characterization of weak convergence therefore gives <span class="math display">\[
-\begin{aligned}
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right|&amp;=0, \\
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right|&amp;=0.
-\end{aligned}
-\]</span> By the triangle inequality, <span class="math display">\[
-\begin{aligned}
-&amp;\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right| \\
-&amp;\qquad\leq
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right| \\
-&amp;\qquad\quad+
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^k}g(\mathbf z)\,dF(\mathbf z)
-\right|.
-\end{aligned}
-\]</span> Both terms on the right tend to zero, so <span class="math display">\[
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right|
-=0.
+<h3 class="anchored" data-anchor-id="proposition-5"><a href="#prp-joint-convergence">Proposition 5</a></h3>
+<p>Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>. For every <span class="math inline">\(\epsilon&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\left\{
+\|(X_n,Y_n)-(X,Y)\|&gt;\epsilon
+\right\}
+\subseteq
+\left\{
+\|X_n-X\|&gt;\epsilon/2
+\right\}
+\cup
+\left\{
+\|Y_n-Y\|&gt;\epsilon/2
+\right\}.
+\]</span></p>
+<p>Taking probabilities, taking the supremum over <span class="math inline">\(\theta\in\Theta\)</span>, and using the two marginal convergences proves</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
 \]</span></p>
 </section>
 </section>
@@ -1089,7 +1148,7 @@ L_n=\ell_{0,n}+\ell_{1,n}.
 <p><span id="eq-Shat-consistency"><span class="math display">\[
 \frac{\widehat{s}_{dd,n}^2}{s_{dd,n}^2}
 \stackrel{\mathcal{P}}{\to}1.
-\tag{25}\]</span></span> Observe that</p>
+\tag{26}\]</span></span> Observe that</p>
 <p><span id="eq-Shat-decomposition"><span class="math display">\[
 \begin{aligned}
 \widehat{s}_{dd,n}^2
@@ -1100,15 +1159,15 @@ L_n=\ell_{0,n}+\ell_{1,n}.
 + \frac{p_d\,s_{dd,n}^2}{\overline D_{d,n}}
 - \left(\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{\overline D_{d,n}}\right)^2.
 \end{aligned}
-\tag{26}\]</span></span></p>
-<p>By Assumption 3, there exists an index <span class="math inline">\(N\)</span> for which <span class="math inline">\(s_{dd,n}^2&gt;0\)</span> for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(d\in\{0,1\}\)</span>, and <span class="math inline">\(\theta\in\Theta\)</span>. Together with Lemma 1 and Propositions 2 and 3, (<a href="#eq-Shat-consistency" class="quarto-xref">25</a>) will follow from (<a href="#eq-Shat-decomposition" class="quarto-xref">26</a>) if we can show <span id="eq-Shat-remainder-bounds"><span class="math display">\[
+\tag{27}\]</span></span></p>
+<p>By Assumption 3, there exists an index <span class="math inline">\(N\)</span> for which <span class="math inline">\(s_{dd,n}^2&gt;0\)</span> for all <span class="math inline">\(n\geq N\)</span>, <span class="math inline">\(d\in\{0,1\}\)</span>, and <span class="math inline">\(\theta\in\Theta\)</span>. Together with Lemma 1 and Propositions 4 and 5, (<a href="#eq-Shat-consistency" class="quarto-xref">26</a>) will follow from (<a href="#eq-Shat-decomposition" class="quarto-xref">27</a>) if we can show <span id="eq-Shat-remainder-bounds"><span class="math display">\[
 \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d s_{dd,n}^2}{s_{dd,n}^2}
 \stackrel{\mathcal{P}}{\to} 0,
 \qquad
 \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{s_{dd,n}}
 \stackrel{\mathcal{P}}{\to} 0.
-\tag{27}\]</span></span></p>
-<p>The first term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">27</a>) has mean zero and variance</p>
+\tag{28}\]</span></span></p>
+<p>The first term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">28</a>) has mean zero and variance</p>
 <p><span class="math display">\[
 \frac{p_d(1-p_d)}{n^2 s_{dd,n}^4}\sum_{i=1}^n u_{i,d,n}^4
 \leq
@@ -1139,12 +1198,12 @@ p_d(1-p_d)
 \sup_{\theta\in\Theta}
 \left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} s_{dd,n}}\right)^2
 \end{aligned}
-\]</span> by Chebyshev’s inequality. Therefore the first term converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Assumption 3. Since the second term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">27</a>) has mean zero and variance <span class="math inline">\(p_d(1-p_d)/n\)</span>, it also converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Chebyshev’s inequality. This proves (<a href="#eq-Shat-consistency" class="quarto-xref">25</a>).</p>
-<p>Since <span class="math inline">\(\widehat{s}_{dd,n}\)</span> and <span class="math inline">\(s_{dd,n}\)</span> are nonnegative, Proposition 2 also gives</p>
+\]</span> by Chebyshev’s inequality. Therefore the first term converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Assumption 3. Since the second term in (<a href="#eq-Shat-remainder-bounds" class="quarto-xref">28</a>) has mean zero and variance <span class="math inline">\(p_d(1-p_d)/n\)</span>, it also converges in <span class="math inline">\(\mathcal{P}\)</span> to zero by Chebyshev’s inequality. This proves (<a href="#eq-Shat-consistency" class="quarto-xref">26</a>).</p>
+<p>Since <span class="math inline">\(\widehat{s}_{dd,n}\)</span> and <span class="math inline">\(s_{dd,n}\)</span> are nonnegative, Proposition 4 also gives</p>
 <p><span id="eq-Shat-root-consistency"><span class="math display">\[
 \frac{\widehat{s}_{dd,n}}{s_{dd,n}}
 \stackrel{\mathcal{P}}{\to}1.
-\tag{28}\]</span></span></p>
+\tag{29}\]</span></span></p>
 <p>Now by (<a href="#eq-sigma-tilde" class="quarto-xref">7</a>) and (<a href="#eq-sigma-hat" class="quarto-xref">10</a>), we have <span id="eq-sigma-ratio-expansion"><span class="math display">\[
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2}
 =
@@ -1160,8 +1219,8 @@ p_d(1-p_d)
 \frac{|a_{1,n}|s_{11,n}}{p}
 }
 \right]^2.
-\tag{29}\]</span></span></p>
-<p>The unbracketed term converges to one in <span class="math inline">\(\mathcal{P}\)</span> by Lemma 1 and Proposition 2. It therefore suffices to show that the bracketed ratio also converges to one. For all <span class="math inline">\(n \geq N\)</span>, <span class="math inline">\(L_n&gt;0\)</span> and the ratios <span class="math inline">\(\ell_{0,n}/L_n\)</span> and <span class="math inline">\(\ell_{1,n}/L_n\)</span> are nonnegative and sum to one. The difference between the bracketed ratio and one can therefore be bounded by <span class="math display">\[
+\tag{30}\]</span></span></p>
+<p>The unbracketed term converges to one in <span class="math inline">\(\mathcal{P}\)</span> by Lemma 1 and Proposition 4. It therefore suffices to show that the bracketed ratio also converges to one. For all <span class="math inline">\(n \geq N\)</span>, <span class="math inline">\(L_n&gt;0\)</span> and the ratios <span class="math inline">\(\ell_{0,n}/L_n\)</span> and <span class="math inline">\(\ell_{1,n}/L_n\)</span> are nonnegative and sum to one. The difference between the bracketed ratio and one can therefore be bounded by <span class="math display">\[
 \begin{aligned}
 &amp;\left|
 \frac{\ell_{0,n}}{L_n}
@@ -1228,7 +1287,7 @@ p_d(1-p_d)
 \right)
 \end{aligned}
 \]</span></p>
-<p>The two probabilities on the right-hand side tend to zero by (<a href="#eq-Shat-root-consistency" class="quarto-xref">28</a>), Lemma 1, and Propositions 2 and 3. Therefore the bracketed ratio in (<a href="#eq-sigma-ratio-expansion" class="quarto-xref">29</a>) converges to one in <span class="math inline">\(\mathcal{P}\)</span>. Combining this with the convergence of the unbracketed term proves (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) by Propositions 2 and 3.</p>
+<p>The two probabilities on the right-hand side tend to zero by (<a href="#eq-Shat-root-consistency" class="quarto-xref">29</a>), Lemma 1, and Propositions 4 and 5. Therefore the bracketed ratio in (<a href="#eq-sigma-ratio-expansion" class="quarto-xref">30</a>) converges to one in <span class="math inline">\(\mathcal{P}\)</span>. Combining this with the convergence of the unbracketed term proves (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) by Propositions 4 and 5.</p>
 </section>
 <section id="sec-residual-appendix" class="level3">
 <h3 class="anchored" data-anchor-id="sec-residual-appendix">Derivation of (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">13</a>)</h3>
@@ -1259,7 +1318,7 @@ U_{d,n}
 + \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
 &amp;= \sum_{i=1}^n X_{i,n} + R_n,
 \end{aligned}
-\tag{30}\]</span></span></p>
+\tag{31}\]</span></span></p>
 <p>where</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -1275,7 +1334,7 @@ R_n
 \right].
 \end{aligned}
 \]</span></p>
-<p>Dividing (<a href="#eq-exact-decomposition" class="quarto-xref">30</a>) by <span class="math inline">\(\widehat{\sigma}_n\)</span> gives</p>
+<p>Dividing (<a href="#eq-exact-decomposition" class="quarto-xref">31</a>) by <span class="math inline">\(\widehat{\sigma}_n\)</span> gives</p>
 <p><span id="eq-standardized-decomposition"><span class="math display">\[
 \begin{aligned}
 \sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
@@ -1284,8 +1343,8 @@ R_n
 +\frac{R_n}{\widetilde{\sigma}_n}
 \frac{\widetilde{\sigma}_n}{\widehat{\sigma}_n}.
 \end{aligned}
-\tag{31}\]</span></span></p>
-<p>Since (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) and Proposition 2 give <span class="math inline">\(\widetilde\sigma_n/\widehat\sigma_n\stackrel{\mathcal{P}}{\to}1\)</span>, Proposition 1 shows that it suffices to prove <span class="math inline">\(R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0\)</span>.</p>
+\tag{32}\]</span></span></p>
+<p>Since (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) and Proposition 4 give <span class="math inline">\(\widetilde\sigma_n/\widehat\sigma_n\stackrel{\mathcal{P}}{\to}1\)</span>, Proposition 1 shows that it suffices to prove <span class="math inline">\(R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0\)</span>.</p>
 <p>Toward this end, observe that <span class="math display">\[
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
@@ -1322,7 +1381,7 @@ C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \left|\frac{U_{1,n}}{s_{11,n}}\right|
 \right],
 \end{aligned}
-\tag{32}\]</span></span></p>
+\tag{33}\]</span></span></p>
 <p>where</p>
 <p><span class="math display">\[
 C_{\underline p}
@@ -1358,11 +1417,11 @@ C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 =
 \frac{p(1-p)}{n}.
 \]</span></p>
-<p>Thus <span class="math inline">\(U_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. The weights <span class="math inline">\(\ell_{0,n}/L_n\)</span> and <span class="math inline">\(\ell_{1,n}/L_n\)</span> lie in <span class="math inline">\([0,1]\)</span>, so the bracketed term in (<a href="#eq-Rn-bound" class="quarto-xref">32</a>) is also <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. By Lemma 1, <span class="math inline">\(\sqrt n(\overline D_{1,n}-p)=O_{\mathcal{P}}(1)\)</span>. Therefore, by Proposition 1, the product inside the first probability on the right-hand side is <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. Thus</p>
+<p>Thus <span class="math inline">\(U_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. The weights <span class="math inline">\(\ell_{0,n}/L_n\)</span> and <span class="math inline">\(\ell_{1,n}/L_n\)</span> lie in <span class="math inline">\([0,1]\)</span>, so the bracketed term in (<a href="#eq-Rn-bound" class="quarto-xref">33</a>) is also <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. By Lemma 1, <span class="math inline">\(\sqrt n(\overline D_{1,n}-p)=O_{\mathcal{P}}(1)\)</span>. Therefore, by Proposition 1, the product inside the first probability on the right-hand side is <span class="math inline">\(o_{\mathcal{P}}(1)\)</span>. Thus</p>
 <p><span class="math display">\[
 \frac{R_n}{\widetilde{\sigma}_n}=o_{\mathcal{P}}(1),
 \]</span></p>
-<p>which by (<a href="#eq-standardized-decomposition" class="quarto-xref">31</a>) proves (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">13</a>).</p>
+<p>which by (<a href="#eq-standardized-decomposition" class="quarto-xref">32</a>) proves (<a href="#eq-means-asymptotic-linearization" class="quarto-xref">13</a>).</p>
 </section>
 </section>
 <section id="sec-scalar-normal-approximation" class="level2">
@@ -1388,7 +1447,7 @@ C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \max_{d\in\{0,1\}}
 \frac{|u_{i,d,n}|}{\sqrt n\,s_{dd,n}}.
 \end{aligned}
-\tag{33}\]</span></span> Define the uniform envelope <span class="math display">\[
+\tag{34}\]</span></span> Define the uniform envelope <span class="math display">\[
 \eta_n
 =
 \frac{1}{\sqrt{\underline p(1-\underline p)}}
@@ -1399,7 +1458,7 @@ C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \]</span> Then <span class="math inline">\(|X_{i,n}|/\widetilde\sigma_n\leq\eta_n\)</span> almost surely for every <span class="math inline">\(i\)</span> and <span class="math inline">\(\theta\in\Theta\)</span>, and Assumption 3 gives <span id="eq-conservative-max-summand-vanishing"><span class="math display">\[
 \lim_{n\to\infty}
 \eta_n=0.
-\tag{34}\]</span></span></p>
+\tag{35}\]</span></span></p>
 <p>Now consider arbitrary sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span>. Since <span class="math inline">\(\omega_{n_k}^2\in[0,1]\)</span>, there is a further subsequence <span class="math inline">\(n_{k_j}\)</span> along which <span class="math inline">\(\omega_{n_{k_j}}^2\to\omega^2\)</span> for some <span class="math inline">\(\omega^2\in[0,1]\)</span>. If <span class="math inline">\(\omega&gt;0\)</span>, then along this further subsequence, <span class="math display">\[
 \begin{aligned}
 \frac{1}{\omega_{n_{k_j}}^3}
@@ -1424,7 +1483,7 @@ C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 \frac{X_{i,n_{k_j}}}{\widetilde\sigma_{n_{k_j}}}
 \right|^3
 =0.
-\tag{35}\]</span></span> The Lyapunov central limit theorem applied after normalization by <span class="math inline">\(\sigma_{n_{k_j}}=\omega_{n_{k_j}}\widetilde\sigma_{n_{k_j}}\)</span>, followed by <span class="math inline">\(\omega_{n_{k_j}}\to\omega\)</span>, therefore gives <span class="math display">\[
+\tag{36}\]</span></span> The Lyapunov central limit theorem applied after normalization by <span class="math inline">\(\sigma_{n_{k_j}}=\omega_{n_{k_j}}\widetilde\sigma_{n_{k_j}}\)</span>, followed by <span class="math inline">\(\omega_{n_{k_j}}\to\omega\)</span>, therefore gives <span class="math display">\[
 \frac{\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}}}{\widetilde\sigma_{n_{k_j}}}
 \rightsquigarrow
 N(0,\omega^2).
@@ -1437,7 +1496,7 @@ N(0,\omega^2).
 =
 \lim_{j\to\infty}\omega_{n_{k_j}}^2
 =0,
-\]</span> so Chebyshev’s inequality gives <span class="math inline">\((\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}})/\widetilde\sigma_{n_{k_j}}\to0\)</span> in probability. In either case, <span class="math inline">\(Z_{n_{k_j}}\rightsquigarrow\omega Z\)</span> for <span class="math inline">\(Z\sim N(0,1)\)</span>, and the normalized sum <span class="math inline">\((\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}})/\widetilde\sigma_{n_{k_j}}\)</span> converges weakly to the same limit. Part (ii) of Proposition 5 therefore gives <span class="math display">\[
+\]</span> so Chebyshev’s inequality gives <span class="math inline">\((\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}})/\widetilde\sigma_{n_{k_j}}\to0\)</span> in probability. In either case, <span class="math inline">\(Z_{n_{k_j}}\rightsquigarrow\omega Z\)</span> for <span class="math inline">\(Z\sim N(0,1)\)</span>, and the normalized sum <span class="math inline">\((\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}})/\widetilde\sigma_{n_{k_j}}\)</span> converges weakly to the same limit. Part (ii) of Proposition 2 therefore gives <span class="math display">\[
 \lim_{j\to\infty}
 \sup_{g\in\mathcal G}
 \left|
@@ -1452,14 +1511,14 @@ g\left(\frac{\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}}}{\widetilde\sigma_{n_{k_j}}}\righ
 \frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
 \stackrel{\mathcal{P}}{\approx}
 Z_n
-\tag{36}\]</span></span> failed, some sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> would keep this distance bounded away from zero, contradicting the existence of the further subsequence just constructed.</p>
+\tag{37}\]</span></span> failed, some sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> would keep this distance bounded away from zero, contradicting the existence of the further subsequence just constructed.</p>
 <p>Furthermore, <span class="math display">\[
 \mathbb{E}_\theta
 \left(
 \frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
 \right)^2
 =\omega_n^2\leq1,
-\]</span> so <span class="math inline">\((\sum_{i=1}^nX_{i,n})/\widetilde\sigma_n=O_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. By (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) and Proposition 2, <span class="math display">\[
+\]</span> so <span class="math inline">\((\sum_{i=1}^nX_{i,n})/\widetilde\sigma_n=O_{\mathcal{P}}(1)\)</span> by Chebyshev’s inequality. By (<a href="#eq-variance-ratio-consistency" class="quarto-xref">12</a>) and Proposition 4, <span class="math display">\[
 \frac{\widetilde\sigma_n}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\to}1.
 \]</span> Therefore Proposition 1 gives <span id="eq-studentization-perturbation"><span class="math display">\[
@@ -1467,7 +1526,7 @@ Z_n
 -
 \frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
 =o_{\mathcal{P}}(1).
-\tag{37}\]</span></span> Equations (<a href="#eq-infeasible-scalar-normal-approximation" class="quarto-xref">36</a>) and (<a href="#eq-studentization-perturbation" class="quarto-xref">37</a>), together with Proposition 4, give (<a href="#eq-scalar-normal-approximation" class="quarto-xref">15</a>).</p>
+\tag{38}\]</span></span> Equations (<a href="#eq-infeasible-scalar-normal-approximation" class="quarto-xref">37</a>) and (<a href="#eq-studentization-perturbation" class="quarto-xref">38</a>), together with Proposition 3, give (<a href="#eq-scalar-normal-approximation" class="quarto-xref">15</a>).</p>
 </section>
 </section>
 

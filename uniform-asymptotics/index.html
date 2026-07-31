@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Malison">
+<meta name="dcterms.date" content="2026-07-30">
+
+<title>Uniform Asymptotics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="index_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<style>
+  h1.title { font-size: 2.75rem; text-align: center; }
+  .quarto-title-meta {
+    display: flex !important;
+    justify-content: center;
+    gap: 5rem;
+    text-align: center;
+  }
+  .theorem, .lemma {
+    margin: 0.75em 0 0.75em 1.5em;
+    padding: 0.25em 0.75em;
+    border-left: 3px solid #ccc;
+  }
+  .proof-block {
+    margin: 0.75em 0 0.75em 1.5em;
+    padding: 0.25em 0.75em;
+    border-left: 2px solid #ddd;
+  }
+  .part-label {
+    display: inline-block;
+    width: 2.5em;
+  }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Uniform Asymptotics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Malison </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Last modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 30, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Let <span class="math inline">\(\Theta\)</span> be a parameter space and, for each <span class="math inline">\(\theta\in\Theta\)</span>, let <span class="math inline">\(\mathbb P_\theta\)</span> denote a probability measure. This note collects notation and auxiliary results for asymptotic statements that hold uniformly over the family <span class="math inline">\(\mathcal P=\{\mathbb P_\theta:\theta\in\Theta\}\)</span>.</p>
+<p>We first define notation for uniform convergence in probability. We say <span class="math inline">\(X_n \in \mathbb{R}^k\)</span> converges in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(X \in \mathbb{R}^k\)</span>, written as <span class="math inline">\(X_n \stackrel{\mathcal{P}}{\to} X\)</span>, if for every <span class="math inline">\(\epsilon &gt; 0\)</span>, <span class="math display">\[
+\lim_{n \to \infty} \sup_{\theta \in \Theta} \mathbb{P}_\theta(\|X_n - X\| &gt; \epsilon) = 0.
+\]</span> For a positive deterministic sequence <span class="math inline">\(r_n\)</span>, we write <span class="math inline">\(X_n=o_{\mathcal{P}}(r_n)\)</span> if <span class="math inline">\(X_n/r_n \stackrel{\mathcal{P}}{\to} 0\)</span>. We write <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n)\)</span> if, for every <span class="math inline">\(\epsilon &gt; 0\)</span>, there exist finite constants <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that <span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\|X_n\|&gt;Mr_n\right)
+&lt;\epsilon
+\]</span> for all <span class="math inline">\(n\geq N\)</span>. The next proposition collects useful stochastic-order relationships:</p>
+<div id="prp-stochastic-order" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1</strong></span> Let <span class="math inline">\(r_n\)</span> and <span class="math inline">\(s_n\)</span> be positive deterministic sequences. The following relationships hold whenever the indicated operations are well-defined:</p>
+<p><span class="part-label">(i)</span> <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)\)</span>.</p>
+<p><span class="part-label">(ii)</span> <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_nY_n=O_{\mathcal{P}}(r_ns_n)\)</span>.</p>
+<p><span class="part-label">(iii)</span> <span class="math inline">\(X_n=o_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_nY_n=o_{\mathcal{P}}(r_ns_n)\)</span>.</p>
+<p><span class="part-label">(iv)</span> <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n),\ r_n\to 0 \quad\Rightarrow\quad X_n=o_{\mathcal{P}}(1)\)</span>.</p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> For <span class="math inline">\(M&gt;0\)</span>, write <span class="math inline">\(A_n^M=\{\|X_n\|&gt;Mr_n\}\)</span> and <span class="math inline">\(B_n^M=\{\|Y_n\|&gt;Ms_n\}\)</span>.</p>
+<p><span class="part-label">(i)</span> Fix <span class="math inline">\(\epsilon&gt;0\)</span>. By the two stochastic-order assumptions, we can choose finite constants <span class="math inline">\(M_X\)</span> and <span class="math inline">\(M_Y\)</span> and an index <span class="math inline">\(N\)</span> so that</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M_X}\right)&lt;\epsilon/2,
+\qquad
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M_Y}\right)&lt;\epsilon/2
+\]</span></p>
+<p>for all <span class="math inline">\(n\geq N\)</span>. Taking <span class="math inline">\(M=\max\{M_X,M_Y\}\)</span>, the same bounds hold with <span class="math inline">\(M\)</span> in place of <span class="math inline">\(M_X\)</span> and <span class="math inline">\(M_Y\)</span>. On <span class="math inline">\(\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c\)</span> we have <span class="math inline">\(\|X_n+Y_n\|\leq\|X_n\|+\|Y_n\|\leq M(r_n+s_n)\)</span>, so</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\bigl(\|X_n+Y_n\|&gt;M(r_n+s_n)\bigr)
+\leq
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)
++
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M}\right)
+&lt;\epsilon
+\]</span></p>
+<p>for <span class="math inline">\(n\geq N\)</span>. Hence <span class="math inline">\(X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)\)</span>.</p>
+<p><span class="part-label">(ii)</span> With the same <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span>, on <span class="math inline">\(\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c\)</span> we have <span class="math inline">\(\|X_nY_n\|\leq\|X_n\|\,\|Y_n\|\leq M^2 r_ns_n\)</span>, so <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_nY_n\|&gt;M^2 r_ns_n)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq N\)</span>. Hence <span class="math inline">\(X_nY_n=O_{\mathcal{P}}(r_ns_n)\)</span>.</p>
+<p><span class="part-label">(iii)</span> Suppose <span class="math inline">\(X_n=o_{\mathcal{P}}(r_n)\)</span>, and fix <span class="math inline">\(\epsilon&gt;0\)</span> and <span class="math inline">\(\delta&gt;0\)</span>. Since <span class="math inline">\(Y_n=O_{\mathcal{P}}(s_n)\)</span>, we can choose <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that</p>
+<p><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(B_n^{M}\right)&lt;\delta
+\]</span></p>
+<p>for all <span class="math inline">\(n\geq N\)</span>. On <span class="math inline">\(\left(B_n^{M}\right)^c\)</span>, the event <span class="math inline">\(\|X_nY_n\|&gt;\epsilon r_ns_n\)</span> implies <span class="math inline">\(\|X_n\|&gt;(\epsilon/M)r_n\)</span>, so</p>
+<p><span class="math display">\[
+\mathbb{P}_\theta(\|X_nY_n\|&gt;\epsilon r_ns_n)
+\leq
+\mathbb{P}_\theta\bigl(\|X_n\|&gt;(\epsilon/M)r_n\bigr)
++\mathbb{P}_\theta\left(B_n^{M}\right).
+\]</span></p>
+<p>Taking the supremum over <span class="math inline">\(\theta\)</span> and the limit superior gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(\|X_nY_n\|&gt;\epsilon r_ns_n) \\
+&amp;\qquad\leq
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\bigl(\|X_n\|&gt;(\epsilon/M)r_n\bigr)
++
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(B_n^{M}\right)
+\leq \delta.
+\end{aligned}
+\]</span></p>
+<p>Taking <span class="math inline">\(\delta\downarrow0\)</span>, we can conclude <span class="math inline">\(X_nY_n=o_{\mathcal{P}}(r_ns_n)\)</span>.</p>
+<p><span class="part-label">(iv)</span> Suppose <span class="math inline">\(X_n=O_{\mathcal{P}}(r_n)\)</span> with <span class="math inline">\(r_n\to 0\)</span>, and fix <span class="math inline">\(\delta&gt;0\)</span> and <span class="math inline">\(\epsilon&gt;0\)</span>. Choose <span class="math inline">\(M\)</span> and <span class="math inline">\(N_0\)</span> with <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq N_0\)</span>. Since <span class="math inline">\(r_n\to 0\)</span>, there is <span class="math inline">\(N_1\)</span> with <span class="math inline">\(Mr_n&lt;\delta\)</span> for <span class="math inline">\(n\geq N_1\)</span>. Therefore <span class="math inline">\(\{\|X_n\|&gt;\delta\}\subseteq A_n^{M}\)</span> and <span class="math inline">\(\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_n\|&gt;\delta)&lt;\epsilon\)</span> for <span class="math inline">\(n\geq\max(N_0,N_1)\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(X_n=o_{\mathcal{P}}(1)\)</span>. <span class="math inline">\(\square\)</span></p>
+</div>
+<p>For each positive integer <span class="math inline">\(q\)</span>, define the class of functions <span class="math display">\[
+\mathcal G_q
+=
+\left\{
+g:\mathbb R^q\to\mathbb R:
+|g(x)|\leq1,
+|g(x)-g(y)|\leq\|x-y\|
+    \text{ for all }x,y\in\mathbb R^q
+\right\}.
+\]</span> When the dimension is clear, we write <span class="math inline">\(\mathcal G\)</span> for <span class="math inline">\(\mathcal G_q\)</span>. For <span class="math inline">\(X_n,Z_n\in\mathbb R^q\)</span>, we say <span class="math inline">\(X_n\)</span> is asymptotically equivalent in <span class="math inline">\(\mathcal{P}\)</span> to <span class="math inline">\(Z_n\)</span>, written <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>, if <span class="math display">\[
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G_q}
+\left|
+\mathbb{E}_\theta[g(X_n)]
+-
+\mathbb{E}_\theta[g(Z_n)]
+\right|
+=0.
+\]</span></p>
+<p>The next proposition shows that asymptotic equivalence preserves uniform stochastic boundedness:</p>
+<div id="prp-asymptotic-equivalence-tightness" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span>, then <span class="math display">\[
+X_n=O_{\mathcal P}(1)
+\quad\Longleftrightarrow\quad
+Z_n=O_{\mathcal P}(1).
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> Suppose <span class="math inline">\(Z_n=O_{\mathcal P}(1)\)</span>. For <span class="math inline">\(M&gt;1\)</span>, define <span class="math display">\[
+g_M(x)
+=
+\min\left\{1,(\|x\|-M+1)_+\right\}.
+\]</span> The function <span class="math inline">\(g_M\)</span> belongs to <span class="math inline">\(\mathcal G_q\)</span> and satisfies <span class="math display">\[
+\mathbf 1\{\|x\|&gt;M\}
+\leq
+g_M(x)
+\leq
+\mathbf 1\{\|x\|&gt;M-1\}.
+\]</span> Therefore, <span class="math display">\[
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\mathbb P_\theta(\|X_n\|&gt;M)
+&amp;\leq
+\sup_{\theta\in\Theta}
+\mathbb E_\theta[g_M(X_n)] \\
+&amp;\leq
+\sup_{\theta\in\Theta}
+\mathbb E_\theta[g_M(Z_n)]
++
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G_q}
+\left|
+\mathbb E_\theta[g(X_n)]
+-
+\mathbb E_\theta[g(Z_n)]
+\right| \\
+&amp;\leq
+\sup_{\theta\in\Theta}
+\mathbb P_\theta(\|Z_n\|&gt;M-1)
++\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G_q}
+\left|
+\mathbb E_\theta[g(X_n)]
+-
+\mathbb E_\theta[g(Z_n)]
+\right|.
+\end{aligned}
+\]</span> Given <span class="math inline">\(\epsilon&gt;0\)</span>, uniform stochastic boundedness of <span class="math inline">\(Z_n\)</span> allows us to pick a finite <span class="math inline">\(M&gt;1\)</span> so that the first term on the final line is eventually smaller than <span class="math inline">\(\epsilon/2\)</span>. Asymptotic equivalence makes the second term eventually smaller than <span class="math inline">\(\epsilon/2\)</span>. Hence <span class="math inline">\(X_n=O_{\mathcal P}(1)\)</span>. The reverse implication follows by interchanging <span class="math inline">\(X_n\)</span> and <span class="math inline">\(Z_n\)</span>. <span class="math inline">\(\square\)</span></p>
+</div>
+<p>The next proposition connects asymptotic equivalence and convergence to a fixed distribution:</p>
+<div id="prp-asymptotic-equivalence-cdf-limit" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3</strong></span> For any sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> and any fixed distribution function <span class="math inline">\(F\)</span>, the following statements hold:</p>
+<p><span class="part-label">(i)</span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> and <span class="math display">\[\lim_{k\to\infty}
+\left|
+\mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+=0
+\quad\text{for every continuity point $\mathbf t$ of $F$},
+\]</span> then <span class="math display">\[
+\lim_{k\to\infty}
+\left|
+\mathbb{P}_{\theta_k}(X_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+=0
+\quad\text{for every continuity point $\mathbf t$ of $F$}.
+\]</span></p>
+<p><span class="part-label">(ii)</span> If <span class="math display">\[
+\begin{aligned}
+\lim_{k \to \infty}
+\left|
+\mathbb{P}_{\theta_k}(X_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+&amp;=0, \\
+\lim_{k \to \infty}
+\left|
+\mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+&amp;=0
+\end{aligned}
+\]</span> for every continuity point <span class="math inline">\(\mathbf t\)</span> of <span class="math inline">\(F\)</span>, then <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+=0.
+\]</span></p>
+<p><span class="part-label">(iii)</span> Suppose <span class="math inline">\(Z_n\)</span> has distribution function <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb P_\theta\)</span> for every <span class="math inline">\(n\)</span> and <span class="math inline">\(\theta\)</span>. Then <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> if and only if, for every continuity point <span class="math inline">\(\mathbf t\in\mathbb R^q\)</span> of <span class="math inline">\(F\)</span>, <span class="math display">\[
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\leq\mathbf t)-F(\mathbf t)
+\right|
+=0.
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em></p>
+<p><span class="part-label">(i)</span> The premise says that, under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>, <span class="math inline">\(Z_{n_k}\)</span> converges weakly to the fixed distribution with distribution function <span class="math inline">\(F\)</span>. By the bounded-Lipschitz characterization of weak convergence, this implies <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|
+=0.
+\]</span> Moreover, for every <span class="math inline">\(k\)</span>, the triangle inequality gives <span class="math display">\[
+\begin{aligned}
+&amp;\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right| \\
+&amp;\qquad\leq
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+\\
+&amp;\qquad\quad+
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|.
+\end{aligned}
+\]</span> The first term on the right tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>, and the second tends to zero by the preceding display. Therefore <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|
+=0.
+\]</span> Thus <span class="math inline">\(X_{n_k}\)</span> converges weakly to <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>. The claimed convergence of distribution functions at every continuity point of <span class="math inline">\(F\)</span> follows from the portmanteau theorem.</p>
+<p><span class="part-label">(ii)</span> The two premises imply that, under <span class="math inline">\(\mathbb{P}_{\theta_k}\)</span>, both <span class="math inline">\(X_{n_k}\)</span> and <span class="math inline">\(Z_{n_k}\)</span> converge weakly to the fixed distribution with distribution function <span class="math inline">\(F\)</span>. The bounded-Lipschitz characterization of weak convergence therefore gives <span class="math display">\[
+\begin{aligned}
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|&amp;=0, \\
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|&amp;=0.
+\end{aligned}
+\]</span> By the triangle inequality, <span class="math display">\[
+\begin{aligned}
+&amp;\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right| \\
+&amp;\qquad\leq
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right| \\
+&amp;\qquad\quad+
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|.
+\end{aligned}
+\]</span> Both terms on the right tend to zero, so <span class="math display">\[
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+=0.
+\]</span></p>
+<p><span class="part-label">(iii)</span> First suppose <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span>. If the asserted uniform convergence failed, there would be a continuity point <span class="math inline">\(\mathbf t\)</span> of <span class="math inline">\(F\)</span>, an <span class="math inline">\(\epsilon&gt;0\)</span>, and sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> such that <span class="math display">\[
+\left|
+\mathbb P_{\theta_k}(X_{n_k}\leq\mathbf t)
+-F(\mathbf t)
+\right|
+\geq\epsilon
+\]</span> for every <span class="math inline">\(k\)</span>. Because <span class="math inline">\(Z_{n_k}\)</span> has distribution function <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb P_{\theta_k}\)</span>, part (i) implies that the left-hand side converges to zero, a contradiction.</p>
+<p>Conversely, suppose the asserted uniform convergence holds. If <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span> failed, there would be an <span class="math inline">\(\epsilon&gt;0\)</span> and sequences <span class="math inline">\(n_k\to\infty\)</span> and <span class="math inline">\(\theta_k\in\Theta\)</span> such that <span class="math display">\[
+\sup_{g\in\mathcal G}
+\left|
+\mathbb E_{\theta_k}[g(X_{n_k})]
+-
+\mathbb E_{\theta_k}[g(Z_{n_k})]
+\right|
+\geq\epsilon
+\]</span> for every <span class="math inline">\(k\)</span>. The asserted uniform convergence implies that <span class="math inline">\(X_{n_k}\)</span> converges weakly to <span class="math inline">\(F\)</span> under <span class="math inline">\(\mathbb P_{\theta_k}\)</span>, while <span class="math inline">\(Z_{n_k}\)</span> has distribution function <span class="math inline">\(F\)</span> for every <span class="math inline">\(k\)</span>. Part (ii) therefore implies that the preceding bounded-Lipschitz distance converges to zero, a contradiction. <span class="math inline">\(\square\)</span></p>
+</div>
+<p>Part (iii) of Proposition 3 implies asymptotic equivalence reduces to uniform weak convergence when the target distribution is fixed.</p>
+<p>The next proposition shows that asymptotic equivalence is preserved under uniformly negligible perturbations:</p>
+<div id="prp-asymptotic-equivalence-perturbation" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span> and <span class="math inline">\(Y_n-X_n=o_{\mathcal{P}}(1)\)</span>, then <span class="math display">\[
+Y_n\stackrel{\mathcal{P}}{\approx}Z_n.
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> By the triangle inequality, we have <span class="math display">\[
+\begin{aligned}
+&amp;\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(Z_n)]
+\right| \\
+&amp;\qquad\leq
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
+\right| \\
+&amp;\qquad\quad+
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(X_n)]-\mathbb{E}_\theta[g(Z_n)]
+\right|.
+\end{aligned}
+\]</span> The second term tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\approx}Z_n\)</span>. To see that the first term also tends to zero, pick <span class="math inline">\(g\in\mathcal G\)</span> and <span class="math inline">\(\delta&gt;0\)</span>. Then <span class="math display">\[
+\begin{aligned}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
+\right|
+&amp;\leq
+\mathbb{E}_\theta\left|g(Y_n)-g(X_n)\right| \\
+&amp;\leq
+\mathbb{E}_\theta\min\{2,\|Y_n-X_n\|\} \\
+&amp;\leq
+\delta
++
+2\mathbb{P}_\theta(\|Y_n-X_n\|&gt;\delta).
+\end{aligned}
+\]</span> Taking the supremum over <span class="math inline">\(g\in\mathcal G\)</span> and <span class="math inline">\(\theta\in\Theta\)</span>, then the limit superior as <span class="math inline">\(n\to\infty\)</span>, gives an upper bound of <span class="math inline">\(\delta\)</span> because <span class="math inline">\(Y_n-X_n=o_{\mathcal{P}}(1)\)</span>. Letting <span class="math inline">\(\delta\downarrow0\)</span> shows <span class="math display">\[
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
+\right|
+=0. \qquad\square
+\]</span></p>
+</div>
+<p>The next proposition records continuous mapping results:</p>
+<div id="prp-continuous-mapping" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 5</strong></span> <span class="part-label">(i)</span> Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and there is a compact set <span class="math inline">\(K\subseteq\mathbb R^k\)</span> such that <span class="math inline">\(\mathbb{P}_\theta(X\in K)=1\)</span> for every <span class="math inline">\(\theta\in\Theta\)</span>. If <span class="math inline">\(h:\mathbb R^k\to\mathbb R^m\)</span> is continuous on an open set containing <span class="math inline">\(K\)</span>, then</p>
+<p><span class="math display">\[
+h(X_n)\stackrel{\mathcal{P}}{\to}h(X).
+\]</span></p>
+<p><span class="part-label">(ii)</span> Suppose <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span> and <span class="math inline">\(Z_n=O_{\mathcal P}(1)\)</span>. If <span class="math inline">\(h:\mathbb R^k\to\mathbb R^m\)</span> is continuous, then</p>
+<p><span class="math display">\[
+h(X_n)
+\stackrel{\mathcal P}{\approx}
+h(Z_n).
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em></p>
+<p><span class="part-label">(i)</span> Fix <span class="math inline">\(\epsilon&gt;0\)</span>. By compactness of <span class="math inline">\(K\)</span> and continuity of <span class="math inline">\(h\)</span> on a neighborhood of <span class="math inline">\(K\)</span>, there exists <span class="math inline">\(\delta&gt;0\)</span> such that</p>
+<p><span class="math display">\[
+z\in\mathbb R^k,\ x\in K,\ \|z-x\|&lt;\delta
+\quad\Rightarrow\quad
+\|h(z)-h(x)\|&lt;\epsilon.
+\]</span></p>
+<p>Since <span class="math inline">\(X\in K\)</span> almost surely under every <span class="math inline">\(\mathbb{P}_\theta\)</span>,</p>
+<p><span class="math display">\[
+\left\{
+\|h(X_n)-h(X)\|&gt;\epsilon
+\right\}
+\cap
+\{X\in K\}
+\subseteq
+\left\{
+\|X_n-X\|&gt;\delta/2
+\right\}.
+\]</span></p>
+<p>The right-hand side tends to zero because <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span>. Since <span class="math inline">\(\epsilon&gt;0\)</span> was arbitrary, <span class="math inline">\(h(X_n)\stackrel{\mathcal{P}}{\to}h(X)\)</span>.</p>
+<p><span class="part-label">(ii)</span> Suppose the conclusion fails. Then there are <span class="math inline">\(\epsilon&gt;0\)</span> and sequences <span class="math inline">\(n_\ell\to\infty\)</span> and <span class="math inline">\(\theta_\ell\in\Theta\)</span> such that</p>
+<p><span class="math display">\[
+\sup_{g\in\mathcal G_m}
+\left|
+\mathbb E_{\theta_\ell}[g(h(X_{n_\ell}))]
+-
+\mathbb E_{\theta_\ell}[g(h(Z_{n_\ell}))]
+\right|
+\geq\epsilon
+\]</span></p>
+<p>for every <span class="math inline">\(\ell\)</span>. Let <span class="math inline">\(\mu_\ell\)</span> denote the law of <span class="math inline">\(Z_{n_\ell}\)</span> under <span class="math inline">\(\mathbb P_{\theta_\ell}\)</span>. We first show that <span class="math inline">\(\{\mu_\ell\}\)</span> is tight. To do so, fix <span class="math inline">\(\delta&gt;0\)</span>. Because <span class="math inline">\(Z_n=O_{\mathcal P}(1)\)</span>, there exist finite constants <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that <span id="eq-Zn-uniform-tail-bound"><span class="math display">\[
+\sup_{\theta\in\Theta}
+\mathbb P_\theta\left(\|Z_n\|&gt;M\right)
+&lt;\delta
+\tag{1}\]</span></span> for every <span class="math inline">\(n\geq N\)</span>. Since <span class="math inline">\(n_\ell\to\infty\)</span>, there exists an index <span class="math inline">\(L\)</span> such that <span class="math inline">\(n_\ell\geq N\)</span> for every <span class="math inline">\(\ell\geq L\)</span>. (<a href="#eq-Zn-uniform-tail-bound" class="quarto-xref">1</a>) then gives <span class="math display">\[
+\mu_\ell\left(\{z\in\mathbb R^k:\|z\|\leq M\}\right)
+&gt;1-\delta
+\]</span> for every <span class="math inline">\(\ell\geq L\)</span>. For each <span class="math inline">\(\ell&lt;L\)</span>, we can also construct a compact ball <span class="math inline">\(K_\ell\)</span> with <span class="math inline">\(\mu_\ell(K_\ell)&gt;1-\delta\)</span>. The finite union <span class="math display">\[
+K
+=
+\{z\in\mathbb R^k:\|z\|\leq M\}
+\cup
+\bigcup_{\ell=1}^{L-1}K_\ell
+\]</span> is compact and satisfies <span class="math inline">\(\mu_\ell(K)&gt;1-\delta\)</span> for every <span class="math inline">\(\ell\)</span>. Thus the sequence <span class="math inline">\(\{\mu_\ell\}\)</span> is tight.</p>
+<p>By Prokhorov’s theorem, there is a subsequence <span class="math inline">\(\{\mu_{\ell_j}\}\)</span> that converges weakly to the law of some random vector <span class="math inline">\(W\)</span> on <span class="math inline">\(\mathbb R^k\)</span>. Part (i) of Proposition 3 and <span class="math inline">\(X_n\stackrel{\mathcal P}{\approx}Z_n\)</span> imply that <span class="math inline">\(X_{n_{\ell_j}}\)</span> also converges weakly to <span class="math inline">\(W\)</span>. Because <span class="math inline">\(h\)</span> is continuous, the continuous mapping theorem implies that both <span class="math inline">\(h(X_{n_{\ell_j}})\)</span> and <span class="math inline">\(h(Z_{n_{\ell_j}})\)</span> converge weakly to <span class="math inline">\(h(W)\)</span>. Part (ii) of Proposition 3 then gives</p>
+<p><span class="math display">\[
+\lim_{j\to\infty}
+\sup_{g\in\mathcal G_m}
+\left|
+\mathbb E_{\theta_{\ell_j}}[g(h(X_{n_{\ell_j}}))]
+-
+\mathbb E_{\theta_{\ell_j}}[g(h(Z_{n_{\ell_j}}))]
+\right|
+=0,
+\]</span></p>
+<p>contradicting the preceding lower bound. Thus <span class="math inline">\(h(X_n)\stackrel{\mathcal P}{\approx}h(Z_n)\)</span>. <span class="math inline">\(\square\)</span></p>
+</div>
+<p>The final result records a useful joint-convergence rule:</p>
+<div id="prp-joint-convergence" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 6</strong></span> If <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>, then</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+\]</span></p>
+</div>
+<div class="proof-block">
+<p><em>Proof.</em> Suppose <span class="math inline">\(X_n\stackrel{\mathcal{P}}{\to}X\)</span> and <span class="math inline">\(Y_n\stackrel{\mathcal{P}}{\to}Y\)</span>. For every <span class="math inline">\(\epsilon&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\left\{
+\|(X_n,Y_n)-(X,Y)\|&gt;\epsilon
+\right\}
+\subseteq
+\left\{
+\|X_n-X\|&gt;\epsilon/2
+\right\}
+\cup
+\left\{
+\|Y_n-Y\|&gt;\epsilon/2
+\right\}.
+\]</span></p>
+<p>Taking probabilities, taking the supremum over <span class="math inline">\(\theta\in\Theta\)</span>, and using the two marginal convergences proves</p>
+<p><span class="math display">\[
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+\qquad\square
+\]</span></p>
+</div>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

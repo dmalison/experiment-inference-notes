@@ -1,0 +1,652 @@
+---
+title: "Uniform Asymptotics"
+author: "David Malison"
+date: last-modified
+from: markdown-fancy_lists
+language:
+  title-block-published: "Last modified"
+format:
+  html:
+    toc: false
+    number-sections: false
+    include-in-header:
+      text: |
+        <style>
+          h1.title { font-size: 2.75rem; text-align: center; }
+          .quarto-title-meta {
+            display: flex !important;
+            justify-content: center;
+            gap: 5rem;
+            text-align: center;
+          }
+          .theorem, .lemma {
+            margin: 0.75em 0 0.75em 1.5em;
+            padding: 0.25em 0.75em;
+            border-left: 3px solid #ccc;
+          }
+          .proof-block {
+            margin: 0.75em 0 0.75em 1.5em;
+            padding: 0.25em 0.75em;
+            border-left: 2px solid #ddd;
+          }
+          .part-label {
+            display: inline-block;
+            width: 2.5em;
+          }
+        </style>
+crossref:
+  ref-hyperlink: true
+---
+
+Let $\Theta$ be a parameter space and, for each $\theta\in\Theta$, let $\mathbb P_\theta$ denote a probability measure.
+This note collects notation and auxiliary results for asymptotic statements that hold uniformly over the family $\mathcal P=\{\mathbb P_\theta:\theta\in\Theta\}$.
+
+We first define notation for uniform convergence in probability.
+We say $X_n \in \mathbb{R}^k$ converges in $\mathcal{P}$ to $X \in \mathbb{R}^k$, written as $X_n \stackrel{\mathcal{P}}{\to} X$, if for every $\epsilon > 0$,
+$$
+\lim_{n \to \infty} \sup_{\theta \in \Theta} \mathbb{P}_\theta(\|X_n - X\| > \epsilon) = 0.
+$$
+For a positive deterministic sequence $r_n$, we write $X_n=o_{\mathcal{P}}(r_n)$ if $X_n/r_n \stackrel{\mathcal{P}}{\to} 0$.
+We write $X_n=O_{\mathcal{P}}(r_n)$ if, for every $\epsilon > 0$, there exist finite constants $M$ and $N$ such that
+$$
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(\|X_n\|>Mr_n\right)
+<\epsilon
+$$
+for all $n\geq N$.
+The next proposition collects useful stochastic-order relationships:
+
+::: {#prp-stochastic-order}
+Let $r_n$ and $s_n$ be positive deterministic sequences. The following relationships hold whenever the indicated operations are well-defined:
+
+[(i)]{.part-label} $X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)$.
+
+[(ii)]{.part-label} $X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_nY_n=O_{\mathcal{P}}(r_ns_n)$.
+
+[(iii)]{.part-label} $X_n=o_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_nY_n=o_{\mathcal{P}}(r_ns_n)$.
+
+[(iv)]{.part-label} $X_n=O_{\mathcal{P}}(r_n),\ r_n\to 0 \quad\Rightarrow\quad X_n=o_{\mathcal{P}}(1)$.
+:::
+
+::: {.proof-block}
+*Proof.* For $M>0$, write $A_n^M=\{\|X_n\|>Mr_n\}$ and $B_n^M=\{\|Y_n\|>Ms_n\}$.
+
+[(i)]{.part-label} Fix $\epsilon>0$.
+By the two stochastic-order assumptions, we can choose finite constants $M_X$ and $M_Y$ and an index $N$ so that
+
+$$
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M_X}\right)<\epsilon/2,
+\qquad
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M_Y}\right)<\epsilon/2
+$$
+
+for all $n\geq N$.
+Taking $M=\max\{M_X,M_Y\}$, the same bounds hold with $M$ in place of $M_X$ and $M_Y$.
+On $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $\|X_n+Y_n\|\leq\|X_n\|+\|Y_n\|\leq M(r_n+s_n)$, so
+
+$$
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\bigl(\|X_n+Y_n\|>M(r_n+s_n)\bigr)
+\leq
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)
++
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M}\right)
+<\epsilon
+$$
+
+for $n\geq N$.
+Hence $X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)$.
+
+[(ii)]{.part-label} With the same $M$ and $N$, on $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $\|X_nY_n\|\leq\|X_n\|\,\|Y_n\|\leq M^2 r_ns_n$, so $\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_nY_n\|>M^2 r_ns_n)<\epsilon$ for $n\geq N$.
+Hence $X_nY_n=O_{\mathcal{P}}(r_ns_n)$.
+
+[(iii)]{.part-label} Suppose $X_n=o_{\mathcal{P}}(r_n)$, and fix $\epsilon>0$ and $\delta>0$.
+Since $Y_n=O_{\mathcal{P}}(s_n)$, we can choose $M$ and $N$ such that
+
+$$
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(B_n^{M}\right)<\delta
+$$
+
+for all $n\geq N$.
+On $\left(B_n^{M}\right)^c$, the event $\|X_nY_n\|>\epsilon r_ns_n$ implies $\|X_n\|>(\epsilon/M)r_n$, so
+
+$$
+\mathbb{P}_\theta(\|X_nY_n\|>\epsilon r_ns_n)
+\leq
+\mathbb{P}_\theta\bigl(\|X_n\|>(\epsilon/M)r_n\bigr)
++\mathbb{P}_\theta\left(B_n^{M}\right).
+$$
+
+Taking the supremum over $\theta$ and the limit superior gives
+
+$$
+\begin{aligned}
+&\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta(\|X_nY_n\|>\epsilon r_ns_n) \\
+&\qquad\leq
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\bigl(\|X_n\|>(\epsilon/M)r_n\bigr)
++
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb{P}_\theta\left(B_n^{M}\right)
+\leq \delta.
+\end{aligned}
+$$
+
+Taking $\delta\downarrow0$, we can conclude $X_nY_n=o_{\mathcal{P}}(r_ns_n)$.
+
+[(iv)]{.part-label} Suppose $X_n=O_{\mathcal{P}}(r_n)$ with $r_n\to 0$, and fix $\delta>0$ and $\epsilon>0$.
+Choose $M$ and $N_0$ with $\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)<\epsilon$ for $n\geq N_0$.
+Since $r_n\to 0$, there is $N_1$ with $Mr_n<\delta$ for $n\geq N_1$.
+Therefore $\{\|X_n\|>\delta\}\subseteq A_n^{M}$ and $\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_n\|>\delta)<\epsilon$ for $n\geq\max(N_0,N_1)$.
+Since $\epsilon>0$ was arbitrary, $X_n=o_{\mathcal{P}}(1)$. $\square$
+:::
+
+For each positive integer $q$, define the class of functions
+$$
+\mathcal G_q
+=
+\left\{
+g:\mathbb R^q\to\mathbb R:
+|g(x)|\leq1,
+|g(x)-g(y)|\leq\|x-y\|
+    \text{ for all }x,y\in\mathbb R^q
+\right\}.
+$$
+When the dimension is clear, we write $\mathcal G$ for $\mathcal G_q$.
+For $X_n,Z_n\in\mathbb R^q$, we say $X_n$ is asymptotically equivalent in $\mathcal{P}$ to $Z_n$,
+written $X_n\stackrel{\mathcal{P}}{\approx}Z_n$, if
+$$
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G_q}
+\left|
+\mathbb{E}_\theta[g(X_n)]
+-
+\mathbb{E}_\theta[g(Z_n)]
+\right|
+=0.
+$$
+
+The next proposition shows that asymptotic equivalence preserves uniform stochastic boundedness:
+
+::: {#prp-asymptotic-equivalence-tightness}
+If $X_n\stackrel{\mathcal P}{\approx}Z_n$, then
+$$
+X_n=O_{\mathcal P}(1)
+\quad\Longleftrightarrow\quad
+Z_n=O_{\mathcal P}(1).
+$$
+:::
+
+::: {.proof-block}
+*Proof.* Suppose $Z_n=O_{\mathcal P}(1)$.
+For $M>1$, define
+$$
+g_M(x)
+=
+\min\left\{1,(\|x\|-M+1)_+\right\}.
+$$
+The function $g_M$ belongs to $\mathcal G_q$ and satisfies
+$$
+\mathbf 1\{\|x\|>M\}
+\leq
+g_M(x)
+\leq
+\mathbf 1\{\|x\|>M-1\}.
+$$
+Therefore,
+$$
+\begin{aligned}
+\sup_{\theta\in\Theta}
+\mathbb P_\theta(\|X_n\|>M)
+&\leq
+\sup_{\theta\in\Theta}
+\mathbb E_\theta[g_M(X_n)] \\
+&\leq
+\sup_{\theta\in\Theta}
+\mathbb E_\theta[g_M(Z_n)]
++
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G_q}
+\left|
+\mathbb E_\theta[g(X_n)]
+-
+\mathbb E_\theta[g(Z_n)]
+\right| \\
+&\leq
+\sup_{\theta\in\Theta}
+\mathbb P_\theta(\|Z_n\|>M-1)
++\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G_q}
+\left|
+\mathbb E_\theta[g(X_n)]
+-
+\mathbb E_\theta[g(Z_n)]
+\right|.
+\end{aligned}
+$$
+Given $\epsilon>0$, uniform stochastic boundedness of $Z_n$ allows us to pick a finite $M>1$ so that the first term on the final line is eventually smaller than $\epsilon/2$.
+Asymptotic equivalence makes the second term eventually smaller than $\epsilon/2$.
+Hence $X_n=O_{\mathcal P}(1)$.
+The reverse implication follows by interchanging $X_n$ and $Z_n$. $\square$
+:::
+
+The next proposition connects asymptotic equivalence and convergence to a fixed distribution:
+
+::: {#prp-asymptotic-equivalence-cdf-limit}
+For any sequences $n_k\to\infty$ and $\theta_k\in\Theta$ and any fixed distribution function $F$, the following statements hold:
+
+[(i)]{.part-label} If $X_n\stackrel{\mathcal{P}}{\approx}Z_n$ and
+$$\lim_{k\to\infty}
+\left|
+\mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+=0
+\quad\text{for every continuity point $\mathbf t$ of $F$},
+$$
+then
+$$
+\lim_{k\to\infty}
+\left|
+\mathbb{P}_{\theta_k}(X_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+=0
+\quad\text{for every continuity point $\mathbf t$ of $F$}.
+$$
+
+[(ii)]{.part-label} If
+$$
+\begin{aligned}
+\lim_{k \to \infty}
+\left|
+\mathbb{P}_{\theta_k}(X_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+&=0, \\
+\lim_{k \to \infty}
+\left|
+\mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
+\right|
+&=0
+\end{aligned}
+$$
+for every continuity point $\mathbf t$ of $F$, then
+$$
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+=0.
+$$
+
+[(iii)]{.part-label} Suppose $Z_n$ has distribution function $F$ under $\mathbb P_\theta$ for every $n$ and $\theta$.
+Then $X_n\stackrel{\mathcal{P}}{\approx}Z_n$ if and only if, for every continuity point $\mathbf t\in\mathbb R^q$ of $F$,
+$$
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left|
+\mathbb{P}_\theta(X_n\leq\mathbf t)-F(\mathbf t)
+\right|
+=0.
+$$
+:::
+
+::: {.proof-block}
+*Proof.*
+
+[(i)]{.part-label} The premise says that, under $\mathbb{P}_{\theta_k}$, $Z_{n_k}$ converges weakly to the fixed distribution with distribution function $F$.
+By the bounded-Lipschitz characterization of weak convergence, this implies
+$$
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|
+=0.
+$$
+Moreover, for every $k$, the triangle inequality gives
+$$
+\begin{aligned}
+&\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right| \\
+&\qquad\leq
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+\\
+&\qquad\quad+
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|.
+\end{aligned}
+$$
+The first term on the right tends to zero because $X_n\stackrel{\mathcal{P}}{\approx}Z_n$, and the second tends to zero by the preceding display.
+Therefore
+$$
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|
+=0.
+$$
+Thus $X_{n_k}$ converges weakly to $F$ under $\mathbb{P}_{\theta_k}$.
+The claimed convergence of distribution functions at every continuity point of $F$ follows from the portmanteau theorem.
+
+[(ii)]{.part-label} The two premises imply that, under $\mathbb{P}_{\theta_k}$, both $X_{n_k}$ and $Z_{n_k}$ converge weakly to the fixed distribution with distribution function $F$.
+The bounded-Lipschitz characterization of weak convergence therefore gives
+$$
+\begin{aligned}
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|&=0, \\
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|&=0.
+\end{aligned}
+$$
+By the triangle inequality,
+$$
+\begin{aligned}
+&\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right| \\
+&\qquad\leq
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right| \\
+&\qquad\quad+
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+-
+\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
+\right|.
+\end{aligned}
+$$
+Both terms on the right tend to zero, so
+$$
+\lim_{k\to\infty}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_{\theta_k}[g(X_{n_k})]
+-
+\mathbb{E}_{\theta_k}[g(Z_{n_k})]
+\right|
+=0.
+$$
+
+[(iii)]{.part-label} First suppose $X_n\stackrel{\mathcal P}{\approx}Z_n$.
+If the asserted uniform convergence failed, there would be a continuity point $\mathbf t$ of $F$, an $\epsilon>0$, and sequences $n_k\to\infty$ and $\theta_k\in\Theta$ such that
+$$
+\left|
+\mathbb P_{\theta_k}(X_{n_k}\leq\mathbf t)
+-F(\mathbf t)
+\right|
+\geq\epsilon
+$$
+for every $k$.
+Because $Z_{n_k}$ has distribution function $F$ under $\mathbb P_{\theta_k}$, part (i) implies that the left-hand side converges to zero, a contradiction.
+
+Conversely, suppose the asserted uniform convergence holds.
+If $X_n\stackrel{\mathcal P}{\approx}Z_n$ failed, there would be an $\epsilon>0$ and sequences $n_k\to\infty$ and $\theta_k\in\Theta$ such that
+$$
+\sup_{g\in\mathcal G}
+\left|
+\mathbb E_{\theta_k}[g(X_{n_k})]
+-
+\mathbb E_{\theta_k}[g(Z_{n_k})]
+\right|
+\geq\epsilon
+$$
+for every $k$.
+The asserted uniform convergence implies that $X_{n_k}$ converges weakly to $F$ under $\mathbb P_{\theta_k}$, while $Z_{n_k}$ has distribution function $F$ for every $k$.
+Part (ii) therefore implies that the preceding bounded-Lipschitz distance converges to zero, a contradiction. $\square$
+:::
+
+Part (iii) of Proposition 3 implies asymptotic equivalence reduces to uniform weak convergence when the target distribution is fixed.
+
+The next proposition shows that asymptotic equivalence is preserved under uniformly negligible perturbations:
+
+::: {#prp-asymptotic-equivalence-perturbation}
+If $X_n\stackrel{\mathcal{P}}{\approx}Z_n$ and $Y_n-X_n=o_{\mathcal{P}}(1)$, then
+$$
+Y_n\stackrel{\mathcal{P}}{\approx}Z_n.
+$$
+:::
+
+::: {.proof-block}
+*Proof.* By the triangle inequality, we have
+$$
+\begin{aligned}
+&\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(Z_n)]
+\right| \\
+&\qquad\leq
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
+\right| \\
+&\qquad\quad+
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(X_n)]-\mathbb{E}_\theta[g(Z_n)]
+\right|.
+\end{aligned}
+$$
+The second term tends to zero because $X_n\stackrel{\mathcal{P}}{\approx}Z_n$.
+To see that the first term also tends to zero, pick $g\in\mathcal G$ and $\delta>0$.
+Then
+$$
+\begin{aligned}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
+\right|
+&\leq
+\mathbb{E}_\theta\left|g(Y_n)-g(X_n)\right| \\
+&\leq
+\mathbb{E}_\theta\min\{2,\|Y_n-X_n\|\} \\
+&\leq
+\delta
++
+2\mathbb{P}_\theta(\|Y_n-X_n\|>\delta).
+\end{aligned}
+$$
+Taking the supremum over $g\in\mathcal G$ and $\theta\in\Theta$, then the limit superior as $n\to\infty$, gives an upper bound of $\delta$ because $Y_n-X_n=o_{\mathcal{P}}(1)$.
+Letting $\delta\downarrow0$ shows
+$$
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\sup_{g\in\mathcal G}
+\left|
+\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
+\right|
+=0. \qquad\square
+$$
+:::
+
+The next proposition records continuous mapping results:
+
+::: {#prp-continuous-mapping}
+[(i)]{.part-label} Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and there is a compact set $K\subseteq\mathbb R^k$ such that $\mathbb{P}_\theta(X\in K)=1$ for every $\theta\in\Theta$.
+If $h:\mathbb R^k\to\mathbb R^m$ is continuous on an open set containing $K$, then
+
+$$
+h(X_n)\stackrel{\mathcal{P}}{\to}h(X).
+$$
+
+[(ii)]{.part-label} Suppose $X_n\stackrel{\mathcal P}{\approx}Z_n$ and $Z_n=O_{\mathcal P}(1)$.
+If $h:\mathbb R^k\to\mathbb R^m$ is continuous, then
+
+$$
+h(X_n)
+\stackrel{\mathcal P}{\approx}
+h(Z_n).
+$$
+:::
+
+::: {.proof-block}
+*Proof.*
+
+[(i)]{.part-label} Fix $\epsilon>0$.
+By compactness of $K$ and continuity of $h$ on a neighborhood of $K$, there exists $\delta>0$ such that
+
+$$
+z\in\mathbb R^k,\ x\in K,\ \|z-x\|<\delta
+\quad\Rightarrow\quad
+\|h(z)-h(x)\|<\epsilon.
+$$
+
+Since $X\in K$ almost surely under every $\mathbb{P}_\theta$,
+
+$$
+\left\{
+\|h(X_n)-h(X)\|>\epsilon
+\right\}
+\cap
+\{X\in K\}
+\subseteq
+\left\{
+\|X_n-X\|>\delta/2
+\right\}.
+$$
+
+The right-hand side tends to zero because $X_n\stackrel{\mathcal{P}}{\to}X$.
+Since $\epsilon>0$ was arbitrary, $h(X_n)\stackrel{\mathcal{P}}{\to}h(X)$.
+
+[(ii)]{.part-label} Suppose the conclusion fails.
+Then there are $\epsilon>0$ and sequences $n_\ell\to\infty$ and $\theta_\ell\in\Theta$ such that
+
+$$
+\sup_{g\in\mathcal G_m}
+\left|
+\mathbb E_{\theta_\ell}[g(h(X_{n_\ell}))]
+-
+\mathbb E_{\theta_\ell}[g(h(Z_{n_\ell}))]
+\right|
+\geq\epsilon
+$$
+
+for every $\ell$.
+Let $\mu_\ell$ denote the law of $Z_{n_\ell}$ under $\mathbb P_{\theta_\ell}$.
+We first show that $\{\mu_\ell\}$ is tight.
+To do so, fix $\delta>0$.
+Because $Z_n=O_{\mathcal P}(1)$, there exist finite constants $M$ and $N$ such that
+$$
+\sup_{\theta\in\Theta}
+\mathbb P_\theta\left(\|Z_n\|>M\right)
+<\delta
+$$ {#eq-Zn-uniform-tail-bound}
+for every $n\geq N$.
+Since $n_\ell\to\infty$, there exists an index $L$ such that $n_\ell\geq N$ for every $\ell\geq L$.
+(-@eq-Zn-uniform-tail-bound) then gives
+$$
+\mu_\ell\left(\{z\in\mathbb R^k:\|z\|\leq M\}\right)
+>1-\delta
+$$
+for every $\ell\geq L$.
+For each $\ell<L$, we can also construct a compact ball $K_\ell$ with $\mu_\ell(K_\ell)>1-\delta$.
+The finite union
+$$
+K
+=
+\{z\in\mathbb R^k:\|z\|\leq M\}
+\cup
+\bigcup_{\ell=1}^{L-1}K_\ell
+$$
+is compact and satisfies $\mu_\ell(K)>1-\delta$ for every $\ell$.
+Thus the sequence $\{\mu_\ell\}$ is tight.
+
+By Prokhorov's theorem, there is a subsequence $\{\mu_{\ell_j}\}$ that converges weakly to the law of some random vector $W$ on $\mathbb R^k$.
+Part (i) of Proposition 3 and $X_n\stackrel{\mathcal P}{\approx}Z_n$ imply that $X_{n_{\ell_j}}$ also converges weakly to $W$.
+Because $h$ is continuous, the continuous mapping theorem implies that both $h(X_{n_{\ell_j}})$ and $h(Z_{n_{\ell_j}})$ converge weakly to $h(W)$.
+Part (ii) of Proposition 3 then gives
+
+$$
+\lim_{j\to\infty}
+\sup_{g\in\mathcal G_m}
+\left|
+\mathbb E_{\theta_{\ell_j}}[g(h(X_{n_{\ell_j}}))]
+-
+\mathbb E_{\theta_{\ell_j}}[g(h(Z_{n_{\ell_j}}))]
+\right|
+=0,
+$$
+
+contradicting the preceding lower bound.
+Thus $h(X_n)\stackrel{\mathcal P}{\approx}h(Z_n)$. $\square$
+:::
+
+The final result records a useful joint-convergence rule:
+
+::: {#prp-joint-convergence}
+If $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$, then
+
+$$
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+$$
+:::
+
+::: {.proof-block}
+*Proof.* Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$.
+For every $\epsilon>0$,
+
+$$
+\left\{
+\|(X_n,Y_n)-(X,Y)\|>\epsilon
+\right\}
+\subseteq
+\left\{
+\|X_n-X\|>\epsilon/2
+\right\}
+\cup
+\left\{
+\|Y_n-Y\|>\epsilon/2
+\right\}.
+$$
+
+Taking probabilities, taking the supremum over $\theta\in\Theta$, and using the two marginal convergences proves
+
+$$
+(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
+\qquad\square
+$$
+:::

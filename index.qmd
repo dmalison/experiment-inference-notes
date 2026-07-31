@@ -65,6 +65,7 @@ The procedures we derive have coverage guarantees that hold uniformly over the p
 ::: {.notes}
 - [Uniform Inference on Treatment Group Means](treatment-group-means/)
 - [Uniform Inference on Relative Treatment Effects](lift/)
+- [Uniform Inference on Ratio Metrics](ratio/)
 - [Regularity Diagnostics](diagnostics/)
 - [Uniform Asymptotics](uniform-asymptotics/)
 :::

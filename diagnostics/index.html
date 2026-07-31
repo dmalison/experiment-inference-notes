@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-27">
+<meta name="dcterms.date" content="2026-07-28">
 
 <title>Regularity Diagnostics</title>
 <style>
@@ -112,7 +112,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2026</p>
+      <p class="date">July 28, 2026</p>
     </div>
   </div>
   
@@ -208,16 +208,16 @@ q_{i,n}
 \qquad
 \widetilde\sigma_n^\mathrm{ATE}
 =
-\frac{s_n}{\sqrt{p(1-p)}}.
+\frac{s_n}{\sqrt{p_0p_1}}.
 \]</span></p>
 <p>Also define the linearization</p>
 <p><span class="math display">\[
 T_n
 =
 \frac{
-\sum_{i=1}^n(D_i-p)(y_i-\overline y)
+\sum_{i=1}^n(D_i-p_1)(y_i-\overline y)
 }{
-\sqrt{n p(1-p)}\,s_n
+\sqrt{n p_0p_1}\,s_n
 }.
 \]</span></p>
 <p>Under the strong null, we can show</p>
@@ -236,11 +236,11 @@ T_n+o_{\mathcal P}(1).
 \right|
 &amp;\leq
 C
-\frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
+\frac{p_0^2+p_1^2}{\sqrt{p_0p_1}}
 \lambda_n \\
 &amp;\leq
 C
-\frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
+\frac{p_0^2+p_1^2}{\sqrt{p_0p_1}}
 \sqrt{\kappa_n},
 \end{aligned}
 \tag{4}\]</span></span> where <span class="math inline">\(C\)</span> is a universal constant. Thus, as a heuristic for assessing the normal approximation to the standardized ATE estimator under the strong null, we can choose <span class="math inline">\(\overline\kappa\)</span> so that the Berry–Esseen bound in (<a href="#eq-kappa-be-bound" class="quarto-xref">4</a>) is no greater than a desired tolerance <span class="math inline">\(\overline\delta\)</span> whenever <span class="math inline">\(\kappa_n\leq\overline\kappa\)</span>. It suffices to set</p>
@@ -249,7 +249,7 @@ C
 =
 \left(
 \frac{\overline\delta}{C}
-\frac{\sqrt{p(1-p)}}{p^2+(1-p)^2}
+\frac{\sqrt{p_0p_1}}{p_0^2+p_1^2}
 \right)^2.
 \tag{5}\]</span></span></p>
 </section>

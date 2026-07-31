@@ -147,7 +147,7 @@ $$
 \qquad
 \widetilde\sigma_n^\mathrm{ATE}
 =
-\frac{s_n}{\sqrt{p(1-p)}}.
+\frac{s_n}{\sqrt{p_0p_1}}.
 $$
 
 Also define the linearization
@@ -156,9 +156,9 @@ $$
 T_n
 =
 \frac{
-\sum_{i=1}^n(D_i-p)(y_i-\overline y)
+\sum_{i=1}^n(D_i-p_1)(y_i-\overline y)
 }{
-\sqrt{n p(1-p)}\,s_n
+\sqrt{n p_0p_1}\,s_n
 }.
 $$
 
@@ -181,11 +181,11 @@ $$
 \right|
 &\leq
 C
-\frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
+\frac{p_0^2+p_1^2}{\sqrt{p_0p_1}}
 \lambda_n \\
 &\leq
 C
-\frac{p^2+(1-p)^2}{\sqrt{p(1-p)}}
+\frac{p_0^2+p_1^2}{\sqrt{p_0p_1}}
 \sqrt{\kappa_n},
 \end{aligned}
 $$ {#eq-kappa-be-bound}
@@ -198,7 +198,7 @@ $$
 =
 \left(
 \frac{\overline\delta}{C}
-\frac{\sqrt{p(1-p)}}{p^2+(1-p)^2}
+\frac{\sqrt{p_0p_1}}{p_0^2+p_1^2}
 \right)^2.
 $$ {#eq-kappa-tolerance}
 

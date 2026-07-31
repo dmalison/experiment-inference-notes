@@ -81,7 +81,11 @@ $$
 =
 \frac{\widehat{\sigma}_n^{\mathrm{ATE}}}{\sqrt{n}\,|\widehat{y}_{0,n}|},\\[1ex]
 \widehat{\sigma}_n^{\mathrm{ATE}} = \widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}, \qquad
-\widehat{\sigma}_{0,n}^2 = \frac{\overline{D}_n\,\widehat{s}_{00,n}^2}{1-\overline{D}_n}, \qquad \widehat{\sigma}_{1,n}^2 = \frac{(1-\overline{D}_n)\,\widehat{s}_{11,n}^2}{\overline{D}_n}.
+\widehat{\sigma}_{d,n}^2
+=
+\frac{\overline D_{1-d,n}}{\overline D_{d,n}}
+\widehat{s}_{dd,n}^2,
+\qquad d\in\{0,1\}.
 \end{gathered}
 $$
 

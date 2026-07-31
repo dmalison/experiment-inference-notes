@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Malison">
-<meta name="dcterms.date" content="2026-07-27">
+<meta name="dcterms.date" content="2026-07-28">
 
 <title>Uniform Inference on Relative Treatment Effects</title>
 <style>
@@ -122,7 +122,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 27, 2026</p>
+      <p class="date">July 28, 2026</p>
     </div>
   </div>
   
@@ -162,7 +162,11 @@ C_{1-\alpha,n}^{\mathrm{scaled}}
 =
 \frac{\widehat{\sigma}_n^{\mathrm{ATE}}}{\sqrt{n}\,|\widehat{y}_{0,n}|},\\[1ex]
 \widehat{\sigma}_n^{\mathrm{ATE}} = \widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}, \qquad
-\widehat{\sigma}_{0,n}^2 = \frac{\overline{D}_n\,\widehat{s}_{00,n}^2}{1-\overline{D}_n}, \qquad \widehat{\sigma}_{1,n}^2 = \frac{(1-\overline{D}_n)\,\widehat{s}_{11,n}^2}{\overline{D}_n}.
+\widehat{\sigma}_{d,n}^2
+=
+\frac{\overline D_{1-d,n}}{\overline D_{d,n}}
+\widehat{s}_{dd,n}^2,
+\qquad d\in\{0,1\}.
 \end{gathered}
 \]</span></p>
 <p>The problem with this interval is that it effectively ignores sampling variability in the denominator. As a consequence, its asymptotic coverage need not equal its nominal level.</p>

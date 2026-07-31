@@ -133,180 +133,9 @@ In the [Appendix](#sec-stationary-ergodic-conditions), we show this assumption h
 
 For $\theta\in\Theta$, let $\mathbb{P}_\theta$ denote the probability measure governing the observed sample $\{(D_i, Y_i)\}_{i=1}^n$ under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2.
 We let $\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}$ denote the set of possible probability measures under consideration.
+We use the notation and auxiliary results from the [uniform asymptotics note](../uniform-asymptotics/).
 
 # Inference
-
-## Uniform asymptotics
-
-Throughout this note, asymptotic statements are made uniformly over the family of distributions $\mathcal{P}$ induced by the parameters in $\Theta$.
-We use uniform asymptotics to ensure the inferential guarantees remain valid across the wide range of parameter configurations found in online experiments.
-
-We first define notation for uniform convergence in probability.
-We say $X_n \in \mathbb{R}^k$ converges in $\mathcal{P}$ to $X \in \mathbb{R}^k$, written as $X_n \stackrel{\mathcal{P}}{\to} X$, if for every $\epsilon > 0$,
-$$
-\lim_{n \to \infty} \sup_{\theta \in \Theta} \mathbb{P}_\theta(\|X_n - X\| > \epsilon) = 0.
-$$
-For a positive deterministic sequence $r_n$, we write $X_n=o_{\mathcal{P}}(r_n)$ if $X_n/r_n \stackrel{\mathcal{P}}{\to} 0$.
-We write $X_n=O_{\mathcal{P}}(r_n)$ if, for every $\epsilon > 0$, there exist finite constants $M$ and $N$ such that
-$$
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\left(\|X_n\|>Mr_n\right)
-<\epsilon
-$$
-for all $n\geq N$.
-We will use the following stochastic-order relationships:
-
-::: {#prp-stochastic-order}
-Let $r_n$ and $s_n$ be positive deterministic sequences. The following relationships hold whenever the indicated operations are well-defined:
-
-$$
-\begin{aligned}
-X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n)
-&\quad\Rightarrow\quad
-X_n+Y_n=O_{\mathcal{P}}(r_n+s_n), \\[1ex]
-X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n)
-&\quad\Rightarrow\quad
-X_nY_n=O_{\mathcal{P}}(r_ns_n), \\[1ex]
-X_n=o_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n)
-&\quad\Rightarrow\quad
-X_nY_n=o_{\mathcal{P}}(r_ns_n), \\[1ex]
-X_n=O_{\mathcal{P}}(r_n),\ r_n\to 0
-&\quad\Rightarrow\quad
-X_n=o_{\mathcal{P}}(1).
-\end{aligned}
-$$
-:::
-
-For each positive integer $q$, define the class of functions
-$$
-\mathcal G_q
-=
-\left\{
-g:\mathbb R^q\to\mathbb R:
-|g(x)|\leq1,
-|g(x)-g(y)|\leq\|x-y\|
-    \text{ for all }x,y\in\mathbb R^q
-\right\}.
-$$
-When the dimension is clear, we write $\mathcal G$ for $\mathcal G_q$.
-For $X_n,Z_n\in\mathbb R^q$, we say $X_n$ is asymptotically equivalent in $\mathcal{P}$ to $Z_n$,
-written $X_n\stackrel{\mathcal{P}}{\approx}Z_n$, if
-$$
-\lim_{n\to\infty}
-\sup_{\theta\in\Theta}
-\sup_{g\in\mathcal G_q}
-\left|
-\mathbb{E}_\theta[g(X_n)]
--
-\mathbb{E}_\theta[g(Z_n)]
-\right|
-=0.
-$$
-
-The next proposition connects asymptotic equivalence and convergence to a fixed distribution:
-
-::: {#prp-asymptotic-equivalence-cdf-limit}
-For any sequences $n_k\to\infty$ and $\theta_k\in\Theta$ and any fixed distribution function $F$, the following statements hold:
-
-(i) If $X_n\stackrel{\mathcal{P}}{\approx}Z_n$ and
-$$\lim_{k\to\infty}
-\left|
-\mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
-\right|
-=0
-\quad\text{for every continuity point $\mathbf t$ of $F$},
-$$
-then
-$$
-\lim_{k\to\infty}
-\left|
-\mathbb{P}_{\theta_k}(X_{n_k}\leq\mathbf t)-F(\mathbf t)
-\right|
-=0
-\quad\text{for every continuity point $\mathbf t$ of $F$}.
-$$
-
-(ii) If
-$$
-\begin{aligned}
-\lim_{k \to \infty}
-\left|
-\mathbb{P}_{\theta_k}(X_{n_k}\leq\mathbf t)-F(\mathbf t)
-\right|
-&=0, \\
-\lim_{k \to \infty}
-\left|
-\mathbb{P}_{\theta_k}(Z_{n_k}\leq\mathbf t)-F(\mathbf t)
-\right|
-&=0
-\end{aligned}
-$$
-for every continuity point $\mathbf t$ of $F$, then
-$$
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right|
-=0.
-$$
-
-(iii) Suppose $Z_n$ has distribution function $F$ under $\mathbb P_\theta$ for every $n$ and $\theta$.
-Then $X_n\stackrel{\mathcal{P}}{\approx}Z_n$ if and only if, for every continuity point $\mathbf t\in\mathbb R^q$ of $F$,
-$$
-\lim_{n\to\infty}
-\sup_{\theta\in\Theta}
-\left|
-\mathbb{P}_\theta(X_n\leq\mathbf t)-F(\mathbf t)
-\right|
-=0.
-$$
-:::
-
-Asymptotic equivalence therefore reduces to uniform weak convergence when the target distribution is fixed, but also accommodates comparisons between sequences that may not converge.
-
-The next proposition shows that asymptotic equivalence is preserved under uniformly negligible perturbations:
-
-::: {#prp-asymptotic-equivalence-perturbation}
-If $X_n\stackrel{\mathcal{P}}{\approx}Z_n$ and $Y_n-X_n=o_{\mathcal{P}}(1)$, then
-$$
-Y_n\stackrel{\mathcal{P}}{\approx}Z_n.
-$$
-:::
-
-The next proposition records continuous mapping results:
-
-::: {#prp-continuous-mapping}
-(i) Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and there is a compact set $K\subseteq\mathbb R^k$ such that $\mathbb{P}_\theta(X\in K)=1$ for every $\theta\in\Theta$.
-If $h:\mathbb R^k\to\mathbb R^m$ is continuous on an open set containing $K$, then
-
-$$
-h(X_n)\stackrel{\mathcal{P}}{\to}h(X).
-$$
-
-(ii) Suppose $X_n\stackrel{\mathcal P}{\approx}Z_n$ and $Z_n=O_{\mathcal P}(1)$.
-If $h:\mathbb R^k\to\mathbb R^m$ is continuous, then
-
-$$
-h(X_n)
-\stackrel{\mathcal P}{\approx}
-h(Z_n).
-$$
-:::
-
-The final result records a useful joint-convergence rule:
-
-::: {#prp-joint-convergence}
-If $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$, then
-
-$$
-(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
-$$
-:::
-
-Proofs of these propositions can be found in the [Appendix](#sec-proposition-proofs).
 
 ## Target
 
@@ -337,7 +166,7 @@ Asymptotic validity permits finite-sample undercoverage, but requires the worst-
 ## Normal approximation
 
 We estimate $\psi_n$ by replacing the potential outcome means with the control and treatment group sample means.
-Let $D_{i,1}=D_i$ and $D_{i,0}=1-D_i$.
+Let $D_{i,1}=D_i$, $D_{i,0}=1-D_i$, $p_1=p$, and $p_0=1-p$.
 For $d\in\{0,1\}$, define
 $$
 \overline D_{d,n}
@@ -354,6 +183,10 @@ $$
 	\text{ or }
 \overline D_{1,n}=0
 \right)
+\leq
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\left(p_1^n+p_0^n\right)
 \leq
 \lim_{n\to\infty}2(1-\underline p)^n
 =0.
@@ -386,15 +219,15 @@ $$
 \mathbf{b}_n
 =
 \begin{pmatrix}
--\dfrac{a_{0,n}}{1-p} \\[2ex]
-\dfrac{a_{1,n}}{p}
+-\dfrac{a_{0,n}}{p_0} \\[2ex]
+\dfrac{a_{1,n}}{p_1}
 \end{pmatrix}
 $$
 
 and
 
 $$
-X_{i,n} = \frac{D_i - p}{\sqrt{n}}
+X_{i,n} = \frac{D_i - p_1}{\sqrt{n}}
 \mathbf{b}_n'\mathbf{u}_{i,n}.
 $$
 
@@ -402,17 +235,17 @@ Under Assumption 1, $\{X_{i,n}\}$ is a triangular array of row-wise independent,
 The variance of the row-wise sum is
 
 $$
-\sigma_n^2 = \sum_{i=1}^n \mathbb{V}(X_{i,n}) = p(1-p)\mathbf{b}_n'\mathbf{S}_n\mathbf{b}_n.
+\sigma_n^2 = \sum_{i=1}^n \mathbb{V}(X_{i,n}) = p_0p_1\mathbf{b}_n'\mathbf{S}_n\mathbf{b}_n.
 $$ {#eq-sigma}
 
 Because the covariance terms in $\mathbf{S}_n$ are not identified, we cannot estimate $\sigma_n^2$ directly.
 Instead, we define
 $$
-\widetilde{\sigma}_n^2 = p(1-p)
+\widetilde{\sigma}_n^2 = p_0p_1
 \left(
-\frac{|a_{0,n}|s_{00,n}}{1-p}
+\frac{|a_{0,n}|s_{00,n}}{p_0}
 +
-\frac{|a_{1,n}|s_{11,n}}{p}
+\frac{|a_{1,n}|s_{11,n}}{p_1}
 \right)^2.
 $$ {#eq-sigma-tilde}
 By the Cauchy--Schwarz inequality,
@@ -420,14 +253,14 @@ $$
 \begin{aligned}
 \sigma_n^2
 &=
-a_{0,n}^2\frac{p}{1-p}s_{00,n}^2
+a_{0,n}^2\frac{p_1}{p_0}s_{00,n}^2
 +
-a_{1,n}^2\frac{1-p}{p}s_{11,n}^2
+a_{1,n}^2\frac{p_0}{p_1}s_{11,n}^2
 - 2a_{0,n}a_{1,n}s_{01,n} \\
 &\leq
-a_{0,n}^2\frac{p}{1-p}s_{00,n}^2
+a_{0,n}^2\frac{p_1}{p_0}s_{00,n}^2
 +
-a_{1,n}^2\frac{1-p}{p}s_{11,n}^2
+a_{1,n}^2\frac{p_0}{p_1}s_{11,n}^2
 + 2|a_{0,n}a_{1,n}|s_{00,n}s_{11,n} \\
 &= \widetilde{\sigma}_n^2.
 \end{aligned}
@@ -454,7 +287,7 @@ $$
 \frac{|a_{1,n}|\widehat{s}_{11,n}}{\overline D_{1,n}}
 \right)^2.
 $$ {#eq-sigma-hat}
-Since $\mathbf{a}_n\neq\mathbf{0}$ and $0<p<1$, Assumption 3 implies that $\widetilde{\sigma}_n^2>0$ for every $\theta\in\Theta$ and all sufficiently large $n$.
+Since $\mathbf{a}_n\neq\mathbf{0}$ and $p_0,p_1>0$, Assumption 3 implies that $\widetilde{\sigma}_n^2>0$ for every $\theta\in\Theta$ and all sufficiently large $n$.
 Therefore, for all sufficiently large $n$,
 $$
 \left\{\widehat\sigma_n=0\right\}
@@ -492,13 +325,13 @@ $$
 \frac{\sigma_n^2}{\widetilde{\sigma}_n^2}
 $$ {#eq-relative-variance}
 and let $Z_n$ have distribution $N(0,\omega_n^2)$.
-In the [Appendix](#sec-scalar-normal-approximation), we use the Lyapunov central limit theorem and Proposition 2 to show
+In the [Appendix](#sec-scalar-normal-approximation), we use the Lyapunov central limit theorem and [Proposition 3](../uniform-asymptotics/#prp-asymptotic-equivalence-cdf-limit) to show
 $$
 \frac{\sum_{i=1}^n X_{i,n}}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\approx}
 Z_n.
 $$ {#eq-scalar-normal-approximation}
-Proposition 3 therefore implies
+[Proposition 4](../uniform-asymptotics/#prp-asymptotic-equivalence-perturbation) therefore implies
 
 $$
 \sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
@@ -556,7 +389,7 @@ $$
 =0
 $$
 for every $t\neq0$.
-Part (i) of Proposition 2 and (-@eq-feasible-normal-approximation) therefore imply
+Part (i) of [Proposition 3](../uniform-asymptotics/#prp-asymptotic-equivalence-cdf-limit) and (-@eq-feasible-normal-approximation) therefore imply
 $$
 \lim_{j\to\infty}
 \mathbb P_{\theta_{k_j}}\left(
@@ -913,411 +746,16 @@ $$
 
 Thus $\Theta$ satisfies Assumption 3.
 
-## Proofs of the asymptotic propositions {#sec-proposition-proofs}
-
-### [Proposition 1](#prp-stochastic-order)
-
-For $M>0$, write $A_n^M=\{\|X_n\|>Mr_n\}$ and $B_n^M=\{\|Y_n\|>Ms_n\}$.
-
-**Sum.**
-Fix $\epsilon>0$.
-By the two stochastic-order assumptions, we can choose finite constants $M_X$ and $M_Y$ and an index $N$ so that
-
-$$
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M_X}\right)<\epsilon/2,
-\qquad
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M_Y}\right)<\epsilon/2
-$$
-
-for all $n\geq N$.
-Taking $M=\max\{M_X,M_Y\}$, the same bounds hold with $M$ in place of $M_X$ and $M_Y$.
-On $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $\|X_n+Y_n\|\leq\|X_n\|+\|Y_n\|\leq M(r_n+s_n)$, so
-
-$$
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\bigl(\|X_n+Y_n\|>M(r_n+s_n)\bigr)
-\leq
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)
-+
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(B_n^{M}\right)
-<\epsilon
-$$
-
-for $n\geq N$.
-Hence $X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)$.
-
-**Product.**
-With the same $M$ and $N$, on $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $\|X_nY_n\|\leq\|X_n\|\,\|Y_n\|\leq M^2 r_ns_n$, so $\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_nY_n\|>M^2 r_ns_n)<\epsilon$ for $n\geq N$.
-Hence $X_nY_n=O_{\mathcal{P}}(r_ns_n)$.
-
-**Product with a vanishing factor.**
-Suppose $X_n=o_{\mathcal{P}}(r_n)$, and fix $\epsilon>0$ and $\delta>0$.
-Since $Y_n=O_{\mathcal{P}}(s_n)$, we can choose $M$ and $N$ such that
-
-$$
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\left(B_n^{M}\right)<\delta
-$$
-
-for all $n\geq N$.
-On $\left(B_n^{M}\right)^c$, the event $\|X_nY_n\|>\epsilon r_ns_n$ implies $\|X_n\|>(\epsilon/M)r_n$, so
-
-$$
-\mathbb{P}_\theta(\|X_nY_n\|>\epsilon r_ns_n)
-\leq
-\mathbb{P}_\theta\bigl(\|X_n\|>(\epsilon/M)r_n\bigr)
-+\mathbb{P}_\theta\left(B_n^{M}\right).
-$$
-
-Taking the supremum over $\theta$ and the limit superior gives
-
-$$
-\begin{aligned}
-&\limsup_{n\to\infty}
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta(\|X_nY_n\|>\epsilon r_ns_n) \\
-&\qquad\leq
-\limsup_{n\to\infty}
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\bigl(\|X_n\|>(\epsilon/M)r_n\bigr)
-+
-\limsup_{n\to\infty}
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\left(B_n^{M}\right)
-\leq \delta.
-\end{aligned}
-$$
-
-Taking $\delta\downarrow0$, we can conclude $X_nY_n=o_{\mathcal{P}}(r_ns_n)$.
-
-**Vanishing rate.**
-Suppose $X_n=O_{\mathcal{P}}(r_n)$ with $r_n\to 0$, and fix $\delta>0$ and $\epsilon>0$.
-Choose $M$ and $N_0$ with $\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)<\epsilon$ for $n\geq N_0$.
-Since $r_n\to 0$, there is $N_1$ with $Mr_n<\delta$ for $n\geq N_1$.
-Therefore $\{\|X_n\|>\delta\}\subseteq A_n^{M}$ and $\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_n\|>\delta)<\epsilon$ for $n\geq\max(N_0,N_1)$.
-Since $\epsilon>0$ was arbitrary, $X_n=o_{\mathcal{P}}(1)$.
-
-### [Proposition 2](#prp-asymptotic-equivalence-cdf-limit)
-
-(i) The premise says that, under $\mathbb{P}_{\theta_k}$, $Z_{n_k}$ converges weakly to the fixed distribution with distribution function $F$.
-By the bounded-Lipschitz characterization of weak convergence, this implies
-$$
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right|
-=0.
-$$
-Moreover, for every $k$, the triangle inequality gives
-$$
-\begin{aligned}
-&\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right| \\
-&\qquad\leq
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right|
-\\
-&\qquad\quad+
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right|.
-\end{aligned}
-$$
-The first term on the right tends to zero because $X_n\stackrel{\mathcal{P}}{\approx}Z_n$, and the second tends to zero by the preceding display.
-Therefore
-$$
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right|
-=0.
-$$
-Thus $X_{n_k}$ converges weakly to $F$ under $\mathbb{P}_{\theta_k}$.
-The claimed convergence of distribution functions at every continuity point of $F$ follows from the portmanteau theorem.
-
-(ii) The two premises imply that, under $\mathbb{P}_{\theta_k}$, both $X_{n_k}$ and $Z_{n_k}$ converge weakly to the fixed distribution with distribution function $F$.
-The bounded-Lipschitz characterization of weak convergence therefore gives
-$$
-\begin{aligned}
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right|&=0, \\
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right|&=0.
-\end{aligned}
-$$
-By the triangle inequality,
-$$
-\begin{aligned}
-&\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right| \\
-&\qquad\leq
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right| \\
-&\qquad\quad+
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
--
-\int_{\mathbb R^q}g(\mathbf z)\,dF(\mathbf z)
-\right|.
-\end{aligned}
-$$
-Both terms on the right tend to zero, so
-$$
-\lim_{k\to\infty}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_{\theta_k}[g(X_{n_k})]
--
-\mathbb{E}_{\theta_k}[g(Z_{n_k})]
-\right|
-=0.
-$$
-
-(iii) First suppose $X_n\stackrel{\mathcal P}{\approx}Z_n$.
-If the asserted uniform convergence failed, there would be a continuity point $\mathbf t$ of $F$, an $\epsilon>0$, and sequences $n_k\to\infty$ and $\theta_k\in\Theta$ such that
-$$
-\left|
-\mathbb P_{\theta_k}(X_{n_k}\leq\mathbf t)
--F(\mathbf t)
-\right|
-\geq\epsilon
-$$
-for every $k$.
-Because $Z_{n_k}$ has distribution function $F$ under $\mathbb P_{\theta_k}$, part (i) implies that the left-hand side converges to zero, a contradiction.
-
-Conversely, suppose the asserted uniform convergence holds.
-If $X_n\stackrel{\mathcal P}{\approx}Z_n$ failed, there would be an $\epsilon>0$ and sequences $n_k\to\infty$ and $\theta_k\in\Theta$ such that
-$$
-\sup_{g\in\mathcal G}
-\left|
-\mathbb E_{\theta_k}[g(X_{n_k})]
--
-\mathbb E_{\theta_k}[g(Z_{n_k})]
-\right|
-\geq\epsilon
-$$
-for every $k$.
-The asserted uniform convergence implies that $X_{n_k}$ converges weakly to $F$ under $\mathbb P_{\theta_k}$, while $Z_{n_k}$ has distribution function $F$ for every $k$.
-Part (ii) therefore implies that the preceding bounded-Lipschitz distance converges to zero, a contradiction.
-
-### [Proposition 3](#prp-asymptotic-equivalence-perturbation)
-
-By the triangle inequality, we have
-$$
-\begin{aligned}
-&\sup_{\theta\in\Theta}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(Z_n)]
-\right| \\
-&\qquad\leq
-\sup_{\theta\in\Theta}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
-\right| \\
-&\qquad\quad+
-\sup_{\theta\in\Theta}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_\theta[g(X_n)]-\mathbb{E}_\theta[g(Z_n)]
-\right|.
-\end{aligned}
-$$
-The second term tends to zero because $X_n\stackrel{\mathcal{P}}{\approx}Z_n$.
-To see that the first term also tends to zero, pick $g\in\mathcal G$ and $\delta>0$.
-Then
-$$
-\begin{aligned}
-\left|
-\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
-\right|
-&\leq
-\mathbb{E}_\theta\left|g(Y_n)-g(X_n)\right| \\
-&\leq
-\mathbb{E}_\theta\min\{2,\|Y_n-X_n\|\} \\
-&\leq
-\delta
-+
-2\mathbb{P}_\theta(\|Y_n-X_n\|>\delta).
-\end{aligned}
-$$
-Taking the supremum over $g\in\mathcal G$ and $\theta\in\Theta$, then the limit superior as $n\to\infty$, gives an upper bound of $\delta$ because $Y_n-X_n=o_{\mathcal{P}}(1)$.
-Letting $\delta\downarrow0$ shows
-$$
-\lim_{n\to\infty}
-\sup_{\theta\in\Theta}
-\sup_{g\in\mathcal G}
-\left|
-\mathbb{E}_\theta[g(Y_n)]-\mathbb{E}_\theta[g(X_n)]
-\right|
-=0.
-$$
-
-### [Proposition 4](#prp-continuous-mapping)
-
-(i)
-Fix $\epsilon>0$.
-By compactness of $K$ and continuity of $h$ on a neighborhood of $K$, there exists $\delta>0$ such that
-
-$$
-z\in\mathbb R^k,\ x\in K,\ \|z-x\|<\delta
-\quad\Rightarrow\quad
-\|h(z)-h(x)\|<\epsilon.
-$$
-
-Since $X\in K$ almost surely under every $\mathbb{P}_\theta$,
-
-$$
-\left\{
-\|h(X_n)-h(X)\|>\epsilon
-\right\}
-\cap
-\{X\in K\}
-\subseteq
-\left\{
-\|X_n-X\|>\delta/2
-\right\}.
-$$
-
-The right-hand side tends to zero because $X_n\stackrel{\mathcal{P}}{\to}X$.
-Since $\epsilon>0$ was arbitrary, $h(X_n)\stackrel{\mathcal{P}}{\to}h(X)$.
-
-(ii)
-Suppose the conclusion fails.
-Then there are $\epsilon>0$ and sequences $n_\ell\to\infty$ and $\theta_\ell\in\Theta$ such that
-
-$$
-\sup_{g\in\mathcal G_m}
-\left|
-\mathbb E_{\theta_\ell}[g(h(X_{n_\ell}))]
--
-\mathbb E_{\theta_\ell}[g(h(Z_{n_\ell}))]
-\right|
-\geq\epsilon
-$$
-
-for every $\ell$.
-Let $\mu_\ell$ denote the law of $Z_{n_\ell}$ under $\mathbb P_{\theta_\ell}$.
-We first show that $\{\mu_\ell\}$ is tight.
-To do so, fix $\delta>0$.
-Because $Z_n=O_{\mathcal P}(1)$, there exist finite constants $M$ and $N$ such that
-$$
-\sup_{\theta\in\Theta}
-\mathbb P_\theta\left(\|Z_n\|>M\right)
-<\delta
-$$ {#eq-Zn-uniform-tail-bound}
-for every $n\geq N$.
-Since $n_\ell\to\infty$, there exists an index $L$ such that $n_\ell\geq N$ for every $\ell\geq L$.
-(-@eq-Zn-uniform-tail-bound) then gives
-$$
-\mu_\ell\left(\{z\in\mathbb R^k:\|z\|\leq M\}\right)
->1-\delta
-$$
-for every $\ell\geq L$.
-For each $\ell<L$, we can also construct a compact ball $K_\ell$ with $\mu_\ell(K_\ell)>1-\delta$.
-The finite union
-$$
-K
-=
-\{z\in\mathbb R^k:\|z\|\leq M\}
-\cup
-\bigcup_{\ell=1}^{L-1}K_\ell
-$$
-is compact and satisfies $\mu_\ell(K)>1-\delta$ for every $\ell$.
-Thus the sequence $\{\mu_\ell\}$ is tight.
-
-By Prokhorov's theorem, there is a subsequence $\{\mu_{\ell_j}\}$ that converges weakly to the law of some random vector $W$ on $\mathbb R^k$.
-Part (i) of Proposition 2 and $X_n\stackrel{\mathcal P}{\approx}Z_n$ imply that $X_{n_{\ell_j}}$ also converges weakly to $W$.
-Because $h$ is continuous, the continuous mapping theorem implies that both $h(X_{n_{\ell_j}})$ and $h(Z_{n_{\ell_j}})$ converge weakly to $h(W)$.
-Part (ii) of Proposition 2 then gives
-
-$$
-\lim_{j\to\infty}
-\sup_{g\in\mathcal G_m}
-\left|
-\mathbb E_{\theta_{\ell_j}}[g(h(X_{n_{\ell_j}}))]
--
-\mathbb E_{\theta_{\ell_j}}[g(h(Z_{n_{\ell_j}}))]
-\right|
-=0,
-$$
-
-contradicting the preceding lower bound.
-Thus $h(X_n)\stackrel{\mathcal P}{\approx}h(Z_n)$.
-
-### [Proposition 5](#prp-joint-convergence)
-
-Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$.
-For every $\epsilon>0$,
-
-$$
-\left\{
-\|(X_n,Y_n)-(X,Y)\|>\epsilon
-\right\}
-\subseteq
-\left\{
-\|X_n-X\|>\epsilon/2
-\right\}
-\cup
-\left\{
-\|Y_n-Y\|>\epsilon/2
-\right\}.
-$$
-
-Taking probabilities, taking the supremum over $\theta\in\Theta$, and using the two marginal convergences proves
-
-$$
-(X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
-$$
-
 ## Estimator asymptotics {#sec-estimator-asymptotics}
 
 ### Notation and auxiliary lemma
 
-Let $p_1=p$ and $p_0=1-p$.
-
-Also define
+Define
 
 $$
-\ell_{0,n}=\frac{|a_{0,n}|s_{00,n}}{1-p},
+\ell_{0,n}=\frac{|a_{0,n}|s_{00,n}}{p_0},
 \qquad
-\ell_{1,n}=\frac{|a_{1,n}|s_{11,n}}{p},
+\ell_{1,n}=\frac{|a_{1,n}|s_{11,n}}{p_1},
 \qquad
 L_n=\ell_{0,n}+\ell_{1,n}.
 $$
@@ -1340,7 +778,7 @@ $$
 $$
 \mathbb{E}_\theta(\overline D_{d,n})=p_d,
 \qquad
-\mathbb{V}_\theta(\overline D_{d,n})=\frac{p_d(1-p_d)}{n}.
+\mathbb{V}_\theta(\overline D_{d,n})=\frac{p_dp_{1-d}}{n}.
 $$
 
 For every $\epsilon>0$, Chebyshev's inequality gives
@@ -1354,7 +792,7 @@ $$
 &\leq
 \frac{1}{\epsilon^2}
 \sup_{\theta\in\Theta}
-\frac{p_d(1-p_d)}{n} \\
+\frac{p_dp_{1-d}}{n} \\
 &\leq
 \frac{1}{4\epsilon^2 n} \\[2ex]
 &\to 0.
@@ -1372,7 +810,7 @@ $$
 \right)
 &\leq
 \frac{1}{M^2}
-\sup_{\theta\in\Theta}p_d(1-p_d) \\
+\sup_{\theta\in\Theta}p_dp_{1-d} \\
 &\leq
 \frac{1}{4M^2}.
 \end{aligned}
@@ -1404,7 +842,7 @@ $$
 $$ {#eq-Shat-decomposition}
 
 By Assumption 3, there exists an index $N$ for which $s_{dd,n}^2>0$ for all $n\geq N$, $d\in\{0,1\}$, and $\theta\in\Theta$.
-Together with Lemma 1 and Propositions 4 and 5, (-@eq-Shat-consistency) will follow from (-@eq-Shat-decomposition) if we can show
+Together with Lemma 1, [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping), and [Proposition 6](../uniform-asymptotics/#prp-joint-convergence), (-@eq-Shat-consistency) will follow from (-@eq-Shat-decomposition) if we can show
 $$
 \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d s_{dd,n}^2}{s_{dd,n}^2}
 \stackrel{\mathcal{P}}{\to} 0,
@@ -1416,9 +854,9 @@ $$ {#eq-Shat-remainder-bounds}
 The first term in (-@eq-Shat-remainder-bounds) has mean zero and variance
 
 $$
-\frac{p_d(1-p_d)}{n^2 s_{dd,n}^4}\sum_{i=1}^n u_{i,d,n}^4
+\frac{p_dp_{1-d}}{n^2 s_{dd,n}^4}\sum_{i=1}^n u_{i,d,n}^4
 \leq
-\frac{p_d(1-p_d)}{n^2 s_{dd,n}^4}
+\frac{p_dp_{1-d}}{n^2 s_{dd,n}^4}
 \max_{1 \leq i \leq n} u_{i,d,n}^2
 \sum_{i=1}^n u_{i,d,n}^2.
 $$
@@ -1426,14 +864,14 @@ $$
 Since $\sum_{i=1}^n u_{i,d,n}^2=ns_{dd,n}^2$, we can write the right-hand side as
 
 $$
-\frac{p_d(1-p_d)}{n}
+\frac{p_dp_{1-d}}{n}
 \left(\frac{\max_{1 \leq i \leq n} u_{i,d,n}^2}{s_{dd,n}^2}\right)
 =
-p_d(1-p_d)
+p_dp_{1-d}
 \left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} s_{dd,n}}\right)^2.
 $$
 
-Since $p_d(1-p_d)\leq 1/4$, for every $\epsilon>0$,
+Since $p_dp_{1-d}\leq 1/4$, for every $\epsilon>0$,
 
 $$
 \begin{aligned}
@@ -1452,11 +890,11 @@ $$
 $$
 by Chebyshev's inequality.
 Therefore the first term converges in $\mathcal{P}$ to zero by Assumption 3.
-Since the second term in (-@eq-Shat-remainder-bounds) has mean zero and variance $p_d(1-p_d)/n$,
+Since the second term in (-@eq-Shat-remainder-bounds) has mean zero and variance $p_dp_{1-d}/n$,
 it also converges in $\mathcal{P}$ to zero by Chebyshev's inequality.
 This proves (-@eq-Shat-consistency).
 
-Since $\widehat{s}_{dd,n}$ and $s_{dd,n}$ are nonnegative, Proposition 4 also gives
+Since $\widehat{s}_{dd,n}$ and $s_{dd,n}$ are nonnegative, [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping) also gives
 
 $$
 \frac{\widehat{s}_{dd,n}}{s_{dd,n}}
@@ -1467,21 +905,21 @@ Now by (-@eq-sigma-tilde) and (-@eq-sigma-hat), we have
 $$
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2}
 =
-\frac{\overline D_{1,n}\overline D_{0,n}}{p(1-p)}
+\frac{\overline D_{1,n}\overline D_{0,n}}{p_1p_0}
 \left[
 \frac{
 \frac{|a_{0,n}|s_{00,n}}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
 +
 \frac{|a_{1,n}|s_{11,n}}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
 }{
-\frac{|a_{0,n}|s_{00,n}}{1-p}
+\frac{|a_{0,n}|s_{00,n}}{p_0}
 +
-\frac{|a_{1,n}|s_{11,n}}{p}
+\frac{|a_{1,n}|s_{11,n}}{p_1}
 }
 \right]^2.
 $$ {#eq-sigma-ratio-expansion}
 
-The unbracketed term converges to one in $\mathcal{P}$ by Lemma 1 and Proposition 4.
+The unbracketed term converges to one in $\mathcal{P}$ by Lemma 1 and [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping).
 It therefore suffices to show that the bracketed ratio also converges to one.
 For all $n \geq N$, $L_n>0$ and the ratios $\ell_{0,n}/L_n$ and $\ell_{1,n}/L_n$ are nonnegative and sum to one.
 The difference between the bracketed ratio and one can therefore be bounded by
@@ -1489,33 +927,33 @@ $$
 \begin{aligned}
 &\left|
 \frac{\ell_{0,n}}{L_n}
-\left(\frac{1-p}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}\right)
+\left(\frac{p_0}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}\right)
 +
 \frac{\ell_{1,n}}{L_n}
-\left(\frac{p}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}\right)
+\left(\frac{p_1}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}\right)
 -1
 \right| \\
 &\leq
 \frac{\ell_{0,n}}{L_n}
 \left|
-\frac{1-p}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
+\frac{p_0}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
 -1
 \right|
 +
 \frac{\ell_{1,n}}{L_n}
 \left|
-\frac{p}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
+\frac{p_1}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
 -1
 \right|
 \\
 &\leq
 \left|
-\frac{1-p}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
+\frac{p_0}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
 -1
 \right|
 +
 \left|
-\frac{p}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
+\frac{p_1}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
 -1
 \right|
 \end{aligned}
@@ -1527,10 +965,10 @@ $$
 \mathbb{P}_\theta\left(
 \left|
 \frac{\ell_{0,n}}{L_n}
-\left(\frac{1-p}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}\right)
+\left(\frac{p_0}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}\right)
 +
 \frac{\ell_{1,n}}{L_n}
-\left(\frac{p}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}\right)
+\left(\frac{p_1}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}\right)
 -1
 \right|>
 \epsilon
@@ -1539,7 +977,7 @@ $$
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{1-p}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
+\frac{p_0}{\overline D_{0,n}}\frac{\widehat{s}_{00,n}}{s_{00,n}}
 -1
 \right|>
 \epsilon/2
@@ -1547,7 +985,7 @@ $$
 \sup_{\theta\in\Theta}
 \mathbb{P}_\theta\left(
 \left|
-\frac{p}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
+\frac{p_1}{\overline D_{1,n}}\frac{\widehat{s}_{11,n}}{s_{11,n}}
 -1
 \right|>
 \epsilon/2
@@ -1555,9 +993,9 @@ $$
 \end{aligned}
 $$
 
-The two probabilities on the right-hand side tend to zero by (-@eq-Shat-root-consistency), Lemma 1, and Propositions 4 and 5.
+The two probabilities on the right-hand side tend to zero by (-@eq-Shat-root-consistency), Lemma 1, [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping), and [Proposition 6](../uniform-asymptotics/#prp-joint-convergence).
 Therefore the bracketed ratio in (-@eq-sigma-ratio-expansion) converges to one in $\mathcal{P}$.
-Combining this with the convergence of the unbracketed term proves (-@eq-variance-ratio-consistency) by Propositions 4 and 5.
+Combining this with the convergence of the unbracketed term proves (-@eq-variance-ratio-consistency) by [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping) and [Proposition 6](../uniform-asymptotics/#prp-joint-convergence).
 
 ### Derivation of (-@eq-means-asymptotic-linearization) {#sec-residual-appendix}
 
@@ -1565,7 +1003,7 @@ Define
 $$
 U_{d,n}
 =
-\frac{1}{n}\sum_{i=1}^n (D_i-p)(y_{i,d}-\overline y_{d,n}),
+\frac{1}{n}\sum_{i=1}^n (D_i-p_1)(y_{i,d}-\overline y_{d,n}),
 \qquad d\in\{0,1\}.
 $$
 
@@ -1575,10 +1013,10 @@ Using $\sum_{i=1}^n (y_{i,d} - \overline y_{d,n}) = 0$, we can write
 $$
 \begin{aligned}
 \widehat y_{0,n} - \overline y_{0,n}
-&= -\frac{1}{n\overline D_{0,n}}\sum_{i=1}^n (D_i - p)(y_{i,0} - \overline y_{0,n})\\[2ex]
+&= -\frac{1}{n\overline D_{0,n}}\sum_{i=1}^n (D_i - p_1)(y_{i,0} - \overline y_{0,n})\\[2ex]
 &= -\dfrac{U_{0,n}}{\overline D_{0,n}}, \\[2ex]
 \widehat y_{1,n} - \overline y_{1,n}
-&= \frac{1}{n\overline D_{1,n}}\sum_{i=1}^n (D_i - p)(y_{i,1} - \overline y_{1,n}) \\[2ex]
+&= \frac{1}{n\overline D_{1,n}}\sum_{i=1}^n (D_i - p_1)(y_{i,1} - \overline y_{1,n}) \\[2ex]
 &= \dfrac{U_{1,n}}{\overline D_{1,n}}
 \end{aligned}
 $$
@@ -1590,8 +1028,8 @@ $$
 \sqrt{n}\left(\widehat{\psi}_n-\psi_n\right)
 &= \sqrt{n}\left(a_{0,n}\left(\widehat y_{0,n}-\overline y_{0,n}\right) + a_{1,n}\left(\widehat y_{1,n}-\overline y_{1,n}\right)\right) \\[2ex]
 &= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}}\right) \\[2ex]
-&= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right)
-+ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{1-p} - \frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}} - \frac{a_{1,n} U_{1,n}}{p}\right) \\[2ex]
+&= \sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{p_0} + \frac{a_{1,n} U_{1,n}}{p_1}\right)
++ \sqrt{n}\left(\frac{a_{0,n} U_{0,n}}{p_0} - \frac{a_{0,n} U_{0,n}}{\overline D_{0,n}} + \frac{a_{1,n} U_{1,n}}{\overline D_{1,n}} - \frac{a_{1,n} U_{1,n}}{p_1}\right) \\[2ex]
 &= \sum_{i=1}^n X_{i,n} + R_n,
 \end{aligned}
 $$ {#eq-exact-decomposition}
@@ -1602,13 +1040,13 @@ $$
 \begin{aligned}
 \sum_{i = 1}^n X_{i,n}
 &=
-\sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{1-p} + \frac{a_{1,n} U_{1,n}}{p}\right), \\[2ex]
+\sqrt{n}\left(-\frac{a_{0,n} U_{0,n}}{p_0} + \frac{a_{1,n} U_{1,n}}{p_1}\right), \\[2ex]
 R_n
-&= -\sqrt{n}\left(\overline D_{1,n}-p\right)
+&= -\sqrt{n}\left(\overline D_{1,n}-p_1\right)
 \left[
-\frac{a_{0,n}}{\overline D_{0,n}(1-p)}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}p_0}U_{0,n}
 +
-\frac{a_{1,n}}{\overline D_{1,n}p}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p_1}U_{1,n}
 \right].
 \end{aligned}
 $$
@@ -1625,21 +1063,21 @@ $$
 \end{aligned}
 $$ {#eq-standardized-decomposition}
 
-Since (-@eq-variance-ratio-consistency) and Proposition 4 give $\widetilde\sigma_n/\widehat\sigma_n\stackrel{\mathcal{P}}{\to}1$, Proposition 1 shows that it suffices to prove $R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0$.
+Since (-@eq-variance-ratio-consistency) and [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping) give $\widetilde\sigma_n/\widehat\sigma_n\stackrel{\mathcal{P}}{\to}1$, [Proposition 1](../uniform-asymptotics/#prp-stochastic-order) shows that it suffices to prove $R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0$.
 
 Toward this end, observe that
 $$
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
 &=
-\frac{\left|\sqrt n(\overline D_{1,n}-p)\right|}{\sqrt{p(1-p)}L_n}
+\frac{\left|\sqrt n(\overline D_{1,n}-p_1)\right|}{\sqrt{p_0p_1}L_n}
 \left|
-\frac{a_{0,n}}{\overline D_{0,n}(1-p)}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}p_0}U_{0,n}
 +
-\frac{a_{1,n}}{\overline D_{1,n}p}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p_1}U_{1,n}
 \right| \\[2ex]
 &\leq
-\frac{\left|\sqrt n(\overline D_{1,n}-p)\right|}{\sqrt{p(1-p)}}
+\frac{\left|\sqrt n(\overline D_{1,n}-p_1)\right|}{\sqrt{p_0p_1}}
 \left[
 \frac{\ell_{0,n}}{L_n}
 \frac{1}{\overline D_{0,n}}
@@ -1652,12 +1090,12 @@ $$
 \end{aligned}
 $$
 
-On the event $\left\{|\overline D_{1,n}-p|\leq\underline p/2\right\}$, $\overline D_{0,n}\geq\underline p/2$ and $\overline D_{1,n}\geq\underline p/2$, so
+On the event $\left\{|\overline D_{1,n}-p_1|\leq\underline p/2\right\}$, $\overline D_{0,n}\geq\underline p/2$ and $\overline D_{1,n}\geq\underline p/2$, so
 $$
 \begin{aligned}
 \frac{|R_n|}{\widetilde{\sigma}_n}
 &\leq
-C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
+C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p_1)\right|
 \left[
 \frac{\ell_{0,n}}{L_n}
 \left|\frac{U_{0,n}}{s_{00,n}}\right|
@@ -1685,7 +1123,7 @@ $$
 \right)
 &\leq
 \sup_{\theta\in\Theta}\mathbb{P}_\theta\left(
-C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
+C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p_1)\right|
 \left[
 \frac{\ell_{0,n}}{L_n}
 \left|\frac{U_{0,n}}{s_{00,n}}\right|
@@ -1696,7 +1134,7 @@ C_{\underline p}\left|\sqrt n(\overline D_{1,n}-p)\right|
 > \epsilon
 \right) \\
 &\quad+
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline D_{1,n}-p|>\underline p/2\right).
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(|\overline D_{1,n}-p_1|>\underline p/2\right).
 \end{aligned}
 $$
 
@@ -1708,13 +1146,13 @@ $$
 \qquad
 \mathbb{V}_\theta\left(\frac{U_{d,n}}{s_{dd,n}}\right)
 =
-\frac{p(1-p)}{n}.
+\frac{p_0p_1}{n}.
 $$
 
 Thus $U_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)$ by Chebyshev's inequality.
 The weights $\ell_{0,n}/L_n$ and $\ell_{1,n}/L_n$ lie in $[0,1]$, so the bracketed term in (-@eq-Rn-bound) is also $o_{\mathcal{P}}(1)$.
-By Lemma 1, $\sqrt n(\overline D_{1,n}-p)=O_{\mathcal{P}}(1)$.
-Therefore, by Proposition 1, the product inside the first probability on the right-hand side is $o_{\mathcal{P}}(1)$.
+By Lemma 1, $\sqrt n(\overline D_{1,n}-p_1)=O_{\mathcal{P}}(1)$.
+Therefore, by [Proposition 1](../uniform-asymptotics/#prp-stochastic-order), the product inside the first probability on the right-hand side is $o_{\mathcal{P}}(1)$.
 Thus
 
 $$
@@ -1726,22 +1164,22 @@ which by (-@eq-standardized-decomposition) proves (-@eq-means-asymptotic-lineari
 ## Derivation of (-@eq-scalar-normal-approximation) {#sec-scalar-normal-approximation}
 
 The bound in (-@eq-conservative-variance) gives $0\leq\omega_n^2\leq1$.
-Moreover, $|D_i-p|\leq1$ and the definition of $\widetilde{\sigma}_n$ imply
+Moreover, $|D_i-p_1|\leq1$ and the definition of $\widetilde{\sigma}_n$ imply
 $$
 \begin{aligned}
 \frac{|X_{i,n}|}{\widetilde\sigma_n}
 &\leq
-\frac{1}{\sqrt{p(1-p)}}
+\frac{1}{\sqrt{p_0p_1}}
 \frac{
-\dfrac{|a_{0,n}|s_{00,n}}{1-p}
+\dfrac{|a_{0,n}|s_{00,n}}{p_0}
 \dfrac{|u_{i,0,n}|}{\sqrt n\,s_{00,n}}
 +
-\dfrac{|a_{1,n}|s_{11,n}}{p}
+\dfrac{|a_{1,n}|s_{11,n}}{p_1}
 \dfrac{|u_{i,1,n}|}{\sqrt n\,s_{11,n}}
 }{
-\dfrac{|a_{0,n}|s_{00,n}}{1-p}
+\dfrac{|a_{0,n}|s_{00,n}}{p_0}
 +
-\dfrac{|a_{1,n}|s_{11,n}}{p}
+\dfrac{|a_{1,n}|s_{11,n}}{p_1}
 } \\
 &\leq
 \frac{1}{\sqrt{\underline p(1-\underline p)}}
@@ -1814,7 +1252,7 @@ $$
 $$
 so Chebyshev's inequality gives $(\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}})/\widetilde\sigma_{n_{k_j}}\to0$ in probability.
 In either case, $Z_{n_{k_j}}\rightsquigarrow\omega Z$ for $Z\sim N(0,1)$, and the normalized sum $(\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}})/\widetilde\sigma_{n_{k_j}}$ converges weakly to the same limit.
-Part (ii) of Proposition 2 therefore gives
+Part (ii) of [Proposition 3](../uniform-asymptotics/#prp-asymptotic-equivalence-cdf-limit) therefore gives
 $$
 \lim_{j\to\infty}
 \sup_{g\in\mathcal G}
@@ -1845,16 +1283,16 @@ $$
 =\omega_n^2\leq1,
 $$
 so $(\sum_{i=1}^nX_{i,n})/\widetilde\sigma_n=O_{\mathcal{P}}(1)$ by Chebyshev's inequality.
-By (-@eq-variance-ratio-consistency) and Proposition 4,
+By (-@eq-variance-ratio-consistency) and [Proposition 5](../uniform-asymptotics/#prp-continuous-mapping),
 $$
 \frac{\widetilde\sigma_n}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\to}1.
 $$
-Therefore Proposition 1 gives
+Therefore [Proposition 1](../uniform-asymptotics/#prp-stochastic-order) gives
 $$
 \frac{\sum_{i=1}^nX_{i,n}}{\widehat\sigma_n}
 -
 \frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
 =o_{\mathcal{P}}(1).
 $$ {#eq-studentization-perturbation}
-Equations (-@eq-infeasible-scalar-normal-approximation) and (-@eq-studentization-perturbation), together with Proposition 3, give (-@eq-scalar-normal-approximation).
+Equations (-@eq-infeasible-scalar-normal-approximation) and (-@eq-studentization-perturbation), together with [Proposition 4](../uniform-asymptotics/#prp-asymptotic-equivalence-perturbation), give (-@eq-scalar-normal-approximation).

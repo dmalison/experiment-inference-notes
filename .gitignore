@@ -5,5 +5,9 @@ __pycache__/
 .venv/
 .quarto/
 .vscode/
+/_book/
+**/*.quarto_ipynb
 
 /.luarc.json
+
+/.quarto/

@@ -26,8 +26,6 @@ format:
             border-left: 3px solid #ccc;
           }
         </style>
-crossref:
-  ref-hyperlink: true
 ---
 
 In our note on [treatment group means](../treatment-group-means/), we constructed confidence intervals that are uniformly valid under a regularity condition that rules out dominant units.

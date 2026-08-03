@@ -34,8 +34,6 @@ format:
             width: 2.5em;
           }
         </style>
-crossref:
-  ref-hyperlink: true
 ---
 
 Let $\Theta$ be a parameter space and, for each $\theta\in\Theta$, let $\mathbb P_\theta$ denote a probability measure.

@@ -26,8 +26,6 @@ format:
             border-left: 3px solid #ccc;
           }
         </style>
-crossref:
-  ref-hyperlink: true
 ---
 
 This note develops inference procedures for ratio metrics in randomized experiments.
@@ -591,19 +589,19 @@ $$
 \qquad
 \frac{U_n}{\widetilde{\sigma}_{r,n}}=o_{\mathcal P}(1).
 $$ {#eq-ratio-regular-sequence-bounds}
-[Proposition 5(i)](../uniform-asymptotics/#prp-continuous-mapping), applied to the scale consistency in (-@eq-ratio-regular-sequence-bounds), gives
+@prp-continuous-mapping(i), applied to the scale consistency in (-@eq-ratio-regular-sequence-bounds), gives
 $$
 \frac{\widetilde{\sigma}_{r,n}}{\widehat{\sigma}_{r,n}}
 \stackrel{\mathcal P}{\to}1.
 $$ {#eq-ratio-reciprocal-scale-consistency}
 Since $\omega_n^2\leq1$, $Z_n=O_{\mathcal P}(1)$.
-[Proposition 2](../uniform-asymptotics/#prp-asymptotic-equivalence-tightness) and (-@eq-ratio-oracle-normal-approximation) therefore imply
+@prp-asymptotic-equivalence-tightness and (-@eq-ratio-oracle-normal-approximation) therefore imply
 $$
 \frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
 =O_{\mathcal P}(1).
 $$ {#eq-ratio-oracle-leading-tightness}
-[Proposition 1(iii)](../uniform-asymptotics/#prp-stochastic-order), applied to (-@eq-ratio-reciprocal-scale-consistency) and (-@eq-ratio-oracle-leading-tightness), therefore gives
+@prp-stochastic-order(iii), applied to (-@eq-ratio-reciprocal-scale-consistency) and (-@eq-ratio-oracle-leading-tightness), therefore gives
 $$
 \left(
 \frac{\widetilde{\sigma}_{r,n}}{\widehat{\sigma}_{r,n}}-1
@@ -612,7 +610,7 @@ $$
 \sum_{i=1}^n X_{i,n}
 =o_{\mathcal P}(1).
 $$ {#eq-ratio-scale-replacement-remainder}
-[Proposition 1(iii)](../uniform-asymptotics/#prp-stochastic-order), applied to (-@eq-ratio-regular-sequence-bounds) and (-@eq-ratio-reciprocal-scale-consistency), also gives
+@prp-stochastic-order(iii), applied to (-@eq-ratio-regular-sequence-bounds) and (-@eq-ratio-reciprocal-scale-consistency), also gives
 $$
 \frac{R_n}{\widehat{\sigma}_{r,n}}=o_{\mathcal P}(1),
 \qquad
@@ -628,7 +626,7 @@ $$
 +o_{\mathcal P}(1).
 \end{aligned}
 $$ {#eq-ratio-feasible-normal-approximation}
-Together with (-@eq-ratio-oracle-normal-approximation), [Proposition 4](../uniform-asymptotics/#prp-asymptotic-equivalence-perturbation) implies
+Together with (-@eq-ratio-oracle-normal-approximation), @prp-asymptotic-equivalence-perturbation implies
 $$
 \frac{\sqrt n(\widehat r_n-r_n)}{\widehat{\sigma}_{r,n}}
 \stackrel{\mathcal P}{\approx}Z_n.

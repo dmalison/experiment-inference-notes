@@ -57,15 +57,15 @@ format:
 
 ::: {.intro}
 These notes develop asymptotic inference tools for online experimentation platforms.
-We model the data using a fixed-potential-outcomes framework with a small set of transparent assumptions.
-The procedures we derive have coverage guarantees that hold uniformly over the parameter space. As a result, they can support reliable inference across a wide range of potential outcome configurations.
+Experiment data are modeled using a fixed-potential-outcomes framework with independent, sequential treatment assignments.
+To support reliable inference across a wide range of potential outcome configurations, the statistical procedures provide coverage guarantees that hold uniformly over the parameter space.
 
 :::
 
 ::: {.notes}
-- [Uniform Inference on Treatment Group Means](treatment-group-means/)
-- [Uniform Inference on Relative Treatment Effects](lift/)
-- [Uniform Inference on Ratio Metrics](ratio/)
+- [Treatment Group Means](treatment-group-means/)
+- [Relative Treatment Effects](lift/)
+- [Ratio Metrics](ratio/)
 - [Regularity Diagnostics](diagnostics/)
 - [Uniform Asymptotics](uniform-asymptotics/)
 :::

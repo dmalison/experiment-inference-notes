@@ -36,8 +36,6 @@ format:
           .coverage-table tbody tr:nth-child(4),
           .coverage-table tbody tr:nth-child(8) { background: #e8f5e9; }      /* >=10 */
         </style>
-crossref:
-  ref-hyperlink: true
 ---
 
 Average treatment effects (ATEs) are often reported relative to a baseline mean. This note studies robust statistical inference for that ratio. We first show why scaling the confidence interval for the ATE or applying the delta method can yield confidence intervals with unreliable coverage. We then construct uniformly-valid confidence intervals by combining Fieller's method with sign tests. We also show how to adapt the construction when effects are reported relative to a full-population baseline. ^[I thank Sergey Gitlin for proposing many of the ideas developed here.]

@@ -88,7 +88,7 @@ $$
 =
 \frac{1}{n}\sum_{i=1}^n
 \mathbf u_{i,d,n}\mathbf u_{i,d,n}'.
-$$ {#eq-ratio-arm-covariance}
+$$ {#eq-ratio-treatment-group-covariance}
 
 Collect the model primitives into the parameter vector
 $$
@@ -118,7 +118,7 @@ $$
 $$
 :::
 
-Assumption 3' implies the coordinatewise no-dominant-unit condition in the treatment-group-means note.
+Assumption 3' implies the coordinatewise no-dominant-unit condition in the treatment group means note.
 
 # Ratio treatment effects
 
@@ -139,9 +139,9 @@ Finally, we use a denominator-strength screen to select between the two interval
 
 ## Fieller difference confidence interval
 
-### Arm-specific Fieller intervals
+### Treatment-group-specific Fieller intervals
 
-We first use Fieller's method to construct confidence intervals for the ratios in each treatment arm.
+We first use Fieller's method to construct confidence intervals for the ratios in each treatment group.
 For $d\in\{0,1\}$, define
 $$
 r_{d,n}
@@ -159,7 +159,7 @@ y_{i,d}-rz_{i,d},\qquad
 \overline y_{d,n}-r\overline z_{d,n}.
 $$ {#eq-candidate-projected-outcomes}
 
-Denote the observed treatment-group means by
+Denote the observed treatment group means by
 $$
 \begin{aligned}
 \overline Y_{d,n}
@@ -214,7 +214,7 @@ $$
 =
 \frac{\overline D_{1-d,n}}{\overline D_{d,n}}
 \widehat S_{d,n}^2(r)
-$$ {#eq-single-arm-v-scale}
+$$ {#eq-single-treatment-group-v-scale}
 where
 $$
 \begin{aligned}
@@ -231,9 +231,9 @@ $$
 -2r\widehat S_{YZ,d,n}
 +r^2\widehat S_{ZZ,d,n}.
 \end{aligned}
-$$ {#eq-single-arm-residual-variance}
+$$ {#eq-single-treatment-group-residual-variance}
 
-For fixed $r\in\mathbb R$, the [treatment-group-means note](../treatment-group-means/#eq-wald-ci) shows that the confidence set
+For fixed $r\in\mathbb R$, the [treatment group means note](../treatment-group-means/#eq-wald-ci) shows that the confidence set
 $$
 C_{1-\alpha/2,d,n}(r)
 =\left\{
@@ -244,7 +244,7 @@ v\in\mathbb R:
 \widehat\sigma_{v,d,n}(r)
 \right\},
 \qquad d\in\{0,1\}.
-$$ {#eq-single-arm-v-interval}
+$$ {#eq-single-treatment-group-v-interval}
 has asymptotic coverage at least $1-\alpha/2$.
 The [Appendix](#sec-uniform-projected-coverage) extends this result to show that this coverage guarantee holds uniformly over $r$:
 $$
@@ -335,12 +335,12 @@ $$
 \leq
 \frac{\alpha}{2},
 \qquad d\in\{0,1\}.
-$$ {#eq-armwise-fieller-coverage}
+$$ {#eq-treatment-group-fieller-coverage}
 
 ### Difference confidence interval
 
-We now combine the armwise Fieller sets to construct a confidence interval for $r_n=r_{1,n}-r_{0,n}$.
-To determine whether both armwise sets are bounded, define the denominator test statistics
+We now combine the treatment-group-specific Fieller sets to construct a confidence interval for $r_n=r_{1,n}-r_{0,n}$.
+To determine whether both treatment-group-specific sets are bounded, define the denominator test statistics
 $$
 T_{d,n}^z =
 \frac{\sqrt n\,|\overline Z_{d,n}|}{\widehat\sigma_{z,d,n}}, \qquad
@@ -373,7 +373,7 @@ $$
 \left\{r_n\in C_{1-\alpha,n}^{\mathrm F}\right\}.
 $$
 Indeed, if $T_n^z\leq z_{1-\alpha/4}$, then $C_{1-\alpha,n}^{\mathrm F}=\mathbb R$.
-Otherwise, the endpoint construction contains every difference $x_1-x_0$ with $x_d\in C_{1-\alpha/2,d,n}^{\mathrm F}$, and hence contains $r_{1,n}-r_{0,n}$ whenever both armwise sets cover their respective targets.
+Otherwise, the endpoint construction contains every difference $x_1-x_0$ with $x_d\in C_{1-\alpha/2,d,n}^{\mathrm F}$, and hence contains $r_{1,n}-r_{0,n}$ whenever both treatment-group-specific sets cover their respective targets.
 Therefore, Bonferroni's inequality gives
 $$
 \mathbb P_\theta
@@ -385,7 +385,7 @@ $$
 \mathbb P_\theta
 \left(r_{0,n}\notin C_{1-\alpha/2,0,n}^{\mathrm F}\right).
 $$
-Applying (-@eq-armwise-fieller-coverage) to the two terms on the right yields
+Applying (-@eq-treatment-group-fieller-coverage) to the two terms on the right yields
 $$
 \liminf_{n\to\infty}
 \inf_{\theta\in\Theta}
@@ -419,7 +419,7 @@ We set $p=1/2$ and reuse the same 20,000 treatment assignments at each value of 
 When the treatment denominator is not separated by many standard errors from zero, the interval frequently equals $\mathbb R$, and its non-coverage rate is well below nominal.
 As the number of standard errors separating the denominator from zero grows, non-coverage stabilizes around $2.5\%$.
 
-The simulation suggests that the Fieller difference interval is conservative. This is because the Bonferroni argument controls the larger event that at least one armwise Fieller set misses its target rather than the smaller event that the Fieller difference interval misses $r_n$. Sharpening the bound requires controlling the joint behavior of the two random sets, which leads to a difficult Gaussian interval-overlap problem.
+The simulation suggests that the Fieller difference interval is conservative. This is because the Bonferroni argument controls the larger event that at least one treatment-group-specific Fieller set misses its target rather than the smaller event that the Fieller difference interval misses $r_n$. Sharpening the bound requires controlling the joint behavior of the two random sets, which leads to a difficult Gaussian interval-overlap problem.
 
 ## Delta method interval
 
@@ -547,7 +547,7 @@ $$
 \frac{\overline D_{1-d,n}}{\overline D_{d,n}}
 \widehat S_{\ell,d,n}^2,
 \qquad d\in\{0,1\},
-$$ {#eq-ratio-armwise-scale}
+$$ {#eq-ratio-treatment-group-scale}
 and let
 $$
 \widetilde{\sigma}_{r,n}
@@ -839,7 +839,7 @@ Enforcing $\tau_n\geq K_\alpha$ prevents the finite-sample screen from selecting
 We first establish a normal approximation that is uniform over $\theta\in\Theta$ and $r\in\mathbb R$.
 Consider arbitrary sequences $n_k\to\infty$, $\theta_k\in\Theta$, and $r_k\in\mathbb R$.
 For brevity, relabel the subsequence by $n$ and write its parameters as $\theta_n$ and $r_n$.
-The treatment-group mean admits the exact representation
+The treatment group mean admits the exact representation
 $$
 \sqrt n
 \left\{
@@ -1226,7 +1226,7 @@ $$
 \to\infty.
 $$ {#eq-screening-implies-regularity}
 Indeed, if the conclusion failed, there would be a further subsequence along which the displayed minimum is bounded.
-For an arm attaining the minimum, the triangle inequality gives
+For a treatment group attaining the minimum, the triangle inequality gives
 $$
 \frac{\sqrt n\,|\overline Z_{d,n}|}{\widehat\sigma_{z,d,n}}
 \leq
@@ -1244,7 +1244,7 @@ The estimated denominator statistic is therefore tight along this further subseq
 ## Estimated denominator strength {#sec-estimated-denominator-strength}
 
 Consider an arbitrary sequence $\theta_n\in\Theta$ satisfying (-@eq-ratio-regular-denominator-condition).
-For each arm, the reverse triangle inequality gives
+For each treatment group, the reverse triangle inequality gives
 $$
 \frac{\sqrt n\,|\overline Z_{d,n}|}{\widehat\sigma_{z,d,n}}
 \geq
@@ -1255,7 +1255,7 @@ $$
 \frac{\sqrt n\,|\overline Z_{d,n}-\overline z_{d,n}|}{\sigma_{z,d,n}}
 \right).
 $$
-Taking the minimum over the two arms yields
+Taking the minimum over the two treatment groups yields
 $$
 T_n^z
 \geq
@@ -1320,13 +1320,13 @@ $$ {#eq-ratio-exact-remainder}
 ## Delta--Fieller nesting {#sec-delta-fieller-nesting}
 
 We prove the deterministic nesting relation in (-@eq-delta-fieller-nesting).
-For each arm, observe that
+For each treatment group, observe that
 $$
 \widehat\sigma_{\ell,d,n}
 =
 \frac{\widehat\sigma_{v,d,n}(\widehat q_{d,n})}
 {|\overline Z_{d,n}|}.
-$$ {#eq-armwise-delta-fieller-scale}
+$$ {#eq-treatment-group-delta-fieller-scale}
 Changing $x$ by $h$ changes the projected outcome by $-hZ_i$.
 The reverse triangle inequality for the corresponding standard deviations therefore gives
 $$
@@ -1343,7 +1343,7 @@ $$
 \frac{z_{1-\alpha/2}}{\sqrt n}
 \widehat\sigma_{\ell,d,n}.
 $$
-On $\{T_n^z\geq K_\alpha\}$, equations (-@eq-nesting-threshold)--(-@eq-armwise-delta-fieller-scale) imply
+On $\{T_n^z\geq K_\alpha\}$, equations (-@eq-nesting-threshold)--(-@eq-treatment-group-delta-fieller-scale) imply
 $$
 \begin{aligned}
 &|x-\widehat q_{d,n}|
@@ -1384,21 +1384,21 @@ $$
 \right]
 \subseteq
 C_{1-\alpha/2,d,n}^{\mathrm F}
-$$ {#eq-armwise-nesting}
+$$ {#eq-treatment-group-nesting}
 on $\{T_n^z\geq K_\alpha\}$.
-Taking pairwise differences in (-@eq-armwise-nesting) proves (-@eq-delta-fieller-nesting).
+Taking pairwise differences in (-@eq-treatment-group-nesting) proves (-@eq-delta-fieller-nesting).
 
 ## Delta-method approximation {#sec-ratio-delta-approximation}
 
 Recall the oracle scores in (-@eq-ratio-score).
-Recall their population variances in (-@eq-ratio-score-variances), and define their cross-arm covariance by
+Recall their population variances in (-@eq-ratio-score-variances), and define their between-treatment-group covariance by
 $$
 S_{\ell,01,n}
 =
 \frac{1}{n}\sum_{i=1}^n
 \ell_{i,0,n}\ell_{i,1,n}.
 $$
-Recall the armwise and aggregate population scales in (-@eq-ratio-armwise-scale) and (-@eq-ratio-robust-scale), respectively.
+Recall the treatment-group-specific and aggregate population scales in (-@eq-ratio-treatment-group-scale) and (-@eq-ratio-robust-scale), respectively.
 Because $D_{i,0}-p_0=-(D_{i,1}-p_1)$ and assignments are independent across units,
 $$
 \begin{aligned}
@@ -1449,7 +1449,7 @@ $$
 \mathbf u_{i,d,n}.
 $$
 Thus Assumption 3' implies the scalar no-dominant-unit condition for both oracle score sequences.
-The [treatment-group-means normal approximation](../treatment-group-means/#eq-infeasible-scalar-normal-approximation), applied to their difference, therefore gives
+The [normal approximation for treatment group means](../treatment-group-means/#eq-infeasible-scalar-normal-approximation), applied to their difference, therefore gives
 $$
 \frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
@@ -1469,7 +1469,7 @@ U_{d,n}
 (D_{i,d}-p_d)\ell_{i,d,n}.
 $$
 Since $\sum_{i=1}^n\ell_{i,d,n}=0$ and
-$D_{i,d}Y_i=D_{i,d}y_{i,d}$ and $D_{i,d}Z_i=D_{i,d}z_{i,d}$, the arm-$d$ term in (-@eq-ratio-linearization) is exactly
+$D_{i,d}Y_i=D_{i,d}y_{i,d}$ and $D_{i,d}Z_i=D_{i,d}z_{i,d}$, the term for treatment group $d$ in (-@eq-ratio-linearization) is exactly
 $$
 \frac{1}{\sqrt n\,\overline D_{d,n}}
 \sum_{i=1}^nD_{i,d}\ell_{i,d,n}
@@ -1621,12 +1621,12 @@ $$
 +\frac{R_n}{\widehat{\sigma}_{r,n}}
 +o_{\mathcal P}(1).
 $$
-For the armwise linear terms defined in (-@eq-ratio-exact-remainder),
+For the treatment-group-specific linear terms defined in (-@eq-ratio-exact-remainder),
 $$
 \frac{\sqrt n\,L_{d,n}}{\sigma_{\ell,d,n}}
 =O_{\mathcal P}(1).
 $$
-Equation (-@eq-ratio-exact-remainder) writes each armwise remainder as $-L_{d,n}\eta_{d,n}/(1+\eta_{d,n})$.
+Equation (-@eq-ratio-exact-remainder) writes each treatment-group-specific remainder as $-L_{d,n}\eta_{d,n}/(1+\eta_{d,n})$.
 Together with (-@eq-regular-relative-denominator-error), $\sigma_{\ell,d,n}/\widetilde{\sigma}_{r,n}\leq1$, and (-@eq-regular-delta-scale-consistency), this implies
 $$
 \frac{R_n}{\widehat{\sigma}_{r,n}}

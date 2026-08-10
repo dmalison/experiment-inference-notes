@@ -78,14 +78,11 @@ $$
 \widehat{\mathrm{se}}^{\,\mathrm{scaled}}_n
 =
 \frac{\widehat{\sigma}_n^{\mathrm{ATE}}}{\sqrt{n}\,|\widehat{y}_{0,n}|},\\[1ex]
-\widehat{\sigma}_n^{\mathrm{ATE}} = \widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}, \qquad
-\widehat{\sigma}_{d,n}^2
-=
-\frac{\overline D_{1-d,n}}{\overline D_{d,n}}
-\widehat{s}_{dd,n}^2,
-\qquad d\in\{0,1\}.
+\widehat{\sigma}_n^{\mathrm{ATE}} = \widehat{\sigma}_{0,n}+\widehat{\sigma}_{1,n}.
 \end{gathered}
 $$
+
+Here $\widehat{\sigma}_{d,n}^2$ is the treatment-group-specific variance estimator defined in (-@eq-treatment-group-variance-estimator) of the [treatment group means note](../treatment-group-means/).
 
 The problem with this interval is that it effectively ignores sampling variability in the denominator.
 As a consequence, its asymptotic coverage need not equal its nominal level.
@@ -203,7 +200,7 @@ $$
 \psi_n^- = \overline{y}_{1,n} - (1-\rho_n^-)\,\overline{y}_{0,n},
 $$
 with sample analogues $\widehat{\psi}_n^+$ and $\widehat{\psi}_n^-$.
-Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment-group means, we can apply the results from the treatment group means note. The associated coefficient vector is
+Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment group means, we can apply the results from the treatment group means note. The associated coefficient vector is
 $$
 \mathbf a_n^s
 =

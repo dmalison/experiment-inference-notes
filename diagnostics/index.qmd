@@ -63,7 +63,7 @@ $$
 Thus, if $\kappa_n$ is large in a finite sample, the asymptotic approximations that rely on Assumption 3 may be unreliable.
 
 Because only one potential outcome is observed for each unit, $\kappa_n$ cannot be computed directly.
-A feasible sample analogue uses observed within-arm residuals in place of the unobserved potential-outcome deviations.
+A feasible sample analogue uses observed within-treatment-group residuals in place of the unobserved potential-outcome deviations.
 For $d\in\{0,1\}$, let
 $$
 n_d=n\overline{D}_{d,n}

@@ -1,8 +1,8 @@
-"""Animated GIFs: CI coverage under homogeneous vs heterogeneous treatment effects.
+"""Illustrate CI coverage and studentized sampling distributions.
 
-Generates two comparable animations from the same seed:
+Generates two figures from the same seed:
   * homogeneous_coverage_animation.gif   (y_{i,1} = y_{i,0} + 1)
-  * heterogeneous_coverage_animation.gif (y_{i,1} = -y_{i,0} + 1)
+    * heterogeneous_studentized_histogram.png (y_{i,1} = -y_{i,0} + 1)
 """
 from __future__ import annotations
 
@@ -59,6 +59,36 @@ def draw_studentized_histogram(ax: plt.Axes, studentized: np.ndarray) -> None:
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.tick_params(labelsize=10)
+
+
+def make_studentized_histogram_figure(
+    y1_from_y0: Callable[[np.ndarray], np.ndarray], out_name: str
+) -> None:
+    rng = np.random.default_rng(SEED)
+    y0_raw = rng.normal(0, 1, size=N_UNITS)
+    y0 = y0_raw - y0_raw.mean()
+    population = Population(y0=y0, y1=y1_from_y0(y0))
+    studentized = np.array([
+        result.studentized_ate
+        for result in simulate_results(
+            SimulationConfig(
+                population=population,
+                treatment_probability=TREATMENT_PROBABILITY,
+                ci_level=CI_LEVEL,
+                rng=np.random.default_rng(0),
+                n_draws=N_HISTOGRAM_DRAWS,
+            )
+        )
+    ])
+
+    fig, ax = plt.subplots(figsize=(9.0, 4.3), dpi=150)
+    draw_studentized_histogram(ax, studentized)
+    fig.tight_layout()
+    out = Path(__file__).parent / out_name
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"wrote {out}")
+    print(f"studentized standard deviation = {studentized.std():.4f}")
 
 
 def make_coverage_animation(
@@ -278,5 +308,8 @@ def make_coverage_animation(
 if __name__ == "__main__":
     # Homogeneous treatment effects: y_{i,1} = y_{i,0} + 1
     make_coverage_animation(lambda y0: y0 + 1.0, "homogeneous_coverage_animation.gif")
-    # Heterogeneous treatment effects: y_{i,1} = -y_{i,0} + 1
-    make_coverage_animation(lambda y0: -y0 + 1.0, "heterogeneous_coverage_animation.gif")
+    # Negatively correlated potential outcomes: y_{i,1} = -y_{i,0} + 1
+    make_studentized_histogram_figure(
+        lambda y0: -y0 + 1.0,
+        "heterogeneous_studentized_histogram.png",
+    )

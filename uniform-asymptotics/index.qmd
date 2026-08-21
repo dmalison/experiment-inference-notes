@@ -39,6 +39,8 @@ format:
 Let $\Theta$ be a parameter space and, for each $\theta\in\Theta$, let $\mathbb P_\theta$ denote a probability measure.
 This note collects notation and auxiliary results for asymptotic statements that hold uniformly over the family $\mathcal P=\{\mathbb P_\theta:\theta\in\Theta\}$.
 
+# Stochastic Order
+
 We first define notation for uniform convergence in probability.
 We say $X_n \in \mathbb{R}^k$ converges in $\mathcal{P}$ to $X \in \mathbb{R}^k$, written as $X_n \stackrel{\mathcal{P}}{\to} X$, if for every $\epsilon > 0$,
 $$
@@ -55,7 +57,7 @@ for all $n\geq N$.
 The next proposition collects useful stochastic-order relationships:
 
 ::: {#prp-stochastic-order}
-Let $r_n$ and $s_n$ be positive deterministic sequences. The following relationships hold whenever the indicated operations are well-defined:
+Let $X_n$ and $Y_n$ be real-valued random variables, and let $r_n$ and $s_n$ be positive deterministic sequences. Then:
 
 [(i)]{.part-label} $X_n=O_{\mathcal{P}}(r_n),\ Y_n=O_{\mathcal{P}}(s_n) \quad\Rightarrow\quad X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)$.
 
@@ -67,7 +69,7 @@ Let $r_n$ and $s_n$ be positive deterministic sequences. The following relations
 :::
 
 ::: {.proof-block}
-*Proof.* For $M>0$, write $A_n^M=\{\|X_n\|>Mr_n\}$ and $B_n^M=\{\|Y_n\|>Ms_n\}$.
+*Proof.* For $M>0$, write $A_n^M=\{|X_n|>Mr_n\}$ and $B_n^M=\{|Y_n|>Ms_n\}$.
 
 [(i)]{.part-label} Fix $\epsilon>0$.
 By the two stochastic-order assumptions, we can choose finite constants $M_X$ and $M_Y$ and an index $N$ so that
@@ -80,10 +82,10 @@ $$
 
 for all $n\geq N$.
 Taking $M=\max\{M_X,M_Y\}$, the same bounds hold with $M$ in place of $M_X$ and $M_Y$.
-On $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $\|X_n+Y_n\|\leq\|X_n\|+\|Y_n\|\leq M(r_n+s_n)$, so
+On $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $|X_n+Y_n|\leq|X_n|+|Y_n|\leq M(r_n+s_n)$, so
 
 $$
-\sup_{\theta\in\Theta}\mathbb{P}_\theta\bigl(\|X_n+Y_n\|>M(r_n+s_n)\bigr)
+\sup_{\theta\in\Theta}\mathbb{P}_\theta\bigl(|X_n+Y_n|>M(r_n+s_n)\bigr)
 \leq
 \sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)
 +
@@ -94,7 +96,7 @@ $$
 for $n\geq N$.
 Hence $X_n+Y_n=O_{\mathcal{P}}(r_n+s_n)$.
 
-[(ii)]{.part-label} With the same $M$ and $N$, on $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $\|X_nY_n\|\leq\|X_n\|\,\|Y_n\|\leq M^2 r_ns_n$, so $\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_nY_n\|>M^2 r_ns_n)<\epsilon$ for $n\geq N$.
+[(ii)]{.part-label} With the same $M$ and $N$, on $\left(A_n^{M}\right)^c\cap\left(B_n^{M}\right)^c$ we have $|X_nY_n|\leq|X_n|\,|Y_n|\leq M^2 r_ns_n$, so $\sup_{\theta\in\Theta}\mathbb{P}_\theta(|X_nY_n|>M^2 r_ns_n)<\epsilon$ for $n\geq N$.
 Hence $X_nY_n=O_{\mathcal{P}}(r_ns_n)$.
 
 [(iii)]{.part-label} Suppose $X_n=o_{\mathcal{P}}(r_n)$, and fix $\epsilon>0$ and $\delta>0$.
@@ -106,12 +108,12 @@ $$
 $$
 
 for all $n\geq N$.
-On $\left(B_n^{M}\right)^c$, the event $\|X_nY_n\|>\epsilon r_ns_n$ implies $\|X_n\|>(\epsilon/M)r_n$, so
+On $\left(B_n^{M}\right)^c$, the event $|X_nY_n|>\epsilon r_ns_n$ implies $|X_n|>(\epsilon/M)r_n$, so
 
 $$
-\mathbb{P}_\theta(\|X_nY_n\|>\epsilon r_ns_n)
+\mathbb{P}_\theta(|X_nY_n|>\epsilon r_ns_n)
 \leq
-\mathbb{P}_\theta\bigl(\|X_n\|>(\epsilon/M)r_n\bigr)
+\mathbb{P}_\theta\bigl(|X_n|>(\epsilon/M)r_n\bigr)
 +\mathbb{P}_\theta\left(B_n^{M}\right).
 $$
 
@@ -121,11 +123,11 @@ $$
 \begin{aligned}
 &\limsup_{n\to\infty}
 \sup_{\theta\in\Theta}
-\mathbb{P}_\theta(\|X_nY_n\|>\epsilon r_ns_n) \\
+\mathbb{P}_\theta(|X_nY_n|>\epsilon r_ns_n) \\
 &\qquad\leq
 \limsup_{n\to\infty}
 \sup_{\theta\in\Theta}
-\mathbb{P}_\theta\bigl(\|X_n\|>(\epsilon/M)r_n\bigr)
+\mathbb{P}_\theta\bigl(|X_n|>(\epsilon/M)r_n\bigr)
 +
 \limsup_{n\to\infty}
 \sup_{\theta\in\Theta}
@@ -139,9 +141,11 @@ Taking $\delta\downarrow0$, we can conclude $X_nY_n=o_{\mathcal{P}}(r_ns_n)$.
 [(iv)]{.part-label} Suppose $X_n=O_{\mathcal{P}}(r_n)$ with $r_n\to 0$, and fix $\delta>0$ and $\epsilon>0$.
 Choose $M$ and $N_0$ with $\sup_{\theta\in\Theta}\mathbb{P}_\theta\left(A_n^{M}\right)<\epsilon$ for $n\geq N_0$.
 Since $r_n\to 0$, there is $N_1$ with $Mr_n<\delta$ for $n\geq N_1$.
-Therefore $\{\|X_n\|>\delta\}\subseteq A_n^{M}$ and $\sup_{\theta\in\Theta}\mathbb{P}_\theta(\|X_n\|>\delta)<\epsilon$ for $n\geq\max(N_0,N_1)$.
+Therefore $\{|X_n|>\delta\}\subseteq A_n^{M}$ and $\sup_{\theta\in\Theta}\mathbb{P}_\theta(|X_n|>\delta)<\epsilon$ for $n\geq\max(N_0,N_1)$.
 Since $\epsilon>0$ was arbitrary, $X_n=o_{\mathcal{P}}(1)$. $\square$
 :::
+
+# Asymptotic Equivalence
 
 For each positive integer $q$, define the class of functions
 $$
@@ -436,7 +440,7 @@ The asserted uniform convergence implies that $X_{n_k}$ converges weakly to $F$ 
 Part (ii) therefore implies that the preceding bounded-Lipschitz distance converges to zero, a contradiction. $\square$
 :::
 
-Part (iii) of Proposition 3 implies asymptotic equivalence reduces to uniform weak convergence when the target distribution is fixed.
+Part (iii) of @prp-asymptotic-equivalence-cdf-limit implies asymptotic equivalence reduces to uniform weak convergence when the target distribution is fixed.
 
 The next proposition shows that asymptotic equivalence is preserved under uniformly negligible perturbations:
 
@@ -501,18 +505,25 @@ $$
 $$
 :::
 
+# Convergence Tools
+
 The next proposition records continuous mapping results:
 
 ::: {#prp-continuous-mapping}
+
+<br>
+
 [(i)]{.part-label} Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and there is a compact set $K\subseteq\mathbb R^k$ such that $\mathbb{P}_\theta(X\in K)=1$ for every $\theta\in\Theta$.
-If $h:\mathbb R^k\to\mathbb R^m$ is continuous on an open set containing $K$, then
+If $h:\mathbb R^k\to\mathbb R^m$ is measurable and continuous on an open set containing $K$, then
 
 $$
 h(X_n)\stackrel{\mathcal{P}}{\to}h(X).
 $$
 
 [(ii)]{.part-label} Suppose $X_n\stackrel{\mathcal P}{\approx}Z_n$ and $Z_n=O_{\mathcal P}(1)$.
-If $h:\mathbb R^k\to\mathbb R^m$ is continuous, then
+Let $h:\mathbb R^k\to\mathbb R^m$ be measurable. If every weak
+subsequential limit of $Z_n$
+assigns probability zero to the discontinuity set of $h$, then
 
 $$
 h(X_n)
@@ -565,38 +576,11 @@ $$
 
 for every $\ell$.
 Let $\mu_\ell$ denote the law of $Z_{n_\ell}$ under $\mathbb P_{\theta_\ell}$.
-We first show that $\{\mu_\ell\}$ is tight.
-To do so, fix $\delta>0$.
-Because $Z_n=O_{\mathcal P}(1)$, there exist finite constants $M$ and $N$ such that
-$$
-\sup_{\theta\in\Theta}
-\mathbb P_\theta\left(\|Z_n\|>M\right)
-<\delta
-$$ {#eq-Zn-uniform-tail-bound}
-for every $n\geq N$.
-Since $n_\ell\to\infty$, there exists an index $L$ such that $n_\ell\geq N$ for every $\ell\geq L$.
-(-@eq-Zn-uniform-tail-bound) then gives
-$$
-\mu_\ell\left(\{z\in\mathbb R^k:\|z\|\leq M\}\right)
->1-\delta
-$$
-for every $\ell\geq L$.
-For each $\ell<L$, we can also construct a compact ball $K_\ell$ with $\mu_\ell(K_\ell)>1-\delta$.
-The finite union
-$$
-K
-=
-\{z\in\mathbb R^k:\|z\|\leq M\}
-\cup
-\bigcup_{\ell=1}^{L-1}K_\ell
-$$
-is compact and satisfies $\mu_\ell(K)>1-\delta$ for every $\ell$.
-Thus the sequence $\{\mu_\ell\}$ is tight.
-
+The sequence $\{\mu_\ell\}$ is tight.
 By Prokhorov's theorem, there is a subsequence $\{\mu_{\ell_j}\}$ that converges weakly to the law of some random vector $W$ on $\mathbb R^k$.
-Part (i) of Proposition 3 and $X_n\stackrel{\mathcal P}{\approx}Z_n$ imply that $X_{n_{\ell_j}}$ also converges weakly to $W$.
-Because $h$ is continuous, the continuous mapping theorem implies that both $h(X_{n_{\ell_j}})$ and $h(Z_{n_{\ell_j}})$ converge weakly to $h(W)$.
-Part (ii) of Proposition 3 then gives
+Part (i) of @prp-asymptotic-equivalence-cdf-limit and $X_n\stackrel{\mathcal P}{\approx}Z_n$ imply that $X_{n_{\ell_j}}$ also converges weakly to $W$.
+By assumption, the law of $W$ assigns probability zero to the discontinuity set of $h$. The continuous mapping theorem therefore implies that both $h(X_{n_{\ell_j}})$ and $h(Z_{n_{\ell_j}})$ converge weakly to $h(W)$.
+Part (ii) of @prp-asymptotic-equivalence-cdf-limit then gives
 
 $$
 \lim_{j\to\infty}
@@ -613,18 +597,27 @@ contradicting the preceding lower bound.
 Thus $h(X_n)\stackrel{\mathcal P}{\approx}h(Z_n)$. $\square$
 :::
 
-The final result records a useful joint-convergence rule:
+The next proposition records a useful joint-convergence rule:
 
 ::: {#prp-joint-convergence}
-If $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$, then
+[(i)]{.part-label} If $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$, then
 
 $$
 (X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
 $$
+
+[(ii)]{.part-label} If $X_n\stackrel{\mathcal P}{\approx}Z_n$ and
+$Y_n\stackrel{\mathcal P}{\to}\mathbf c$, then
+
+$$
+(X_n,Y_n)
+\stackrel{\mathcal P}{\approx}
+(Z_n,\mathbf c).
+$$
 :::
 
 ::: {.proof-block}
-*Proof.* Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$.
+*Proof.* [(i)]{.part-label} Suppose $X_n\stackrel{\mathcal{P}}{\to}X$ and $Y_n\stackrel{\mathcal{P}}{\to}Y$.
 For every $\epsilon>0$,
 
 $$
@@ -645,6 +638,58 @@ Taking probabilities, taking the supremum over $\theta\in\Theta$, and using the 
 
 $$
 (X_n,Y_n)\stackrel{\mathcal{P}}{\to}(X,Y).
-\qquad\square
 $$
+
+[(ii)]{.part-label} For every bounded, 1-Lipschitz function $g$ on the
+product space, the map $\mathbf x\mapsto g(\mathbf x,\mathbf c)$ is bounded
+and 1-Lipschitz. Hence
+
+$$
+(X_n,\mathbf c)
+\stackrel{\mathcal P}{\approx}
+(Z_n,\mathbf c).
+$$
+
+Moreover,
+
+$$
+\left\|(X_n,Y_n)-(X_n,\mathbf c)\right\|
+=
+\left\|Y_n-\mathbf c\right\|
+=o_{\mathcal P}(1).
+$$
+
+The result follows from @prp-asymptotic-equivalence-perturbation. $\square$
+:::
+
+The final result gives a uniform version of Slutsky's theorem:
+
+::: {#prp-asymptotic-equivalence-slutsky}
+Suppose $X_n,Y_n,Z_n\in\mathbb R$ and $c\in\mathbb R$. If
+$X_n\stackrel{\mathcal P}{\approx}Z_n$,
+$Z_n=O_{\mathcal P}(1)$, and
+$Y_n\stackrel{\mathcal P}{\to}c$, then
+
+[(i)]{.part-label} $X_n+Y_n\stackrel{\mathcal P}{\approx}Z_n+c$.
+
+[(ii)]{.part-label} $X_nY_n\stackrel{\mathcal P}{\approx}cZ_n$.
+
+[(iii)]{.part-label} If $c\neq0$, then
+$X_n/Y_n\stackrel{\mathcal P}{\approx}Z_n/c$.
+:::
+
+::: {.proof-block}
+*Proof.* Part (ii) of @prp-joint-convergence gives
+
+$$
+(X_n,Y_n)
+\stackrel{\mathcal P}{\approx}
+(Z_n,c).
+$$
+
+Since $(Z_n,c)=O_{\mathcal P}(1)$, part (ii) of
+@prp-continuous-mapping can be applied to the maps
+$(x,y)\mapsto x+y$, $(x,y)\mapsto xy$, and, when $c\neq0$,
+$(x,y)\mapsto x/y$, defined arbitrarily when $y=0$.
+This proves the three conclusions. $\square$
 :::

@@ -12,12 +12,17 @@ book:
       text: Relative Treatment Effects
     - href: ratio/index.qmd
       text: Ratio Metrics
+    - href: regression/index.qmd
+      text: Variance Reduction via Regression
     - diagnostics/index.qmd
     - uniform-asymptotics/index.qmd
 
 crossref:
   chapters: false
   ref-hyperlink: true
+
+filters:
+  - assumption-xrefs.lua
 
 format:
   html:

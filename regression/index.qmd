@@ -1,0 +1,2112 @@
+---
+title: "Variance Reduction via Regression"
+author: "David Malison"
+date: last-modified
+from: markdown-fancy_lists
+language:
+  title-block-published: "Last modified"
+format:
+  html:
+    toc: false
+    number-sections: false
+    include-in-header:
+      text: |
+        <style>
+          h1.title { font-size: 2.75rem; text-align: center; }
+          .quarto-title-meta {
+            display: flex !important;
+            justify-content: center;
+            gap: 5rem;
+            text-align: center;
+          }
+          .assumption, .theorem {
+            margin: 0.75em 0 0.75em 1.5em;
+            padding: 0.25em 0.75em;
+            border-left: 3px solid #ccc;
+          }
+          .proof-block {
+            margin: 0.75em 0 0.75em 1.5em;
+            padding: 0.25em 0.75em;
+            border-left: 2px solid #ddd;
+          }
+        </style>
+---
+
+In this note, we extend our data model to include a vector of covariates and
+then use them to construct a least-squares estimator for a linear combination of
+treatment-group means. The resulting estimator has smaller conservative
+asymptotic variance than either the unadjusted treatment-group-means estimator
+or CUPED.
+
+# Model
+
+In addition to $(D_i,Y_i)$, suppose that for each unit we observe a $k$-dimensional vector of covariates $\mathbf{w}_i\in\mathbb{R}^k$. Unlike the outcome $Y_i$, the observed covariate vector $\mathbf{w}_i$ is assumed to be unaffected by treatment assignment. In practice, this condition is often satisfied by constructing $\mathbf{w}_i$ from information recorded before unit $i$ was first assigned a treatment group. We treat the sequence $\{\mathbf{w}_i\}_{i=1}^\infty$ as fixed, so treatment assignment remains the only source of randomness in the model.
+
+Let $\overline{\mathbf w}_n$ denote the covariate mean vector:
+$$
+\overline{\mathbf w}_n
+=
+\frac{1}{n}\sum_{i=1}^n\mathbf w_i.
+$$ {#eq-regression-covariate-mean}
+
+Also define the centered covariate matrix and the
+potential-outcome vectors
+
+$$
+\mathbf W_n
+=
+\begin{pmatrix}
+(\mathbf w_1-\overline{\mathbf w}_n)' \\
+\vdots \\
+(\mathbf w_n-\overline{\mathbf w}_n)'
+\end{pmatrix},
+\qquad
+\mathbf y_{0,n}
+=
+\begin{pmatrix}
+y_{1,0} \\
+\vdots \\
+y_{n,0}
+\end{pmatrix},
+\qquad
+\mathbf y_{1,n}
+=
+\begin{pmatrix}
+y_{1,1} \\
+\vdots \\
+y_{n,1}
+\end{pmatrix}.
+$$
+
+Let
+
+$$
+\boldsymbol\beta_{d,n}
+=
+\left(\mathbf W_n'\mathbf W_n
+\right)^\dagger
+\mathbf W_n'\mathbf y_{d,n}
+$$
+denote the vector of linear projection
+coefficients, where $A^\dagger$ denotes the Moore-Penrose pseudoinverse of a matrix $A$.
+$\boldsymbol\beta_{d,n}$ minimizes the sum of squared residuals:
+$$
+\boldsymbol\beta_{d,n}
+\in
+\underset{\boldsymbol b\in\mathbb R^k}{\operatorname{argmin}}
+\sum_{i=1}^n
+\left[
+y_{i,d}
+-\overline y_{d,n}
+-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol b
+\right]^2.
+$$ {#eq-regression-projection-minimization}
+
+Define the corresponding residuals by
+$$
+\epsilon_{i,d,n}
+=
+y_{i,d}
+-\overline y_{d,n}
+-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{d,n}
+$$ {#eq-regression-projection-residuals}
+
+Summing over $i$, we obtain
+
+$$
+\sum_{i=1}^n\epsilon_{i,d,n}
+=0.
+$$ {#eq-regression-population-residual-sum-zero}
+
+The first-order conditions for the minimization problem in
+(-@eq-regression-projection-minimization) also imply
+$$
+\sum_{i=1}^n
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)
+\epsilon_{i,d,n}
+=\mathbf0.
+$$ {#eq-regression-population-normal-equations}
+
+Collect the residuals into the vector
+
+$$
+\boldsymbol\epsilon_{i,n}
+=
+\begin{pmatrix}
+\epsilon_{i,0,n} \\
+\epsilon_{i,1,n}
+\end{pmatrix}
+$$
+
+and define the second-moment matrix
+
+$$
+\mathbf V_n
+=
+\frac{1}{n}\sum_{i=1}^n
+\boldsymbol\epsilon_{i,n}\boldsymbol\epsilon_{i,n}'
+=
+\begin{pmatrix}
+v_{0,n}^2 & v_{01,n} \\
+v_{01,n} & v_{1,n}^2
+\end{pmatrix}.
+$$ {#eq-regression-residual-second-moments}
+
+Also define unit $i$'s covariate leverage by
+$$
+h_{i,n}
+=
+\frac{1}{n}
++
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\mathbf W_n'\mathbf W_n\right)^\dagger
+\left(\mathbf w_i-\overline{\mathbf w}_n\right),
+$$
+
+Collect the model primitives into the parameter vector
+
+$$
+\theta
+=
+\left(
+p,
+\{y_{i,0}\}_{i=1}^\infty,
+\{y_{i,1}\}_{i=1}^\infty,
+\{\mathbf w_i\}_{i=1}^\infty
+\right)
+$$
+
+
+and let
+
+$$
+\Theta
+\subseteq
+[\underline p,1-\underline p]
+\times\mathbb R^\mathbb N
+\times\mathbb R^\mathbb N
+\times(\mathbb R^k)^\mathbb N
+$$
+
+denote the set of parameter configurations under consideration.
+We replace [Assumption 3](../treatment-group-means/#asm-nondegenerate) with the following regularity conditions:
+
+::: {.assumption #asm-regression-covariates}
+**Assumption 3'' (Regularity)**
+
+[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $N$ such that
+$v_{d,n}^2>0$ for every $n\geq N$, $\theta\in\Theta$, and $d\in\{0,1\}$.
+
+[**(ii)**]{.part-label} **(Maximum variance share)** For each $d\in\{0,1\}$,
+
+$$
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\max_{1\leq i\leq n}
+\frac{|\epsilon_{i,d,n}|}{\sqrt n\,v_{d,n}}
+=0
+$$
+
+[**(iii)**]{.part-label} **(Maximum leverage)**
+
+$$
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\max_{1\leq i\leq n}
+ h_{i,n}
+=0.
+$$
+:::
+
+Part (i) ensures that the residual variances are nonzero for all sufficiently large sample sizes and is analogous to the non-degeneracy condition in Assumption 3.
+Part (ii) is the direct analogue of the maximum variance-share condition in Assumption 3(ii), with projection residuals replacing centered potential outcomes.
+Part (iii) is the covariate analogue of the maximum variance-share condition; indeed, when $k=1$, the two conditions are exactly equivalent with the centered potential outcome replaced by the centered covariate.
+In the [Appendix](#sec-regression-stationary-ergodic-conditions), we show that
+these restrictions hold on a set of arbitrarily high probability when the
+potential outcomes and covariates are generated jointly by a stationary
+ergodic process with finite second moments and positive residual variances.
+
+# Estimator
+
+In this section, we derive a least squares estimator
+for a linear combination of treatment group means.
+Rearrange (-@eq-regression-projection-residuals) to obtain
+$$
+\begin{aligned}
+y_{i,d}
+&=
+\overline y_{d,n}
++
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{d,n}
++
+\epsilon_{i,d,n},
+\qquad d\in\{0,1\}.
+\end{aligned}
+$$ {#eq-regression-potential-outcome-decomposition-centered}
+
+Plugging in to the observation equation from [Assumption 2](../treatment-group-means/#asm-sutva) gives
+$$
+\begin{aligned}
+Y_i
+&= (1 - D_i) y_{i,0} + D_i y_{i,1} \\[1ex]
+&=
+\left[
+(1-D_i)\overline y_{0,n}
++D_i\overline y_{1,n}
+\right]
+\\
+&\quad+
+\left[
+(1-D_i)
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{0,n}
++D_i
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{1,n}
+\right]
+\\
+&\quad+
+\left[
+(1-D_i)\epsilon_{i,0,n}
++D_i\epsilon_{i,1,n}
+\right].
+\end{aligned}
+$$ {#eq-regression-observed-outcome-projection-decomposition}
+
+Because $\mathbf a_n\neq\mathbf0$, the vectors $(a_{0,n},a_{1,n})'$ and $(-a_{1,n},a_{0,n})'$ form an orthogonal basis of $\mathbb R^2$.
+Define $\lambda_n$ via the change of coordinates
+
+$$
+\begin{pmatrix}
+\psi_n \\
+\lambda_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+a_{0,n} & a_{1,n} \\
+-a_{1,n} & a_{0,n}
+\end{pmatrix}
+\begin{pmatrix}
+\overline y_{0,n} \\
+\overline y_{1,n}
+\end{pmatrix}.
+$$ {#eq-regression-mean-reparameterization}
+
+Inverting this transformation yields
+
+$$
+\begin{pmatrix}
+\overline y_{0,n} \\
+\overline y_{1,n}
+\end{pmatrix}
+=
+\frac{1}{a_{0,n}^2+a_{1,n}^2}
+\begin{pmatrix}
+ a_{0,n} & -a_{1,n} \\
+ a_{1,n} & a_{0,n}
+\end{pmatrix}
+\begin{pmatrix}
+\psi_n \\
+\lambda_n
+\end{pmatrix}.
+$$ {#eq-regression-mean-reparameterization-inverse}
+
+We can therefore re-write the first term in (-@eq-regression-observed-outcome-projection-decomposition) as
+$$
+\begin{aligned}
+(1-D_i)\overline y_{0,n}+D_i\overline y_{1,n}
+&=
+\psi_n D_i^{\psi} +
+\lambda_n D_i^{\lambda}
+\end{aligned}
+$$ {#eq-regression-transformed-means}
+
+where
+
+$$
+\begin{aligned}
+D_{i,n}^{\psi}
+&=
+\frac{a_{0,n}(1-D_i)+a_{1,n}D_i}
+{a_{0,n}^2+a_{1,n}^2},
+\\[2ex]
+D_{i,n}^{\lambda}
+&=
+\frac{-a_{1,n}(1-D_i)+a_{0,n}D_i}
+{a_{0,n}^2+a_{1,n}^2}.
+\end{aligned}
+$$ {#eq-regression-transformed-treatment-regressors}
+
+Plugging into (-@eq-regression-observed-outcome-projection-decomposition) gives
+$$
+\begin{aligned}
+Y_i
+&= \psi_nD_{i,n}^{\psi} + \lambda_nD_{i,n}^{\lambda} + (1-D_i)\left(\mathbf w_i-\overline{\mathbf w}_n\right)'\boldsymbol\beta_{0,n} \\
+&\quad\, + D_i\left(\mathbf w_i-\overline{\mathbf w}_n\right)'\boldsymbol\beta_{1,n} + U_{i,n}.
+\end{aligned}
+$$ {#eq-regression-fully-interacted-observed-outcome}
+where
+$$
+U_{i,n}
+=
+(1-D_i)\epsilon_{i,0,n}
++D_i\epsilon_{i,1,n}.
+$$
+
+Now define the vectors
+
+$$
+\mathbf D_n^\psi
+=
+\begin{pmatrix}
+D_{1,n}^{\psi} \\
+\vdots \\
+D_{n,n}^{\psi}
+\end{pmatrix},
+\qquad
+\mathbf D_n^\lambda
+=
+\begin{pmatrix}
+D_{1,n}^{\lambda} \\
+\vdots \\
+D_{n,n}^{\lambda}
+\end{pmatrix},
+\qquad
+\mathbf D_n
+=
+\begin{pmatrix}
+D_1 \\
+\vdots \\
+D_n
+\end{pmatrix},
+\qquad
+\mathbf 1_n
+=
+\begin{pmatrix}
+1 \\
+\vdots \\
+1
+\end{pmatrix}
+$$
+and use them to construct the design matrix corresponding to (-@eq-regression-fully-interacted-observed-outcome):
+$$
+\mathbf X_n
+=
+\begin{pmatrix}
+\mathbf D_n^\psi
+&
+\mathbf D_n^\lambda
+&
+\operatorname{diag}(\mathbf 1_n-\mathbf D_n)\mathbf W_n
+&
+\operatorname{diag}(\mathbf D_n)\mathbf W_n
+\end{pmatrix}.
+$$
+
+The regression estimator is defined as
+
+$$
+\begin{pmatrix}
+\widehat\psi_n^{\mathrm{reg}} \\
+\widehat\lambda_n \\
+\widehat{\boldsymbol\beta}_{0,n} \\
+\widehat{\boldsymbol\beta}_{1,n}
+\end{pmatrix}
+=
+\left[
+\left(\mathbf X_n\right)'
+\mathbf X_n
+\right]^\dagger
+\left(\mathbf X_n\right)'
+\mathbf Y_n,
+$$ {#eq-regression-fully-interacted-estimator}
+where
+$$
+\mathbf Y_n
+=
+\begin{pmatrix}
+Y_1 \\
+\vdots \\
+Y_n
+\end{pmatrix}
+$$
+
+In the [Appendix](#sec-regression-separate-regressions), we show that, with
+probability approaching one uniformly over $\Theta$, $\widehat\psi_n^{\mathrm{reg}}$ can alternatively be computed by running
+separate regressions for the control and treatment groups and then weighting the resulting
+intercepts by $a_{0,n}$ and $a_{1,n}$, respectively.
+
+## Treatment-group intercepts
+
+It will be convenient to transform the estimated coefficients into the implied treatment-group intercepts using the inverse
+transformation in (-@eq-regression-mean-reparameterization-inverse):
+
+$$
+\begin{pmatrix}
+\widehat\alpha_{0,n}^{\mathrm{reg}} \\
+\widehat\alpha_{1,n}^{\mathrm{reg}}
+\end{pmatrix}
+=
+\frac{1}{a_{0,n}^2+a_{1,n}^2}
+\begin{pmatrix}
+a_{0,n} & -a_{1,n} \\
+a_{1,n} & a_{0,n}
+\end{pmatrix}
+\begin{pmatrix}
+\widehat\psi_n^{\mathrm{reg}} \\
+\widehat\lambda_n
+\end{pmatrix}.
+$$ {#eq-regression-implied-intercepts}
+
+In the [Appendix](#sec-regression-full-intercept-adjustment), we show
+
+$$
+\widehat\alpha_{d,n}^{\mathrm{reg}}
+=
+\widehat y_{d,n}
+-
+\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\beta}_{d,n},
+$$ {#eq-regression-intercept-adjustments}
+where
+
+$$
+\widehat{\mathbf w}_{d,n}
+=
+\frac{1}{n_d}\sum_{i=1}^nD_{i,d}\mathbf w_i
+$$
+denotes the covariate means in treatment group $d \in \{0, 1\}$.
+The intercept estimator therefore adjusts the treatment-group mean $\widehat y_{d,n}$
+by subtracting the covariate imbalance weighted by the treatment-group-specific
+coefficient $\widehat{\boldsymbol\beta}_{d,n}$.
+
+# Inference
+
+## Error decomposition
+
+In this section, we decompose the estimator's error into a weighted combination
+of residual means and a remainder term.
+Averaging (-@eq-regression-potential-outcome-decomposition-centered) over
+treatment group $d$ gives
+
+$$
+\widehat y_{d,n}
+=
+\overline y_{d,n}
++
+\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{d,n}
++
+\widehat\epsilon_{d,n},
+$$
+where
+$$
+\widehat\epsilon_{d,n}
+=
+\frac{1}{n_d}\sum_{i=1}^nD_{i,d}\epsilon_{i,d,n}.
+$$
+
+
+Substituting this expression into the first identity in
+(-@eq-regression-intercept-adjustments) gives
+
+$$
+\begin{aligned}
+\widehat\alpha_{d,n}^{\mathrm{reg}}
+&=
+\overline y_{d,n}
+-
+\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right) +
+\widehat\epsilon_{d,n}.
+\end{aligned}
+$$ {#eq-regression-full-intercept-error}
+
+Plugging into
+$\widehat\psi_n^{\mathrm{reg}}
+=a_{0,n}\widehat\alpha_{0,n}^{\mathrm{reg}}
++a_{1,n}\widehat\alpha_{1,n}^{\mathrm{reg}}$,
+we obtain
+
+$$
+\widehat\psi_n^{\mathrm{reg}}-\psi_n
+=
+[a_{0,n}\widehat\epsilon_{0,n}
++a_{1,n}\widehat\epsilon_{1,n}]
++R_n^{\mathrm{reg}},
+$$ {#eq-regression-full-target-error-decomposition}
+
+where
+
+$$
+R_n^{\mathrm{reg}}
+=
+-a_{0,n}
+\left(\widehat{\mathbf w}_{0,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\beta}_{0,n}-\boldsymbol\beta_{0,n}\right)
+-a_{1,n}
+\left(\widehat{\mathbf w}_{1,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\beta}_{1,n}-\boldsymbol\beta_{1,n}\right).
+$$ {#eq-regression-full-remainder-definition}
+
+## Normality approximation
+
+The leading term in
+(-@eq-regression-full-target-error-decomposition) applies the treatment-group-means estimator to the residual arrays
+$\{\epsilon_{i,0,n}\}$ and $\{\epsilon_{i,1,n}\}$. The row-wise means of these arrays are
+zero by (-@eq-regression-population-residual-sum-zero), while
+Assumption
+3''(i) and (ii) provide the non-degeneracy and maximum variance-share
+conditions needed to apply the results from the [treatment-group-means note](../treatment-group-means/#sec-estimator-asymptotics).
+Define
+
+$$
+\sigma_{d,n}^{2,\mathrm{reg}}
+=
+\frac{1-p_d}{p_d}v_{d,n}^2,
+\qquad
+\sigma_{01,n}^{\mathrm{reg}}
+=v_{01,n}.
+$$ {#eq-regression-full-treatment-group-variance}
+
+The variance of the leading term in
+(-@eq-regression-full-target-error-decomposition) is
+
+$$
+\begin{aligned}
+\sigma_n^{2,\mathrm{reg}}
+&=
+a_{0,n}^2\sigma_{0,n}^{2,\mathrm{reg}}
++a_{1,n}^2\sigma_{1,n}^{2,\mathrm{reg}}
+-2a_{0,n}a_{1,n}\sigma_{01,n}^{\mathrm{reg}}.
+\end{aligned}
+$$ {#eq-regression-full-treatment-group-means-variance}
+
+The corresponding conservative variance is
+
+$$
+\widetilde\sigma_n^{2,\mathrm{reg}}
+=
+\left(
+|a_{0,n}|\sigma_{0,n}^{\mathrm{reg}}
++|a_{1,n}|\sigma_{1,n}^{\mathrm{reg}}
+\right)^2.
+$$ {#eq-regression-full-conservative-variance}
+
+If the projection residuals were observed, we could estimate the
+treatment-group-specific variances by
+
+$$
+\check\sigma_{d,n}^{2,\mathrm{reg}}
+=
+\frac{1-\overline D_{d,n}}{\overline D_{d,n}}
+\left[
+\frac{1}{n_d}\sum_{i=1}^n
+D_{i,d}\left(\epsilon_{i,d,n}-\widehat\epsilon_{d,n}\right)^2
+\right],
+\qquad d\in\{0,1\},
+$$ {#eq-regression-full-oracle-treatment-group-variance-estimator}
+
+and construct
+
+$$
+\check\sigma_n^{2,\mathrm{reg}}
+=
+\left(
+|a_{0,n}|\check\sigma_{0,n}^{\mathrm{reg}}
++|a_{1,n}|\check\sigma_{1,n}^{\mathrm{reg}}
+\right)^2.
+$$ {#eq-regression-full-oracle-conservative-variance-estimator}
+
+The
+[studentized normal approximation](../treatment-group-means/#eq-feasible-normal-approximation){.quarto-xref} from the treatment-group-means note implies
+
+$$
+\sqrt n
+\frac{
+a_{0,n}\widehat\epsilon_{0,n}
++a_{1,n}\widehat\epsilon_{1,n}
+}{\check\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\approx}
+Z_n^{\mathrm{reg}},
+\qquad
+Z_n^{\mathrm{reg}}
+\sim
+N\left(
+0,
+\frac{\sigma_n^{2,\mathrm{reg}}}
+{\widetilde\sigma_n^{2,\mathrm{reg}}}
+\right).
+$$ {#eq-regression-full-oracle-normal-approximation}
+
+$\check\sigma_{d,n}^{2,\mathrm{reg}}$ is infeasible
+because the projection residuals are unobserved. To obtain a feasible
+estimator, we replace the population residuals with the fitted residuals:
+
+$$
+\begin{aligned}
+\widehat U_{i,n}
+&=
+Y_i
+-\widehat\psi_n^{\mathrm{reg}}D_{i,n}^{\psi}
+-\widehat\lambda_nD_{i,n}^{\lambda}
+\\
+&\quad-
+(1-D_i)
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\beta}_{0,n}
+-D_i
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\beta}_{1,n}.
+\end{aligned}
+$$ {#eq-regression-full-fitted-residual}
+
+Define the feasible within-treatment-group fitted-residual variances by
+
+$$
+\widehat v_{d,n}^{2,\mathrm{reg}}
+=
+\frac{1}{n_d}\sum_{i=1}^n
+D_{i,d}\left(\widehat U_{i,n}\right)^2
+$$ {#eq-regression-full-sample-residual-variances}
+
+and construct
+
+$$
+\widehat\sigma_{d,n}^{2,\mathrm{reg}}
+=
+\frac{1-\overline D_{d,n}}{\overline D_{d,n}}
+\widehat v_{d,n}^{2,\mathrm{reg}},
+\qquad
+\widehat\sigma_n^{2,\mathrm{reg}}
+=
+\left(
+|a_{0,n}|\widehat\sigma_{0,n}^{\mathrm{reg}}
++|a_{1,n}|\widehat\sigma_{1,n}^{\mathrm{reg}}
+\right)^2.
+$$ {#eq-regression-full-conservative-variance-estimator}
+
+In the [Appendix](#sec-regression-oracle-feasible-arm-variance), we show that
+
+$$
+\frac{\check\sigma_n^{2,\mathrm{reg}}}
+{\widehat\sigma_n^{2,\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$ {#eq-regression-full-oracle-feasible-variance-consistency}
+
+Since $\check\sigma_n^{\mathrm{reg}}$ and
+$\widehat\sigma_n^{\mathrm{reg}}$ are nonnegative,
+@prp-continuous-mapping(i) gives
+$\check\sigma_n^{\mathrm{reg}}/\widehat\sigma_n^{\mathrm{reg}}
+\stackrel{\mathcal P}{\to}1$. Moreover,
+$\sigma_n^{2,\mathrm{reg}}\leq\widetilde\sigma_n^{2,\mathrm{reg}}$
+implies $Z_n^{\mathrm{reg}}=O_{\mathcal P}(1)$. Therefore
+(-@eq-regression-full-oracle-normal-approximation) and
+@prp-asymptotic-equivalence-slutsky imply
+
+$$
+\sqrt n
+\frac{
+a_{0,n}\widehat\epsilon_{0,n}
++a_{1,n}\widehat\epsilon_{1,n}
+}{\widehat\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\approx}
+Z_n^{\mathrm{reg}}.
+$$ {#eq-regression-full-feasible-residual-means-normal-approximation}
+
+## Confidence intervals
+
+The [Appendix](#sec-regression-remainder-negligibility) shows that the remainder term is negligible:
+
+$$
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}0.
+$$ {#eq-regression-remainder-negligibility}
+
+Combining
+(-@eq-regression-full-target-error-decomposition), (-@eq-regression-full-feasible-residual-means-normal-approximation) and (-@eq-regression-remainder-negligibility) and applying
+@prp-asymptotic-equivalence-perturbation gives
+
+$$
+\sqrt n
+\frac{\widehat\psi_n^{\mathrm{reg}}-\psi_n}
+{\widehat\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\approx}
+Z_n^{\mathrm{reg}}.
+$$ {#eq-regression-feasible-normal-approximation}
+
+Define the confidence interval by
+
+$$
+C_{1-\alpha,n}^{\mathrm{reg}}
+=
+\left[
+\widehat\psi_n^{\mathrm{reg}}
+-z_{1-\alpha/2}
+\sqrt{\frac{\widehat\sigma_n^{2,\mathrm{reg}}}{n}},
+\widehat\psi_n^{\mathrm{reg}}
++z_{1-\alpha/2}
+\sqrt{\frac{\widehat\sigma_n^{2,\mathrm{reg}}}{n}}
+\right].
+$$ {#eq-regression-confidence-interval}
+
+The uniform-coverage argument from the treatment-group-means note then gives
+
+$$
+\liminf_{n\to\infty}
+\inf_{\theta\in\Theta}
+\mathbb P_\theta\left(\psi_n\in C_{1-\alpha,n}^{\mathrm{reg}}\right)
+\geq 1-\alpha.
+$$ {#eq-regression-confidence-interval-coverage}
+
+# Comparison with other estimators
+
+In this section, we compare the regression estimator with two alternatives: the
+unadjusted treatment-group-means estimator and CUPED.
+
+## Unadjusted estimator
+
+We first compare the conservative variance of the regression estimator with
+that of the unadjusted treatment-group-means estimator.
+Squaring the decomposition in
+(-@eq-regression-potential-outcome-decomposition-centered) and applying the
+population normal equations in (-@eq-regression-population-normal-equations)
+gives, for each $d\in\{0,1\}$,
+
+$$
+\frac{1}{n}\sum_{i=1}^n
+\left(y_{i,d}-\overline y_{d,n}\right)^2
+=
+v_{d,n}^2
++\boldsymbol\beta_{d,n}'
+\left(\frac{1}{n}\mathbf W_n'\mathbf W_n\right)
+\boldsymbol\beta_{d,n}.
+$$ {#eq-regression-adjusted-residual-second-moments}
+
+Define the finite-population coefficient of determination for treatment group
+$d$ as
+
+$$
+R_{d,n}^2
+=
+\frac{
+\boldsymbol\beta_{d,n}'
+\left(\frac{1}{n}\mathbf W_n'\mathbf W_n\right)
+\boldsymbol\beta_{d,n}
+}{
+\frac{1}{n}\sum_{i=1}^n\left(y_{i,d}-\overline y_{d,n}\right)^2
+}
+.
+$$
+
+The two terms on the right-hand side of
+(-@eq-regression-adjusted-residual-second-moments) are nonnegative, so
+$0\leq R_{d,n}^2\leq 1$. Rearranging gives
+
+$$
+v_{d,n}^2
+=
+(1-R_{d,n}^2)
+\frac{1}{n}\sum_{i=1}^n
+\left(y_{i,d}-\overline y_{d,n}\right)^2.
+$$
+
+Using (-@eq-regression-full-treatment-group-variance), we then have
+
+$$
+\sigma_{d,n}^{2,\mathrm{reg}}
+=
+\left(1-R_{d,n}^2\right)\sigma_{d,n}^2.
+$$
+
+The conservative regression variance in
+(-@eq-regression-full-conservative-variance) therefore satisfies
+
+$$
+\widetilde\sigma_n^{2,\mathrm{reg}}
+=
+\left(
+|a_{0,n}|\sqrt{1-R_{0,n}^2}\,\sigma_{0,n}
++|a_{1,n}|\sqrt{1-R_{1,n}^2}\,\sigma_{1,n}
+\right)^2.
+$$
+
+Taking nonnegative square roots and rearranging, we obtain
+
+$$
+\frac{\widetilde\sigma_n - \widetilde\sigma_n^{\mathrm{reg}}}{\widetilde\sigma_n}
+=
+w_{0,n}\left(1-\sqrt{1-R_{0,n}^2}\right)
++w_{1,n}\left(1-\sqrt{1-R_{1,n}^2}\right),
+$$
+where
+
+$$
+w_{d,n}
+=
+\frac{|a_{d,n}|\sigma_{d,n}}{|a_{d,n}|\sigma_{d,n}+|a_{1-d,n}|\sigma_{1-d,n}}
+,
+\qquad d\in\{0,1\},
+$$
+
+denotes the share of the unadjusted conservative standard deviation contributed by
+treatment group $d$.
+The relative reduction in the conservative standard deviation is therefore a
+weighted average of the armwise reduction factors $1-\sqrt{1-R_{d,n}^2}$.
+Taking a first-order expansion around $R_{d,n}^2=0$ yields
+
+$$
+1-\sqrt{1-R_{d,n}^2}
+=
+\frac{R_{d,n}^2}{2}
++O\left(R_{d,n}^4\right).
+$$
+
+Thus, when both armwise $R^2$ values are small, the relative reduction in the
+conservative standard deviation is approximately
+
+$$
+\frac{\widetilde\sigma_n - \widetilde\sigma_n^{\mathrm{reg}}}{\widetilde\sigma_n}
+\approx
+\frac{w_{0,n}R_{0,n}^2+w_{1,n}R_{1,n}^2}{2}.
+$$
+
+## CUPED
+
+[CUPED](https://doi.org/10.1145/2433396.2433413) is a commonly used technique that reduces variance by
+subtracting a covariate adjustment from each treatment-group mean.
+Let
+
+$$
+\widehat{\boldsymbol\gamma}_n
+=
+\left(\mathbf W_n'\mathbf W_n\right)^\dagger
+\mathbf W_n'\mathbf Y_n.
+$$ {#eq-regression-cuped-coefficient-estimator}
+
+denote the pooled coefficient estimator and
+define the CUPED-adjusted treatment-group mean by
+
+$$
+\widehat\alpha_{d,n}^{\mathrm{cuped}}
+=
+\widehat y_{d,n}
+-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\gamma}_n,
+\qquad d\in\{0,1\}.
+$$ {#eq-regression-cuped-intercept}
+
+Compared with the regression intercepts in
+(-@eq-regression-intercept-adjustments), the CUPED intercepts replace the
+treatment-group-specific coefficient $\widehat{\boldsymbol\beta}_{d,n}$ with a single coefficient vector shared across treatment groups.
+The CUPED estimator of $\psi_n$ is given by
+
+$$
+\begin{aligned}
+\widehat\psi_n^{\mathrm{cuped}}
+&=
+a_{0,n}\widehat\alpha_{0,n}^{\mathrm{cuped}}
++a_{1,n}\widehat\alpha_{1,n}^{\mathrm{cuped}}.
+\end{aligned}
+$$ {#eq-regression-cuped-estimator}
+
+To describe its asymptotic behavior, define
+
+$$
+\begin{aligned}
+\boldsymbol\gamma_n
+&=
+\mathbb E_\theta\left[\widehat{\boldsymbol\gamma}_n\right]
+\\
+&=
+\left(\mathbf W_n'\mathbf W_n\right)^\dagger
+\mathbf W_n'
+\left[(1-p)\mathbf y_{0,n}+p\mathbf y_{1,n}\right]
+\\
+&=
+(1-p)\boldsymbol\beta_{0,n}
++p\boldsymbol\beta_{1,n}.
+\end{aligned}
+$$ {#eq-regression-standard-cuped-coefficient}
+
+Averaging (-@eq-regression-potential-outcome-decomposition-centered) over
+treatment group $d$ and substituting the result into
+(-@eq-regression-cuped-intercept) yields
+
+$$
+\begin{aligned}
+\widehat\alpha_{d,n}^{\mathrm{cuped}}
+&=
+\overline y_{d,n}
++\widehat u_{d,n}^{\mathrm{cuped}}
+-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right).
+\end{aligned}
+$$ {#eq-regression-cuped-residual}
+
+where
+$$
+\begin{aligned}
+\widehat u_{d,n}^{\mathrm{cuped}}
+&=
+\frac{1}{n_d}\sum_{i=1}^n
+D_{i,d}u_{i,d,n}^{\mathrm{cuped}},
+\\[1ex]
+u_{i,d,n}^{\mathrm{cuped}}
+&=
+\epsilon_{i,d,n}
++\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)
+\end{aligned}
+$$
+
+
+Consequently,
+
+$$
+\widehat\psi_n^{\mathrm{cuped}}-\psi_n
+=
+a_{0,n}\widehat u_{0,n}^{\mathrm{cuped}}
++a_{1,n}\widehat u_{1,n}^{\mathrm{cuped}}
++R_n^{\mathrm{cuped}},
+$$ {#eq-regression-cuped-error-decomposition}
+
+where
+
+$$
+\begin{aligned}
+R_n^{\mathrm{cuped}}
+&=
+-a_{0,n}
+\left(\widehat{\mathbf w}_{0,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right)
+\\
+&\quad-
+a_{1,n}
+\left(\widehat{\mathbf w}_{1,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right).
+\end{aligned}
+$$ {#eq-regression-cuped-remainder}
+
+Define
+
+$$
+\sigma_{d,n}^{2,\mathrm{cuped}}
+=
+\frac{1-p_d}{p_d}
+\left(
+\frac{1}{n}\sum_{i=1}^n
+\left(u_{i,d,n}^{\mathrm{cuped}}\right)^2
+\right)
+$$
+
+Because $\boldsymbol\beta_{d,n}$ is the projection coefficient, the population
+normal equations (-@eq-regression-population-normal-equations) make
+$\mathbf w_i-\overline{\mathbf w}_n$ orthogonal to $\epsilon_{i,d,n}$.
+Therefore
+
+$$
+\begin{aligned}
+\frac{1}{n}\sum_{i=1}^n
+\left(u_{i,d,n}^{\mathrm{cuped}}\right)^2
+&=
+v_{d,n}^2
++
+\left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)'
+\left(\frac{1}{n}\mathbf W_n'\mathbf W_n\right)
+\left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)
+\end{aligned}
+$$ {#eq-regression-cuped-second-moments}
+
+which implies
+$$
+\sigma_{d,n}^{2,\mathrm{cuped}}
+=
+\sigma_{d,n}^{2,\mathrm{reg}}
++
+\frac{1-p_d}{p_d}
+\left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)'
+\left(\frac{1}{n}\mathbf W_n'\mathbf W_n\right)
+\left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right).
+$$
+
+The quadratic form is nonnegative, so
+$\sigma_{d,n}^{2,\mathrm{cuped}}\geq\sigma_{d,n}^{2,\mathrm{reg}}$ for each
+$d\in\{0,1\}$. Consequently, the conservative CUPED variance satisfies
+
+$$
+\begin{aligned}
+\widetilde\sigma_n^{2,\mathrm{cuped}}
+&=
+\left(
+|a_{0,n}|\sigma_{0,n}^{\mathrm{cuped}}
++|a_{1,n}|\sigma_{1,n}^{\mathrm{cuped}}
+\right)^2
+\\
+&\geq
+\left(
+|a_{0,n}|\sigma_{0,n}^{\mathrm{reg}}
++|a_{1,n}|\sigma_{1,n}^{\mathrm{reg}}
+\right)^2
+\\
+&=
+\widetilde\sigma_n^{2,\mathrm{reg}}.
+\end{aligned}
+$$ {#eq-regression-cuped-conservative-variance}
+
+Since
+
+$$
+\begin{aligned}
+\mathbf W_n\left(\boldsymbol\beta_{0,n}-\boldsymbol\gamma_n\right)
+&=
+p\,\mathbf W_n
+\left(\boldsymbol\beta_{0,n}-\boldsymbol\beta_{1,n}\right),
+\\[1ex]
+\mathbf W_n\left(\boldsymbol\beta_{1,n}-\boldsymbol\gamma_n\right)
+&=
+-(1-p)\,\mathbf W_n
+\left(\boldsymbol\beta_{0,n}-\boldsymbol\beta_{1,n}\right),
+\end{aligned}
+$$
+
+$\sigma_{d,n}^{2,\mathrm{cuped}} = \sigma_{d,n}^{2,\mathrm{reg}}$ if and only if
+
+$$
+\mathbf W_n\boldsymbol\beta_{0,n}
+=
+\mathbf W_n\boldsymbol\beta_{1,n}.
+$$
+
+The regression estimator therefore has weakly smaller conservative asymptotic
+variance than the CUPED estimator, with strict inequality whenever the linear projections differ across treatment groups.
+
+# Appendix
+
+## A mixture-model motivation for [Assumption 3''](#asm-regression-covariates) {#sec-regression-stationary-ergodic-conditions}
+
+Let $\mathcal Q$ be a collection of probability laws on the path space
+$(\mathbb R^2\times\mathbb R^k)^\mathbb N$. Under each $Q\in\mathcal Q$,
+suppose the joint coordinate process
+
+$$
+\left\{
+\begin{pmatrix}
+Y_{i,0} \\
+Y_{i,1} \\
+W_i
+\end{pmatrix}
+:i\geq1
+\right\}
+$$
+
+is stationary and ergodic. Suppose also that, for each $d\in\{0,1\}$,
+
+$$
+\mathbb E_Q\left[Y_{1,d}^2\right]<\infty,
+\qquad
+\mathbb E_Q\left[\|W_1\|^2\right]<\infty.
+$$
+
+Define
+
+$$
+\begin{gathered}
+\mu_d(Q)
+=
+\mathbb E_Q[Y_{1,d}],
+\qquad
+\boldsymbol\mu_w(Q)
+=
+\mathbb E_Q[W_1],
+\\[2ex]
+\boldsymbol\Sigma_w(Q)
+=
+\mathbb E_Q\left[
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\left(W_1-\boldsymbol\mu_w(Q)\right)'
+\right],
+\\[2ex]
+\boldsymbol\beta_d(Q)
+=
+\boldsymbol\Sigma_w(Q)^\dagger
+\mathbb E_Q\left[
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\left(Y_{1,d}-\mu_d(Q)\right)
+\right],
+\\[2ex]
+v_d^2(Q)
+=
+\mathbb E_Q\left[
+\left\{
+Y_{1,d}-\mu_d(Q)
+-\left(W_1-\boldsymbol\mu_w(Q)\right)'
+\boldsymbol\beta_d(Q)
+\right\}^2
+\right],
+\end{gathered}
+$$
+
+and assume $v_d^2(Q)>0$.
+Let $\Pi$ be a probability distribution on
+$\mathcal Q$. Generate a path of potential outcomes and covariates by first
+drawing $Q\sim\Pi$ and then drawing the path according to $Q$.
+
+For each $d\in\{0,1\}$, define the empirical quantities
+
+$$
+\begin{gathered}
+\overline Y_{d,n}
+=
+\frac{1}{n}\sum_{i=1}^nY_{i,d},
+\qquad
+\overline W_n
+=
+\frac{1}{n}\sum_{i=1}^nW_i,
+\\[2ex]
+\mathbf Y_{d,n}
+=
+\begin{pmatrix}
+Y_{1,d} \\
+\vdots \\
+Y_{n,d}
+\end{pmatrix},
+\qquad
+\mathbb W_n
+=
+\begin{pmatrix}
+(W_1-\overline W_n)' \\
+\vdots \\
+(W_n-\overline W_n)'
+\end{pmatrix}.
+\end{gathered}
+$$
+
+We use the existing notation $\boldsymbol\beta_{d,n}$,
+$\epsilon_{i,d,n}$, $v_{d,n}^2$, and $h_{i,n}$ for the corresponding
+functions of these random empirical data.
+
+### Projection coefficient convergence
+
+We first show that
+
+$$
+\boldsymbol\beta_{d,n}\to\boldsymbol\beta_d(Q)
+$$ {#eq-regression-ergodic-coefficient-convergence}
+$Q$-almost surely.
+The ergodic theorem gives
+
+$$
+\begin{gathered}
+\frac{1}{n}\mathbb W_n'\mathbb W_n
+\to
+\boldsymbol\Sigma_w(Q)
+\\[2ex]
+\frac{1}{n}\mathbb W_n'\mathbf Y_{d,n}
+\to
+\mathbb E_Q\left[
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\left(Y_{1,d}-\mu_d(Q)\right)
+\right]
+\end{gathered}
+$$ {#eq-regression-ergodic-projection-moment-convergence}
+$Q$-almost surely.
+Let
+
+$$
+r
+=
+\operatorname{rank}(\boldsymbol\Sigma_w(Q)).
+$$
+
+We consider three cases.
+
+**Case 1: full rank**. If $r=k$, $\boldsymbol\Sigma_w(Q)$ is positive definite. The empirical
+covariance matrix is therefore positive definite for all sufficiently large
+$n$, and continuity of matrix inversion gives
+
+$$
+\left(
+\frac{1}{n}\mathbb W_n'\mathbb W_n
+\right)^{-1}
+\to
+\boldsymbol\Sigma_w(Q)^{-1}.
+$$
+
+For all such $n$,
+
+$$
+\begin{aligned}
+\boldsymbol\beta_{d,n}
+&=
+\left(
+\frac{1}{n}\mathbb W_n'\mathbb W_n
+\right)^{-1}
+\left(
+\frac{1}{n}\mathbb W_n'\mathbf Y_{d,n}
+\right)
+\\[1ex]
+&\to
+\boldsymbol\Sigma_w(Q)^{-1}
+\mathbb E_Q\left[
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\left(Y_{1,d}-\mu_d(Q)\right)
+\right]
+\\[1ex]
+&=
+\boldsymbol\beta_d(Q).
+\end{aligned}
+$$
+
+**Case 2: zero rank**. If $r=0$, then $\boldsymbol\Sigma_w(Q)=\mathbf0$, so
+$W_i=\boldsymbol\mu_w(Q)$ simultaneously for every $i\geq1$,
+$Q$-almost surely. Hence $\mathbb W_n=\mathbf0$ and
+$\boldsymbol\beta_{d,n}=\boldsymbol\beta_d(Q)=\mathbf0$ for every $n$.
+
+**Case 3: intermediate rank**. Suppose instead that $0<r<k$.
+Since the Moore--Penrose inverse is continuous along fixed-rank sequences, it
+suffices to show that the empirical covariance matrix
+$\frac{1}{n}\mathbb W_n'\mathbb W_n$ has rank $r$ for all sufficiently large
+$n$, $Q$-almost surely.
+Toward this end, let
+$\left\{\mathbf q_1(Q),\ldots,\mathbf q_{k-r}(Q)\right\}$ be an orthonormal basis of
+$\operatorname{null}(\boldsymbol\Sigma_w(Q))$. For each
+$j\in\{1,\ldots,k-r\}$,
+
+$$
+\begin{aligned}
+0
+&=
+\mathbf q_j(Q)'\boldsymbol\Sigma_w(Q)\mathbf q_j(Q)
+\\
+&=
+\mathbb E_Q\left[
+\left\{
+\mathbf q_j(Q)'
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\right\}^2
+\right].
+\end{aligned}
+$$
+
+Therefore, for all $j\in\{1,\ldots,k-r\}$,
+
+$$
+\mathbf q_j(Q)'
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+=0
+$$
+
+$Q$-almost surely. Hence
+
+$$
+W_1-\boldsymbol\mu_w(Q)
+\in
+\operatorname{null}(\boldsymbol\Sigma_w(Q))^\perp
+=
+\operatorname{col}(\boldsymbol\Sigma_w(Q))
+$$
+
+$Q$-almost surely. By stationarity and countable subadditivity, this inclusion holds simultaneously for every $i\geq1$, $Q$-almost surely. On this probability-one event,
+
+$$
+\overline W_n-\boldsymbol\mu_w(Q)
+=
+\frac{1}{n}\sum_{i=1}^n
+\left(W_i-\boldsymbol\mu_w(Q)\right)
+\in
+\operatorname{col}(\boldsymbol\Sigma_w(Q))
+$$
+
+and
+
+$$
+W_i-\overline W_n
+=
+\left(W_i-\boldsymbol\mu_w(Q)\right)
+-
+\left(\overline W_n-\boldsymbol\mu_w(Q)\right)
+\in
+\operatorname{col}(\boldsymbol\Sigma_w(Q)).
+$$
+
+Consequently,
+
+$$
+0
+\leq
+\operatorname{rank}\left(\frac{1}{n}\mathbb W_n'\mathbb W_n\right)
+=
+\operatorname{rank}(\mathbb W_n)
+\leq
+r.
+$$ {#eq-regression-ergodic-covariance-rank-upper-bound}
+
+Let $\lambda_r(A)$ denote the $r$th largest eigenvalue of a
+symmetric matrix $A$. Since $\boldsymbol\Sigma_w(Q)$ has rank $r>0$,
+
+$$
+\lambda_r\left(\boldsymbol\Sigma_w(Q)\right)>0.
+$$
+
+Convergence of the empirical covariance matrix implies
+
+$$
+\lambda_r\left(\frac{1}{n}\mathbb W_n'\mathbb W_n\right)
+\to
+\lambda_r\left(\boldsymbol\Sigma_w(Q)\right)>0.
+$$
+
+Therefore, for all sufficiently large $n$,
+
+$$
+\operatorname{rank}\left(\frac{1}{n}\mathbb W_n'\mathbb W_n\right)
+\geq r.
+$$
+
+Combining this inequality with
+(-@eq-regression-ergodic-covariance-rank-upper-bound) gives
+
+$$
+\operatorname{rank}\left(\frac{1}{n}\mathbb W_n'\mathbb W_n\right)
+=
+r
+=
+\operatorname{rank}(\boldsymbol\Sigma_w(Q))
+$$
+
+for all sufficiently large $n$. Hence
+$$
+\left(
+\frac{1}{n}\mathbb W_n'\mathbb W_n
+\right)^\dagger
+\to
+\boldsymbol\Sigma_w(Q)^\dagger,
+$$
+which implies
+$$
+\begin{aligned}
+\boldsymbol\beta_{d,n}
+&=
+\left(
+\frac{1}{n}\mathbb W_n'\mathbb W_n
+\right)^\dagger
+\left(
+\frac{1}{n}\mathbb W_n'\mathbf Y_{d,n}
+\right)
+\\[1ex]
+&\to
+\boldsymbol\Sigma_w(Q)^\dagger
+\mathbb E_Q\left[
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\left(Y_{1,d}-\mu_d(Q)\right)
+\right]
+\\[1ex]
+&=
+\boldsymbol\beta_d(Q).
+\end{aligned}
+$$
+
+### Residual-variance convergence
+
+We next show that the residual variance converges to the population value $Q$-almost surely. Expanding the square gives
+
+$$
+\begin{aligned}
+v_{d,n}^2
+&=
+\frac{1}{n}\sum_{i=1}^n
+\left(Y_{i,d}-\overline Y_{d,n}\right)^2 -
+2\boldsymbol\beta_{d,n}'
+\left(
+\frac{1}{n}\mathbb W_n'\mathbf Y_{d,n}
+\right) +
+\boldsymbol\beta_{d,n}'
+\left(
+\frac{1}{n}\mathbb W_n'\mathbb W_n
+\right)
+\boldsymbol\beta_{d,n}.
+\end{aligned}
+$$
+
+The ergodic theorem also gives
+
+$$
+\frac{1}{n}\sum_{i=1}^n
+\left(Y_{i,d}-\overline Y_{d,n}\right)^2
+\to
+\mathbb E_Q\left[
+\left(Y_{1,d}-\mu_d(Q)\right)^2
+\right]
+$$
+
+$Q$-almost surely. Combining this limit with
+(-@eq-regression-ergodic-coefficient-convergence) and
+(-@eq-regression-ergodic-projection-moment-convergence) gives
+
+$$
+\begin{aligned}
+v_{d,n}^2
+&\to
+\mathbb E_Q\left[
+\left(Y_{1,d}-\mu_d(Q)\right)^2
+\right]
+\\[1ex]
+&\quad-
+2\boldsymbol\beta_d(Q)'
+\mathbb E_Q\left[
+\left(W_1-\boldsymbol\mu_w(Q)\right)
+\left(Y_{1,d}-\mu_d(Q)\right)
+\right]
+\\[1ex]
+&\quad+
+\boldsymbol\beta_d(Q)'
+\boldsymbol\Sigma_w(Q)
+\boldsymbol\beta_d(Q)
+\\[1ex]
+&=
+\mathbb E_Q\left[
+\left\{
+Y_{1,d}-\mu_d(Q)
+-
+\left(W_1-\boldsymbol\mu_w(Q)\right)'
+\boldsymbol\beta_d(Q)
+\right\}^2
+\right]
+\\
+&=
+v_d^2(Q).
+\end{aligned}
+$$ {#eq-regression-ergodic-residual-variance-convergence}
+
+$Q$-almost surely for each $d\in\{0,1\}$.
+
+### Maximum variance-share and leverage conditions
+
+We next show the maximum variance-share and maximum-leverage conditions
+hold $Q$-almost surely.
+The dyadic union-bound and Borel--Cantelli argument used in the
+[mixture-model motivation for Assumption 3](../treatment-group-means/#sec-stationary-ergodic-conditions)
+applies to every coordinate of the joint process. The finite-second-moment
+conditions therefore imply
+
+$$
+\frac{1}{\sqrt n}
+\max_{1\leq i\leq n}
+\left(
+|Y_{i,0}|+|Y_{i,1}|+\|W_i\|
+\right)
+\to 0
+$$
+
+$Q$-almost surely. The ergodic theorem also gives
+
+$$
+\overline Y_{d,n}
+\to
+\mu_d(Q),
+\qquad
+\overline W_n
+\to
+\boldsymbol\mu_w(Q)
+$$
+
+$Q$-almost surely. On every path for which these convergences hold, we have
+
+$$
+\begin{aligned}
+\frac{1}{\sqrt n}
+\max_{1\leq i\leq n}
+|\epsilon_{i,d,n}|
+&\leq
+\frac{1}{\sqrt n}
+\max_{1\leq i\leq n}|Y_{i,d}|
++
+\frac{|\overline Y_{d,n}|}{\sqrt n}
+\\
+&\quad+
+\|\boldsymbol\beta_{d,n}\|
+\left(
+\frac{1}{\sqrt n}
+\max_{1\leq i\leq n}\|W_i\|
++
+\frac{\|\overline W_n\|}{\sqrt n}
+\right)
+\\
+&\to 0.
+\end{aligned}
+$$ {#eq-regression-ergodic-residual-maximum}
+
+Together with the positive limit in
+(-@eq-regression-ergodic-residual-variance-convergence), this gives
+
+$$
+\max_{1\leq i\leq n}
+\frac{|\epsilon_{i,d,n}|}{\sqrt n\,v_{d,n}}
+\to 0
+$$
+
+$Q$-almost surely.
+
+For leverage, suppose first that $r>0$. The convergence results above imply that
+$\left\|\left(\frac{1}{n}\mathbb W_n'\mathbb W_n\right)^\dagger\right\|$
+is bounded for all sufficiently large $n$. Hence
+
+$$
+\begin{aligned}
+\max_{1\leq i\leq n}h_{i,n}
+&\leq
+\frac{1}{n}
++
+\left\|
+\left(\frac{1}{n}\mathbb W_n'\mathbb W_n\right)^\dagger
+\right\|
+\max_{1\leq i\leq n}
+\frac{\|W_i-\overline W_n\|^2}{n}
+\to 0.
+\end{aligned}
+$$ {#eq-regression-ergodic-leverage}
+$Q$-almost surely.
+
+When $r=0$, $h_{i,n}=1/n$, so the same conclusion holds.
+
+### Uniformity over $\Theta$
+
+Let $\mathbb P_{\mathbf Y,\mathbf W}$ denote the mixture law of the path. The
+events on which the convergences in
+(-@eq-regression-ergodic-residual-variance-convergence),
+(-@eq-regression-ergodic-residual-maximum), and
+(-@eq-regression-ergodic-leverage) hold are measurable and have $Q$-probability
+one for every $Q\in\mathcal Q$. Their intersection, taken over $d\in\{0,1\}$
+where applicable, therefore has probability one under
+$\mathbb P_{\mathbf Y,\mathbf W}$.
+
+For a realized path $(\mathbf y,\mathbf w)$, define the measurable pathwise
+limit
+
+$$
+V_d^*(\mathbf y,\mathbf w)
+=
+\limsup_{n\to\infty}v_{d,n}^2.
+$$
+
+Then $0<V_d^*(\mathbf Y,\mathbf W)<\infty$ almost surely. The same
+continuity-from-below and Egorov argument used in the
+[mixture-model motivation for Assumption 3](../treatment-group-means/#sec-stationary-ergodic-conditions)
+shows that, for every $\eta>0$, there exist $c>0$ and a measurable set $E$
+such that $\mathbb P_{\mathbf Y,\mathbf W}(E)>1-\eta$ and, for
+$d\in\{0,1\}$,
+
+$$
+\begin{gathered}
+\inf_{(\mathbf y,\mathbf w)\in E}V_d^*(\mathbf y,\mathbf w)\geq c,
+\\
+\sup_{(\mathbf y,\mathbf w)\in E}
+\left|v_{d,n}^2-V_d^*(\mathbf y,\mathbf w)\right|
+\to0,
+\\
+\sup_{(\mathbf y,\mathbf w)\in E}
+\frac{1}{\sqrt n}
+\max_{1\leq i\leq n}|\epsilon_{i,d,n}|
+\to0,
+\qquad
+\sup_{(\mathbf y,\mathbf w)\in E}
+\max_{1\leq i\leq n}h_{i,n}
+\to0.
+\end{gathered}
+$$ {#eq-regression-uniform-pathwise-convergences}
+
+Let $\Theta$ be the set of parameter configurations whose treatment probability
+satisfies Assumption 1 and whose potential-outcome and covariate path lies in
+$E$.
+(-@eq-regression-uniform-pathwise-convergences) implies that this $\Theta$
+satisfies Assumption 3''.
+Thus, for every $\eta>0$, the mixture law assigns probability greater than
+$1-\eta$ to a set of paths that induces a parameter space satisfying
+Assumption 3''.
+
+## Separate-regression representation {#sec-regression-separate-regressions}
+
+We first show that the intercept and effective covariate coefficients are
+uniquely identified within each treatment group with probability approaching
+one uniformly over $\Theta$. Let
+
+$$
+r_n
+=
+\operatorname{rank}\left(\frac{1}{n}\mathbf W_n'\mathbf W_n\right)
+$$
+
+and fix a reduced eigendecomposition
+
+$$
+\frac{1}{n}\mathbf W_n'\mathbf W_n
+=
+\mathbf U_n\boldsymbol\Lambda_n\mathbf U_n',
+$$
+
+where the columns of $\mathbf U_n\in\mathbb R^{k\times r_n}$ are orthonormal
+and $\boldsymbol\Lambda_n\in\mathbb R^{r_n\times r_n}$ is diagonal and
+positive definite. If $r_n=0$, then $\mathbf W_n=\mathbf0$. In that case,
+the two treatment-group intercepts are uniquely identified whenever both
+treatment groups are nonempty, an event whose probability approaches one
+uniformly. Suppose below that $r_n>0$, and define
+
+$$
+\mathbf z_{i,n}
+=
+\boldsymbol\Lambda_n^{-1/2}\mathbf U_n'
+\left(\mathbf w_i-\overline{\mathbf w}_n\right),
+\qquad
+\widehat{\mathbf z}_{d,n}
+=
+\frac{1}{n_d}\sum_{i=1}^nD_{i,d}\mathbf z_{i,n}.
+$$
+
+Then
+
+$$
+\frac{1}{n}\sum_{i=1}^n\mathbf z_{i,n}=\mathbf0,
+\qquad
+\frac{1}{n}\sum_{i=1}^n
+\mathbf z_{i,n}\mathbf z_{i,n}'
+=\mathbf I_{r_n},
+\qquad
+h_{i,n}
+=
+\frac{1+\|\mathbf z_{i,n}\|^2}{n}.
+$$
+
+For each $d\in\{0,1\}$,
+
+$$
+\mathbb E_\theta
+\left\|
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}
+\right\|^2
+=
+\frac{p_d(1-p_d)r_n}{n}
+\leq
+\frac{k}{4n},
+$$
+
+so $n^{-1}\sum_iD_{i,d}\mathbf z_{i,n}=o_{\mathcal P}(1)$ uniformly.
+Because $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
+$p_d\geq\underline p$, it follows that
+$\widehat{\mathbf z}_{d,n}=o_{\mathcal P}(1)$. Moreover,
+
+$$
+\begin{aligned}
+&\mathbb E_\theta
+\left\|
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+\right\|_{\mathrm F}^2
+\\
+&\qquad=
+\frac{p_d(1-p_d)}{n^2}
+\sum_{i=1}^n\|\mathbf z_{i,n}\|^4
+\\
+&\qquad\leq
+\frac{k}{4}
+\max_{1\leq i\leq n}
+\frac{\|\mathbf z_{i,n}\|^2}{n}
+\leq
+\frac{k}{4}
+\max_{1\leq i\leq n}h_{i,n}.
+\end{aligned}
+$$
+
+Assumption 3''(iii) therefore implies
+
+$$
+\begin{aligned}
+&\frac{1}{n}\sum_{i=1}^n
+D_{i,d}
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+\\
+&\qquad=
+\frac{1}{n}\sum_{i=1}^n
+D_{i,d}\mathbf z_{i,n}\mathbf z_{i,n}'
+-
+\overline D_{d,n}
+\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'
+\stackrel{\mathcal P}{\to}
+p_d\mathbf I_{r_n}
+\end{aligned}
+$$ {#eq-regression-arm-effective-covariate-rank}
+
+uniformly over $\Theta$. Since $p_d\geq\underline p$, both armwise centered
+matrices in (-@eq-regression-arm-effective-covariate-rank) are positive
+definite with probability approaching one uniformly. On this event, no
+nonzero effective linear combination of the covariates is constant within a
+treatment group. Hence the intercept and effective slope are uniquely
+identified in each of the two separate treatment-group regressions. Any
+remaining slope nonuniqueness belongs to $\operatorname{null}(\mathbf W_n)$
+and does not affect the fitted values or intercepts.
+
+After permuting observations by treatment group, the fully interacted
+least-squares criterion is the sum of the two separate treatment-group
+criteria. The unique intercepts and effective slopes must therefore agree
+with those from the two separate regressions. Finally,
+(-@eq-regression-implied-intercepts) gives
+
+$$
+\widehat\psi_n^{\mathrm{reg}}
+=
+a_{0,n}\widehat\alpha_{0,n}^{\mathrm{reg}}
++
+a_{1,n}\widehat\alpha_{1,n}^{\mathrm{reg}},
+$$
+
+which proves the claimed representation.
+
+## Fully interacted intercept adjustment {#sec-regression-full-intercept-adjustment}
+
+By the definitions of $D_{i,n}^{\psi}$ and
+$D_{i,n}^{\lambda}$,
+
+$$
+\begin{pmatrix}
+\mathbf D_n^\psi & \mathbf D_n^\lambda
+\end{pmatrix}
+'
+=
+\frac{1}{a_{0,n}^2+a_{1,n}^2}
+\begin{pmatrix}
+a_{0,n} & -a_{1,n} \\
+a_{1,n} & a_{0,n}
+\end{pmatrix}
+\begin{pmatrix}
+\mathbf 1_n-\mathbf D_n & \mathbf D_n
+\end{pmatrix}
+'
+$$ {#eq-regression-treatment-column-transformation}
+
+Together with (-@eq-regression-implied-intercepts), this gives
+
+$$
+\begin{aligned}
+\mathbf D_n^\psi\widehat\psi_n^{\mathrm{reg}}
++\mathbf D_n^\lambda\widehat\lambda_n
+&=
+\begin{pmatrix}
+\mathbf 1_n-\mathbf D_n & \mathbf D_n
+\end{pmatrix}
+\frac{1}{a_{0,n}^2+a_{1,n}^2}
+\begin{pmatrix}
+a_{0,n} & -a_{1,n} \\
+a_{1,n} & a_{0,n}
+\end{pmatrix}
+\begin{pmatrix}
+\widehat\psi_n^{\mathrm{reg}} \\
+\widehat\lambda_n
+\end{pmatrix}
+\\[1ex]
+&=
+\begin{pmatrix}
+\mathbf 1_n-\mathbf D_n & \mathbf D_n
+\end{pmatrix}
+\begin{pmatrix}
+\widehat\alpha_{0,n}^{\mathrm{reg}} \\
+\widehat\alpha_{1,n}^{\mathrm{reg}}
+\end{pmatrix}
+\\[1ex]
+&=
+(\mathbf 1_n-\mathbf D_n)\widehat\alpha_{0,n}^{\mathrm{reg}}
++\mathbf D_n\widehat\alpha_{1,n}^{\mathrm{reg}}.
+\end{aligned}
+$$ {#eq-regression-full-fitted-treatment-group-intercepts}
+
+The fully interacted estimator solves the least-squares problem
+
+$$
+\begin{pmatrix}
+\widehat\psi_n^{\mathrm{reg}} \\
+\widehat\lambda_n \\
+\widehat{\boldsymbol\beta}_{0,n} \\
+\widehat{\boldsymbol\beta}_{1,n}
+\end{pmatrix}
+\in
+\underset{\boldsymbol b\in\mathbb R^{2+2k}}{\operatorname{argmin}}
+\left\|
+\mathbf Y_n-\mathbf X_n\boldsymbol b
+\right\|^2
+$$ {#eq-regression-full-least-squares-problem}
+
+The first-order conditions for
+(-@eq-regression-full-least-squares-problem) imply
+
+$$
+\begin{pmatrix}
+\mathbf D_n^\psi & \mathbf D_n^\lambda
+\end{pmatrix}
+'
+\left[
+\mathbf Y_n
+-\mathbf D_n^\psi\widehat\psi_n^{\mathrm{reg}}
+-\mathbf D_n^\lambda\widehat\lambda_n
+-\operatorname{diag}(\mathbf 1_n-\mathbf D_n)
+\mathbf W_n\widehat{\boldsymbol\beta}_{0,n}
+-\operatorname{diag}(\mathbf D_n)
+\mathbf W_n\widehat{\boldsymbol\beta}_{1,n}
+\right]
+= \mathbf{0}.
+$$ {#eq-regression-full-transformed-treatment-normal-equations}
+
+Equations (-@eq-regression-treatment-column-transformation),
+(-@eq-regression-full-fitted-treatment-group-intercepts), and
+(-@eq-regression-full-transformed-treatment-normal-equations) imply
+
+$$
+\begin{pmatrix}
+\mathbf 1_n-\mathbf D_n & \mathbf D_n
+\end{pmatrix}
+'
+\left[
+\mathbf Y_n
+-(\mathbf 1_n-\mathbf D_n)\widehat\alpha_{0,n}^{\mathrm{reg}}
+-\mathbf D_n\widehat\alpha_{1,n}^{\mathrm{reg}}
+-\operatorname{diag}(\mathbf 1_n-\mathbf D_n)
+\mathbf W_n\widehat{\boldsymbol\beta}_{0,n}
+-\operatorname{diag}(\mathbf D_n)
+\mathbf W_n\widehat{\boldsymbol\beta}_{1,n}
+\right]
+= \mathbf{0}.
+$$ {#eq-regression-full-treatment-arm-normal-equations}
+
+Dividing the two normal equations by the corresponding treatment-group sample
+sizes gives, for each $d\in\{0,1\}$,
+
+$$
+\frac{1}{n_d}\sum_{i=1}^n
+D_{i,d}
+\left[
+Y_i
+-\widehat\alpha_{d,n}^{\mathrm{reg}}
+-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\beta}_{d,n}
+\right]
+=0.
+$$ {#eq-regression-full-treatment-arm-normal-equations-intercepts}
+
+Evaluating the sum and rearranging yields
+(-@eq-regression-intercept-adjustments).
+
+## Equivalence of oracle and fitted-residual variances {#sec-regression-oracle-feasible-arm-variance}
+
+We show that replacing the centered projection residuals by the fully
+interacted fitted residuals has no asymptotic effect. The
+[separate-regression representation](#sec-regression-separate-regressions)
+defines $r_n$, $\mathbf U_n$, $\boldsymbol\Lambda_n$, $\mathbf z_{i,n}$,
+and $\widehat{\mathbf z}_{d,n}$. If $r_n=0$, then $\mathbf W_n=\mathbf0$
+and the fitted residuals equal
+$\epsilon_{i,d,n}-\widehat\epsilon_{d,n}$ within
+treatment group $d$.
+Suppose below that $r_n>0$.
+
+The treatment-group slope normal equations imply
+
+$$
+\begin{aligned}
+&\left[
+\frac{1}{n}\sum_{i=1}^n
+D_{i,d}
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+\right]
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right)
+\\
+&\qquad=
+\frac{1}{n}\sum_{i=1}^n
+D_{i,d}
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\epsilon_{i,d,n}-\widehat\epsilon_{d,n}\right).
+\end{aligned}
+$$
+
+The population normal equations give
+$\sum_i\mathbf z_{i,n}\epsilon_{i,d,n}=\mathbf0$, so the
+right-hand side
+equals
+
+$$
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}\epsilon_{i,d,n}
+-
+\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\widehat\epsilon_{d,n}.
+$$
+
+The first term has mean zero and satisfies
+
+$$
+\begin{aligned}
+&\mathbb E_\theta
+\left\|
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}\epsilon_{i,d,n}
+\right\|^2
+\\
+&\qquad\leq
+p_d(1-p_d)
+\max_{1\leq i\leq n}h_{i,n}\,v_{d,n}^2.
+\end{aligned}
+$$
+
+Moreover,
+
+$$
+\sqrt n\,\widehat{\mathbf z}_{d,n}=O_{\mathcal P}(1),
+\qquad
+\sqrt n\,\frac{|\widehat\epsilon_{d,n}|}{v_{d,n}}
+=O_{\mathcal P}(1).
+$$
+
+Combining these bounds with Assumption 3''(iii) and
+(-@eq-regression-arm-effective-covariate-rank) gives
+
+$$
+\frac{
+\left\|
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right)
+\right\|
+}{v_{d,n}}
+=o_{\mathcal P}(1).
+$$
+
+For every unit assigned to treatment group $d$,
+(-@eq-regression-full-fitted-residual) and
+(-@eq-regression-full-intercept-error) give
+
+$$
+\begin{aligned}
+\widehat U_{i,n}
+&=
+\epsilon_{i,d,n}-\widehat\epsilon_{d,n}
+\\
+&\quad-
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right).
+\end{aligned}
+$$
+
+The effective-slope bound, the treatment-group-means variance-consistency
+result, and (-@eq-regression-arm-effective-covariate-rank) therefore imply
+
+$$
+\frac{\widehat v_{d,n}^{2,\mathrm{reg}}}{v_{d,n}^2}
+\stackrel{\mathcal P}{\to}1,
+\qquad
+\frac{
+n_d^{-1}\sum_{i=1}^n
+D_{i,d}
+\left(\epsilon_{i,d,n}-\widehat\epsilon_{d,n}\right)^2
+}{v_{d,n}^2}
+\stackrel{\mathcal P}{\to}1.
+$$
+
+The treatment-share factor is the same in
+$\check\sigma_{d,n}^{2,\mathrm{reg}}$ and
+$\widehat\sigma_{d,n}^{2,\mathrm{reg}}$. Hence
+
+$$
+\frac{\check\sigma_{d,n}^{2,\mathrm{reg}}}
+{\widehat\sigma_{d,n}^{2,\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1,
+\qquad d\in\{0,1\}.
+$$
+
+Taking nonnegative square roots and applying the weighted-sum definitions of
+$\check\sigma_n^{\mathrm{reg}}$ and
+$\widehat\sigma_n^{\mathrm{reg}}$ gives
+
+$$
+\frac{\check\sigma_n^{2,\mathrm{reg}}}
+{\widehat\sigma_n^{2,\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$
+
+## Regression remainders {#sec-regression-remainder-negligibility}
+
+The effective-slope bounds established above, together with Assumption 1 and
+the scale definitions, give, for each $d\in\{0,1\}$,
+
+$$
+\begin{aligned}
+\sqrt n\,\widehat{\mathbf z}_{d,n}
+&=O_{\mathcal P}(1),
+\\[2ex]
+\frac{
+\left\|
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right)
+\right\|
+}{\sigma_{d,n}^{\mathrm{reg}}}
+&=o_{\mathcal P}(1).
+\end{aligned}
+$$
+
+If $r_n=0$, then $\mathbf W_n=\mathbf0$ and the remainder is zero. If
+$r_n>0$, the effective-coordinate definitions imply
+
+$$
+\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right)
+=
+\widehat{\mathbf z}_{d,n}'
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right).
+$$
+
+The remainder definition therefore yields
+
+$$
+\frac{\sqrt n\,|R_n^{\mathrm{reg}}|}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+\leq
+\sum_{d\in\{0,1\}}
+\frac{|a_{d,n}|\sigma_{d,n}^{\mathrm{reg}}}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+\left\|\sqrt n\,\widehat{\mathbf z}_{d,n}\right\|
+\frac{
+\left\|
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right)
+\right\|
+}{\sigma_{d,n}^{\mathrm{reg}}}
+=o_{\mathcal P}(1).
+$$
+
+In the sum, the two nonnegative coefficients add to one. The
+[treatment-group-means variance-consistency result](../treatment-group-means/#eq-variance-ratio-consistency){.quarto-xref},
+applied to the corresponding residual arrays, and the fitted-residual variance
+equivalence proved above imply
+
+$$
+\frac{\widetilde\sigma_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$
+
+It follows that
+
+$$
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+=
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+\frac{\widetilde\sigma_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}0.
+$$

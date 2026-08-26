@@ -7,7 +7,6 @@ language:
   title-block-published: "Last modified"
 format:
   html:
-    toc: false
     number-sections: false
     include-in-header:
       text: |

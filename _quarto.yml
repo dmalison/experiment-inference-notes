@@ -27,7 +27,9 @@ filters:
 format:
   html:
     css: styles.css
-    toc: false
+    toc: true
+    toc-location: left
+    toc-depth: 3
     number-sections: false
     grid:
       body-width: 1000px

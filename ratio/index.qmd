@@ -6,7 +6,6 @@ language:
   title-block-published: "Last modified"
 format:
   html:
-    toc: false
     number-sections: false
     link-external-newwindow: true
     include-in-header:

@@ -32,4 +32,5 @@ format:
     toc-depth: 3
     number-sections: false
     grid:
+      sidebar-width: 320px
       body-width: 1000px

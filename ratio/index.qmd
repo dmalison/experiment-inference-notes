@@ -38,7 +38,9 @@ Let $y_{i,d}$ and $z_{i,d}$ denote unit $i$'s potential outcomes for $Y_i$ and $
 We replace Assumption 2 with the following multivariate analogue:
 
 ::: {.assumption #asm-sutva}
-**Assumption 2'.** The observed outcomes are determined by
+**Assumption 2' (Stable unit treatment value)**
+
+The observed outcomes are determined by
 
 $$
 Y_i = D_i y_{i,1} + (1-D_i)y_{i,0},
@@ -104,8 +106,13 @@ and let $\Theta \subseteq (0,1)\times (\mathbb R^2)^\mathbb N\times (\mathbb R^2
 We replace Assumption 3 with the following multivariate regularity condition:
 
 ::: {.assumption #asm-nondegenerate}
-**Assumption 3'.** There exists an index $N$ for which $\mathbf S_{dd,n}$ is positive definite for all $n\geq N$, $d\in\{0,1\}$, and $\theta\in\Theta$.
-In addition, for each $d\in\{0,1\}$,
+**Assumption 3' (Regularity)**
+
+[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $N$ for which
+$\mathbf S_{dd,n}$ is positive definite for all $n\geq N$, $d\in\{0,1\}$,
+and $\theta\in\Theta$.
+
+[**(ii)**]{.part-label} **(Maximum variance share)** For each $d\in\{0,1\}$,
 
 $$
 \lim_{n\to\infty}
@@ -118,7 +125,7 @@ $$
 $$
 :::
 
-Assumption 3' implies the coordinatewise no-dominant-unit condition in the treatment group means note.
+Assumption 3'(ii) implies the coordinatewise no-dominant-unit condition in the treatment group means note.
 
 # Ratio treatment effects
 
@@ -562,7 +569,7 @@ $$
 +
 \widehat\sigma_{\ell,1,n}
 $$ {#eq-ratio-robust-scale}
-Under Assumption 3', $\widetilde{\sigma}_{r,n}>0$ for all $n$ sufficiently large.
+Under Assumption 3'(i), $\widetilde{\sigma}_{r,n}>0$ for all $n$ sufficiently large.
 We therefore define
 $$
 \omega_n^2 = \frac{\sigma_{r,n}^2}{\widetilde{\sigma}_{r,n}^2}
@@ -595,38 +602,33 @@ $$
 \stackrel{\mathcal P}{\to}1.
 $$ {#eq-ratio-reciprocal-scale-consistency}
 Since $\omega_n^2\leq1$, $Z_n=O_{\mathcal P}(1)$.
-@prp-asymptotic-equivalence-tightness and (-@eq-ratio-oracle-normal-approximation) therefore imply
+Thus (-@eq-ratio-oracle-normal-approximation),
+(-@eq-ratio-reciprocal-scale-consistency), and
+@prp-asymptotic-equivalence-slutsky imply
 $$
-\frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
+\frac{1}{\sqrt n\,\widehat{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
-=O_{\mathcal P}(1).
-$$ {#eq-ratio-oracle-leading-tightness}
-@prp-stochastic-order(iii), applied to (-@eq-ratio-reciprocal-scale-consistency) and (-@eq-ratio-oracle-leading-tightness), therefore gives
-$$
-\left(
-\frac{\widetilde{\sigma}_{r,n}}{\widehat{\sigma}_{r,n}}-1
-\right)
-\frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
-\sum_{i=1}^n X_{i,n}
-=o_{\mathcal P}(1).
-$$ {#eq-ratio-scale-replacement-remainder}
+\stackrel{\mathcal P}{\approx}Z_n.
+$$ {#eq-ratio-feasible-leading-normal-approximation}
 @prp-stochastic-order(iii), applied to (-@eq-ratio-regular-sequence-bounds) and (-@eq-ratio-reciprocal-scale-consistency), also gives
 $$
 \frac{R_n}{\widehat{\sigma}_{r,n}}=o_{\mathcal P}(1),
 \qquad
 \frac{U_n}{\widehat{\sigma}_{r,n}}=o_{\mathcal P}(1).
 $$ {#eq-ratio-feasible-remainder-bounds}
-Using (-@eq-ratio-score-decomposition), (-@eq-ratio-scale-replacement-remainder), and (-@eq-ratio-feasible-remainder-bounds), we can therefore write
+Using (-@eq-ratio-score-decomposition) and
+(-@eq-ratio-feasible-remainder-bounds), we can therefore write
 $$
 \begin{aligned}
 \frac{\sqrt n(\widehat r_n-r_n)}{\widehat{\sigma}_{r,n}}
 &=
-\frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
+\frac{1}{\sqrt n\,\widehat{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
 +o_{\mathcal P}(1).
 \end{aligned}
 $$ {#eq-ratio-feasible-normal-approximation}
-Together with (-@eq-ratio-oracle-normal-approximation), @prp-asymptotic-equivalence-perturbation implies
+Together with (-@eq-ratio-feasible-leading-normal-approximation),
+@prp-asymptotic-equivalence-perturbation implies
 $$
 \frac{\sqrt n(\widehat r_n-r_n)}{\widehat{\sigma}_{r,n}}
 \stackrel{\mathcal P}{\approx}Z_n.
@@ -912,7 +914,7 @@ np_dp_{1-d}S_{d,n}^2(r_n)
 },
 $$
 where the inequality uses $|D_{i,d}-p_d|\leq1$.
-Assumption 1 bounds $p_dp_{1-d}$ below by some $c>0$, so the Rayleigh-quotient inequality and Assumption 3' give
+Assumption 1 bounds $p_dp_{1-d}$ below by some $c>0$, so the Rayleigh-quotient inequality and Assumption 3'(ii) give
 $$
 \begin{aligned}
 \max_{1\leq i\leq n}
@@ -1009,7 +1011,7 @@ $$
 &\to0.
 \end{aligned}
 $$
-where convergence follows from Assumption 3'.
+where convergence follows from Assumption 3'(ii).
 For every $\epsilon>0$, the operator-norm bound and Markov's inequality therefore give
 $$
 \begin{aligned}
@@ -1448,7 +1450,7 @@ $$
 \mathbf S_{dd,n}^{-1}
 \mathbf u_{i,d,n}.
 $$
-Thus Assumption 3' implies the scalar no-dominant-unit condition for both oracle score sequences.
+Thus Assumption 3'(ii) implies the scalar no-dominant-unit condition for both oracle score sequences.
 The [normal approximation for treatment group means](../treatment-group-means/#eq-infeasible-scalar-normal-approximation), applied to their difference, therefore gives
 $$
 \frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
@@ -1616,7 +1618,7 @@ Multiplying (-@eq-ratio-oracle-linearization) by $\widetilde{\sigma}_{r,n}/\wide
 $$
 \frac{\sqrt n(\widehat r_n-r_n)}{\widehat{\sigma}_{r,n}}
 =
-\frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
+\frac{1}{\sqrt n\,\widehat{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
 +\frac{R_n}{\widehat{\sigma}_{r,n}}
 +o_{\mathcal P}(1).
@@ -1633,5 +1635,5 @@ $$
 =o_{\mathcal P}(1),
 $$
 which proves (-@eq-ratio-feasible-normal-approximation).
-Together with (-@eq-ratio-oracle-normal-approximation), this gives a Gaussian approximation with variance $\omega_n^2\leq1$ for the feasible statistic.
+Together with (-@eq-ratio-feasible-leading-normal-approximation), this gives a Gaussian approximation with variance $\omega_n^2\leq1$ for the feasible statistic.
 Therefore its two-sided rejection probability at the critical value $z_{1-\alpha/2}$ has limit superior at most $\alpha$, establishing (-@eq-regular-sequence-delta-coverage).

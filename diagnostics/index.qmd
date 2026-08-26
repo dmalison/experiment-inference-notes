@@ -54,13 +54,13 @@ Let
 $$
 \kappa_n = \max\{\kappa_{0,n},\kappa_{1,n}\}.
 $$
-The negligibility condition in [Assumption 3](../treatment-group-means/#asm-nondegenerate) is equivalent to requiring
+The maximum variance-share condition in [Assumption 3(ii)](../treatment-group-means/#asm-nondegenerate) is equivalent to requiring
 
 $$
 \lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0.
 $$
 
-Thus, if $\kappa_n$ is large in a finite sample, the asymptotic approximations that rely on Assumption 3 may be unreliable.
+Thus, if $\kappa_n$ is large in a finite sample, the asymptotic approximations that rely on Assumption 3(ii) may be unreliable.
 
 Because only one potential outcome is observed for each unit, $\kappa_n$ cannot be computed directly.
 A feasible sample analogue uses observed within-treatment-group residuals in place of the unobserved potential-outcome deviations.

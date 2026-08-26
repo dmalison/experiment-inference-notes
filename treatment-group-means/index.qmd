@@ -43,7 +43,9 @@ Let $D_i$ denote an observed treatment indicator, with $D_i = 1$ if unit $i$ is 
 We make the following assumption about the treatment assignment mechanism:
 
 ::: {.assumption #asm-random}
-**Assumption 1.** $D_1, D_2, \ldots$ are independent Bernoulli random variables with common treatment probability $p$, and there exists $\underline p>0$ such that $\underline p\leq p\leq1-\underline p$.
+**Assumption 1 (Bernoulli assignment)**
+
+$D_1, D_2, \ldots$ are independent Bernoulli random variables with common treatment probability $p$, and there exists $\underline p>0$ such that $\underline p\leq p\leq1-\underline p$.
 :::
 
 Assumption 1 excludes stratified designs that exactly assign a predetermined fraction of units to each treatment group.
@@ -54,18 +56,21 @@ In online experiments, randomization is typically performed by hashing unit iden
 In addition to $D_i$, we observe an outcome of interest $Y_i$ that we model using potential outcomes.
 We treat the potential outcomes as fixed, so treatment assignment is the only source of randomness.
 This framework abstracts from the population sampling process, which may vary across experiments or over time within an experiment.
-We perform inference only on functions of the potential outcomes of the observed units; analysts must assess the extent to which an experiment's results generalize to other populations or contexts.
+We conduct inference only on functions of the observed units' potential outcomes; analysts must assess the extent to which a particular experiment's results generalize to other populations or contexts.
 
 Let $y_{i,d}$ denote unit $i$'s potential outcome under treatment $d \in \{0, 1\}$.
+The inference results developed here also apply when the potential outcomes vary with $n$, but we suppress this dependence in the notation for clarity.
 We assume $Y_i$ is generated according to the following rule:
 
 ::: {.assumption #asm-sutva}
-**Assumption 2.** The observed outcome $Y_i$ satisfies
+**Assumption 2 (Stable unit treatment value)**
+
+The observed outcome $Y_i$ satisfies
 
 $$Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}.$$ {#eq-observed-outcome}
 :::
 
-Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units. This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption) and can be restrictive in some settings. For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing potential outcomes in subsequent sessions.
+Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units. This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption) and can be restrictive in some settings. For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing the outcomes observed in subsequent sessions.
 Such spillovers can often be handled by randomizing at a coarser level, but doing so lowers the number of units and usually reduces the experiment's statistical power.
 
 For $d\in\{0,1\}$, define the potential outcome mean and centered potential outcome by
@@ -98,10 +103,10 @@ $$
 and define the covariance matrix
 
 $$
-\mathbf{S}_n = \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i,n} \mathbf{u}_{i,n}' = \begin{pmatrix}
+\mathbf{S}_n = \begin{pmatrix}
 s_{00,n}^2 & s_{01,n} \\
 s_{01,n} & s_{11,n}^2
-\end{pmatrix}.
+\end{pmatrix} =  \frac{1}{n}\sum_{i=1}^n \mathbf{u}_{i,n} \mathbf{u}_{i,n}'.
 $$ {#eq-Sn-def}
 
 Also collect the model primitives into the parameter vector
@@ -114,10 +119,15 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 $$
 
 and let $\Theta \subseteq (\underline{p}, 1-\underline{p}) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}$ denote the set of parameters under consideration.
-We impose the following regularity condition on the potential outcome sequences in $\Theta$:
+We impose the following regularity conditions on the potential outcome sequences in $\Theta$:
 
 ::: {.assumption #asm-nondegenerate}
-**Assumption 3.** There exists an index $N$ for which $s_{dd,n}^2>0$ for all $n\geq N$, $d\in\{0,1\}$, and $\theta\in\Theta$. In addition, for each $d\in\{0,1\}$,
+**Assumption 3 (Regularity)**
+
+[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $N$ for which
+$s_{dd,n}^2>0$ for all $n\geq N$ and $d\in\{0,1\}$.
+
+[**(ii)**]{.part-label} **(Maximum variance share)** For each $d\in\{0,1\}$,
 
 $$
 \lim_{n\to\infty}
@@ -128,25 +138,28 @@ $$
 $$
 :::
 
-Assumption 3 ensures that the potential outcome variance in each treatment group is positive for all sufficiently large sample sizes. It also rules out dominant units by requiring each unit’s share of total potential outcome variation to vanish as the sample grows.
-In the [Appendix](#sec-stationary-ergodic-conditions), we show this assumption holds with arbitrarily high probability when potential outcomes are generated by a stationary ergodic process with finite, positive variances.
-We also develop a finite-sample diagnostic for assessing this condition in the [regularity diagnostics note](../diagnostics/#variance-share-diagnostic).
+Assumption 3(i), the non-degeneracy condition, ensures that the potential outcome variance in each treatment group is positive for all sufficiently large sample sizes.
+Assumption 3(ii), the maximum variance-share condition, rules out dominant units by requiring each unit's share of total potential outcome variation to vanish as the sample grows.
+In the [Appendix](#sec-stationary-ergodic-conditions), we show that both conditions hold with arbitrarily high probability when potential outcomes are generated by a stationary ergodic process with finite, positive variances.
+We also develop a finite-sample diagnostic for assessing the maximum variance-share condition in the [regularity diagnostics note](../diagnostics/#variance-share-diagnostic).
 
 For $\theta\in\Theta$, let $\mathbb{P}_\theta$ denote the probability measure governing the observed sample $\{(D_i, Y_i)\}_{i=1}^n$ under the random assignment mechanism in Assumption 1 and the observation equation in Assumption 2.
 Let $\mathcal{P} = \{\mathbb{P}_\theta: \theta \in \Theta\}$ denote the set of possible probability measures under consideration.
 
 # Inference
 
-## Estimand and validity criterion
+## Estimand
 
-We are interested in performing inference on a linear combination of the potential outcome means. Define
+In this note, we are interested in performing inference on a linear combination of the potential outcome means. Define
 
 $$\psi_n = \mathbf{a}_n' \overline{\mathbf{y}}_n$$
 
 for a nonzero, nonrandom coefficient vector $\mathbf{a}_n = (a_{0,n}, a_{1,n})'$.
-Although the coefficient vector is nonrandom, we allow the coefficients to vary with $n$ to accommodate other applications (see the [sign-specific contrasts in the relative treatment effects note](../lift/#splitting-by-the-control-mean-sign) for an example).
+We allow the coefficients to vary with $n$ to accommodate subsequent applications (see the [sign-specific contrasts in the relative treatment effects note](../lift/#splitting-by-the-control-mean-sign) for an example).
 Setting $\mathbf{a}_n = (1, 0)'$ or $\mathbf{a}_n = (0, 1)'$ yields the mean under control or treatment, respectively, while setting $\mathbf{a}_n = (-1, 1)'$ yields the average treatment effect (ATE).
 We explore these special cases in more detail in the [common estimands section](#sec-common-estimands).
+
+## Validity criterion
 
 For $\alpha \in (0, 1)$, let
 
@@ -163,9 +176,9 @@ $$
 $$ {#eq-asymptotic-p}
 
 If the sequence is not uniformly valid, there are parameter configurations at arbitrarily large sample sizes for which coverage falls below the nominal level by at least some fixed amount.
-Such persistent undercoverage is problematic for experimentation platforms, which apply the same inference procedure across many different parameter configurations. We therefore seek procedures satisfying (-@eq-asymptotic-p), which requires the worst-case coverage shortfall to vanish as the sample size grows.
+Such persistent undercoverage is problematic for experimentation platforms, which apply the same inference procedure across many different parameter configurations. We therefore seek procedures which ensure the worst-case coverage shortfall vanishes as the sample size grows.
 
-## Normal approximation
+## Estimator
 
 We estimate $\psi_n$ by replacing the potential outcome means with their corresponding sample means.
 Let $D_{i,1}=D_i$, $D_{i,0}=1-D_i$, $p_1=p$, and $p_0=1-p$.
@@ -196,6 +209,8 @@ and set
 $$
 \widehat{\psi}_n = \mathbf{a}_n'\widehat{\mathbf{y}}_n.
 $$
+
+## Normal approximation
 
 To describe the sampling behavior of $\widehat\psi_n$, define
 
@@ -259,7 +274,7 @@ a_{1,n}^2\frac{1 - p_1}{p_1}s_{11,n}^2
 $$ {#eq-sigma}
 
 Because the covariance term $s_{01,n}$ is not identified, we cannot estimate $\sigma_n^2$ directly.
-However, we can bound its absolute value using the identified within-treatment-group variances.
+However, we can bound its absolute value using the within-treatment-group variances.
 For $d\in\{0,1\}$, define the treatment-group-specific variance
 $$
 \sigma_{d,n}^2
@@ -335,7 +350,7 @@ $$
 \right)^2.
 $$ {#eq-sigma-hat}
 
-In the [Appendix](#sec-estimator-asymptotics), we show^[Assumption 3 gives an $N$ such that $s_{dd,n}^2>0$ for both $d\in\{0,1\}$, every $\theta\in\Theta$, and all $n\geq N$. Since $0<p_d<1$, (-@eq-treatment-group-variance) then implies $\sigma_{d,n}>0$ under the same conditions. Because $\mathbf a_n\neq\mathbf 0$, at least one $|a_{d,n}|$ is positive, so (-@eq-sigma-tilde) gives $\widetilde{\sigma}_n^2>0$ for every $\theta\in\Theta$ and all $n\geq N$. Thus division by $\widetilde{\sigma}_n$ is well-defined for all sufficiently large $n$.]
+In the [Appendix](#sec-estimator-asymptotics), we show^[Assumption 3(i) gives an $N$ such that $s_{dd,n}^2>0$ for both $d\in\{0,1\}$ and all $n\geq N$. Since $0<p_d<1$, (-@eq-treatment-group-variance) then implies $\sigma_{d,n}>0$ for $n \geq N$. Because $\mathbf a_n\neq\mathbf 0$, (-@eq-sigma-tilde) gives $\widetilde{\sigma}_n^2>0$ for all $n\geq N$. Thus division by $\widetilde{\sigma}_n$ is well-defined for all sufficiently large $n$.]
 $$
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2} \stackrel{\mathcal{P}}{\to} 1.
 $$ {#eq-variance-ratio-consistency}
@@ -538,7 +553,7 @@ $$
 \end{aligned}
 $$ {#eq-ate-variance-estimator}
 
-To compare this estimator with [Neyman's classical variance estimator](https://doi.org/10.1214/ss/1177012031), define the unit-level treatment effect and its finite-population variance by
+To compare with [Neyman's classical variance estimator](https://doi.org/10.1214/ss/1177012031), define the unit-level treatment effect and its variance by
 $$
 \tau_i=y_{i,1}-y_{i,0},
 \qquad
@@ -559,7 +574,7 @@ $$
 \frac{s_{\tau\tau,n}^2}{n}
 \right).
 $$ {#eq-ate-exact-conditional-variance}
-Because $\tau_i$ is never observed, $s_{\tau\tau,n}^2$ is not identified. Replacing it by its lower bound zero gives Neyman's conservative upper bound
+Because $\tau_i$ is never observed, $s_{\tau\tau,n}^2$ is not identified. Replacing it by zero gives the conservative upper bound
 $$
 \frac{n}{n-1}
 \left(
@@ -596,9 +611,11 @@ $$
 \frac{(s_{11,n}-s_{00,n})^2}{n}
 \right).
 $$
-Plugging sample analogues into this sharper bound yields (-@eq-ate-variance-estimator). The Cauchy--Schwarz and Neyman upper bounds coincide when $s_{00,n}=s_{11,n}$. The Cauchy--Schwarz bound is exact when the centered potential outcomes are perfectly positively correlated.
+Plugging sample analogues into this sharper bound yields (-@eq-ate-variance-estimator).
+The Cauchy--Schwarz bound is exact when the centered potential outcomes are perfectly positively correlated.
+The two upper bounds coincide when $s_{00,n}=s_{11,n}$.
 
-# Illustration
+# Monte Carlo illustration
 
 The first illustration animates repeated treatment assignments for a fixed population of $n=1{,}000$ units with $y_{i,1}=y_{i,0}+1$.
 In each frame, the left panel shows the fixed potential outcomes and realized data for the first 20 units, while the top-right panel shows the ATE estimator and its $95\%$ confidence interval, colored green when it covers $\psi_n$ and red otherwise.
@@ -898,7 +915,6 @@ $$
 Thus $\Theta$ satisfies Assumption 3.
 
 ## Estimator asymptotics {#sec-estimator-asymptotics}
-
 ### Notation and auxiliary lemma
 
 Define
@@ -992,7 +1008,7 @@ $$
 \end{aligned}
 $$ {#eq-Shat-decomposition}
 
-By Assumption 3, there exists an index $N$ for which $s_{dd,n}^2>0$ for all $n\geq N$, $d\in\{0,1\}$, and $\theta\in\Theta$.
+By Assumption 3(i), there exists an index $N$ for which $s_{dd,n}^2>0$ for all $n\geq N$, $d\in\{0,1\}$, and $\theta\in\Theta$.
 Together with Lemma 1, @prp-continuous-mapping, and @prp-joint-convergence, (-@eq-Shat-consistency) will follow from (-@eq-Shat-decomposition) if we can show
 $$
 \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d s_{dd,n}^2}{s_{dd,n}^2}
@@ -1040,7 +1056,7 @@ $$
 \end{aligned}
 $$
 by Chebyshev's inequality.
-Therefore the first term converges in $\mathcal{P}$ to zero by Assumption 3.
+Therefore the first term converges in $\mathcal{P}$ to zero by Assumption 3(ii).
 Since the second term in (-@eq-Shat-remainder-bounds) has mean zero and variance $p_dp_{1-d}/n$,
 it also converges in $\mathcal{P}$ to zero by Chebyshev's inequality.
 This proves (-@eq-Shat-consistency).
@@ -1184,7 +1200,7 @@ $$
 \max_{1\leq i\leq n}
 \frac{|u_{i,d,n}|}{\sqrt n\,s_{dd,n}}.
 $$
-Then $|X_{i,n}|/\widetilde\sigma_n\leq\eta_n$ almost surely for every $i$ and $\theta\in\Theta$, and Assumption 3 gives
+Then $|X_{i,n}|/\widetilde\sigma_n\leq\eta_n$ almost surely for every $i$ and $\theta\in\Theta$, and Assumption 3(ii) gives
 $$
 \lim_{n\to\infty}
 \eta_n=0.
@@ -1261,28 +1277,15 @@ Z_n
 $$ {#eq-infeasible-scalar-normal-approximation}
 failed, some sequences $n_k\to\infty$ and $\theta_k\in\Theta$ would keep this distance bounded away from zero, contradicting the existence of the further subsequence just constructed.
 
-Furthermore,
-$$
-\mathbb{E}_\theta
-\left(
-\frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
-\right)^2
-=\omega_n^2\leq1,
-$$
-so $(\sum_{i=1}^nX_{i,n})/\widetilde\sigma_n=O_{\mathcal{P}}(1)$ by Chebyshev's inequality.
-By (-@eq-variance-ratio-consistency) and @prp-continuous-mapping,
+By (-@eq-variance-ratio-consistency) and @prp-continuous-mapping(i),
 $$
 \frac{\widetilde\sigma_n}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\to}1.
 $$
-Therefore @prp-stochastic-order gives
-$$
-\frac{\sum_{i=1}^nX_{i,n}}{\widehat\sigma_n}
--
-\frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
-=o_{\mathcal{P}}(1).
-$$ {#eq-studentization-perturbation}
-Equations (-@eq-infeasible-scalar-normal-approximation) and (-@eq-studentization-perturbation), together with @prp-asymptotic-equivalence-perturbation, give (-@eq-scalar-normal-approximation).
+Since $\omega_n^2\leq1$, $Z_n=O_{\mathcal P}(1)$. Therefore
+(-@eq-infeasible-scalar-normal-approximation) and
+@prp-asymptotic-equivalence-slutsky give
+(-@eq-scalar-normal-approximation).
 
 ## Derivation of (-@eq-remainder-negligibility) {#sec-residual-appendix}
 

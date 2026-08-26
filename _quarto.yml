@@ -29,3 +29,5 @@ format:
     css: styles.css
     toc: false
     number-sections: false
+    grid:
+      body-width: 1000px

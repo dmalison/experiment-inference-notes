@@ -340,6 +340,29 @@ D_{i,n}^{\lambda}
 \end{aligned}
 $$ {#eq-regression-transformed-treatment-regressors}
 
+For the control mean, treatment mean, and ATE, respectively, these regressors
+simplify to
+
+$$
+\begin{array}{c|cc}
+\psi_n
+& D_{i,n}^{\psi}
+& D_{i,n}^{\lambda}
+\\ \hline
+\overline y_{0,n}
+& 1-D_i
+& D_i
+\\[1ex]
+\overline y_{1,n}
+& D_i
+& -(1-D_i)
+\\[1ex]
+\overline y_{1,n}-\overline y_{0,n}
+& D_i-\frac{1}{2}
+& -\frac{1}{2}.
+\end{array}
+$$
+
 Plugging into (-@eq-regression-observed-outcome-projection-decomposition) gives
 $$
 \begin{aligned}
@@ -1695,9 +1718,10 @@ $$
 \frac{k}{4n},
 $$
 
-so $n^{-1}\sum_iD_{i,d}\mathbf z_{i,n}=o_{\mathcal P}(1)$ uniformly.
+so $n^{-1}\sum_iD_{i,d}\mathbf z_{i,n}=o_{\mathcal P}(1)$.
 Because $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
-$p_d\geq\underline p$, it follows that
+$p_d\geq\underline p$, @prp-joint-convergence(i) and
+@prp-continuous-mapping(i) give
 $\widehat{\mathbf z}_{d,n}=o_{\mathcal P}(1)$. Moreover,
 
 $$

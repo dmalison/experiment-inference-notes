@@ -144,6 +144,77 @@ Therefore $\{|X_n|>\delta\}\subseteq A_n^{M}$ and $\sup_{\theta\in\Theta}\mathbb
 Since $\epsilon>0$ was arbitrary, $X_n=o_{\mathcal{P}}(1)$. $\square$
 :::
 
+The next proposition converts uniform moment bounds into stochastic-order
+statements.
+
+::: {#prp-uniform-moment-bounds}
+Let $X_n$ be a random vector, let $r_n$ be a positive deterministic sequence,
+and fix $q>0$.
+
+[(i)]{.part-label} If
+
+$$
+\lim_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb E_\theta
+\left[
+\left(\frac{\|X_n\|}{r_n}\right)^q
+\right]
+=0,
+$$
+
+then $X_n=o_{\mathcal P}(r_n)$.
+
+[(ii)]{.part-label} If
+
+$$
+\limsup_{n\to\infty}
+\sup_{\theta\in\Theta}
+\mathbb E_\theta
+\left[
+\left(\frac{\|X_n\|}{r_n}\right)^q
+\right]
+<\infty,
+$$
+
+then $X_n=O_{\mathcal P}(r_n)$.
+:::
+
+::: {.proof-block}
+*Proof.* For every $M>0$, Markov's inequality gives
+
+$$
+\sup_{\theta\in\Theta}
+\mathbb P_\theta\left(\|X_n\|>Mr_n\right)
+\leq
+\frac{1}{M^q}
+\sup_{\theta\in\Theta}
+\mathbb E_\theta
+\left[
+\left(\frac{\|X_n\|}{r_n}\right)^q
+\right].
+$$
+
+Under the condition in part (i), take $M=\epsilon$ for arbitrary
+$\epsilon>0$. The right-hand side converges to zero, so
+$X_n/r_n\stackrel{\mathcal P}{\to}0$.
+
+Under the condition in part (ii), there exist finite $C$ and $N$ such that
+
+$$
+\sup_{\theta\in\Theta}
+\mathbb E_\theta
+\left[
+\left(\frac{\|X_n\|}{r_n}\right)^q
+\right]
+\leq C
+$$
+for every $n\geq N$.
+For any $\epsilon>0$, choosing $M>(C/\epsilon)^{1/q}$ makes the preceding
+probability strictly smaller than $\epsilon$ for every $n\geq N$. Hence
+$X_n=O_{\mathcal P}(r_n)$. $\square$
+:::
+
 # Asymptotic Equivalence
 
 For each positive integer $q$, define the class of functions

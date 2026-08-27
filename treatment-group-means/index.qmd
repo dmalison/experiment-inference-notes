@@ -947,42 +947,10 @@ $$
 \mathbb{V}_\theta(\overline D_{d,n})=\frac{p_dp_{1-d}}{n}.
 $$
 
-For every $\epsilon>0$, Chebyshev's inequality gives
-
-$$
-\begin{aligned}
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\left(
-\left|\overline D_{d,n}-p_d\right|>\epsilon
-\right)
-&\leq
-\frac{1}{\epsilon^2}
-\sup_{\theta\in\Theta}
-\frac{p_dp_{1-d}}{n} \\
-&\leq
-\frac{1}{4\epsilon^2 n} \\[2ex]
-&\to 0.
-\end{aligned}
-$$
-
-Thus $\overline D_{d,n}\stackrel{\mathcal{P}}{\to}p_d$.
-Also, for every $M>0$,
-
-$$
-\begin{aligned}
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\left(
-\left|\sqrt n(\overline D_{d,n}-p_d)\right|>M
-\right)
-&\leq
-\frac{1}{M^2}
-\sup_{\theta\in\Theta}p_dp_{1-d} \\
-&\leq
-\frac{1}{4M^2}.
-\end{aligned}
-$$
-
-Therefore $\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal{P}}(1)$. $\square$
+Since $p_dp_{1-d}\leq1/4$, @prp-uniform-moment-bounds(i) gives
+$\overline D_{d,n}-p_d=o_{\mathcal P}(1)$, while
+@prp-uniform-moment-bounds(ii) gives
+$\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal P}(1)$. $\square$
 :::
 
 ### Derivation of (-@eq-variance-ratio-consistency) {#sec-variance-ratio-consistency}
@@ -1037,27 +1005,10 @@ p_dp_{1-d}
 \left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} s_{dd,n}}\right)^2.
 $$
 
-Since $p_dp_{1-d}\leq 1/4$, for every $\epsilon>0$,
-
-$$
-\begin{aligned}
-\sup_{\theta\in\Theta}
-\mathbb{P}_\theta\left(
-\left|
-\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d s_{dd,n}^2}{s_{dd,n}^2}
-\right|>
-\epsilon
-\right)
-&\leq
-\frac{1}{4\epsilon^2}
-\sup_{\theta\in\Theta}
-\left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} s_{dd,n}}\right)^2
-\end{aligned}
-$$
-by Chebyshev's inequality.
-Therefore the first term converges in $\mathcal{P}$ to zero by Assumption 3(ii).
-Since the second term in (-@eq-Shat-remainder-bounds) has mean zero and variance $p_dp_{1-d}/n$,
-it also converges in $\mathcal{P}$ to zero by Chebyshev's inequality.
+Assumption 3(ii) and @prp-uniform-moment-bounds(i) therefore imply that the
+first term in (-@eq-Shat-remainder-bounds) converges in $\mathcal P$ to zero.
+The second term has mean zero and variance $p_dp_{1-d}/n\leq1/(4n)$, so
+@prp-uniform-moment-bounds(i) gives the same conclusion for that term.
 This proves (-@eq-Shat-consistency).
 
 Since $\widehat{s}_{dd,n}$ and $s_{dd,n}$ are nonnegative, @prp-continuous-mapping also gives
@@ -1374,7 +1325,8 @@ $$
 \frac{p_0p_1}{n}.
 $$
 
-Thus $U_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)$ by Chebyshev's inequality.
+Thus @prp-uniform-moment-bounds(i) gives
+$U_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)$.
 The weights $\ell_{0,n}/L_n$ and $\ell_{1,n}/L_n$ lie in $[0,1]$, so the bracketed term in (-@eq-Rn-bound) is also $o_{\mathcal{P}}(1)$.
 By Lemma 1, $\sqrt n(\overline D_{1,n}-p_1)=O_{\mathcal{P}}(1)$.
 Therefore, by @prp-stochastic-order, the product inside the first probability on the right-hand side is $o_{\mathcal{P}}(1)$.

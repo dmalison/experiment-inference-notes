@@ -220,7 +220,7 @@ $$
 :::
 
 Part (i) ensures that the residual variances are nonzero for all sufficiently large sample sizes and is analogous to the non-degeneracy condition in Assumption 3.
-Part (ii) is the direct analogue of the maximum variance-share condition in Assumption 3(ii), with projection residuals replacing centered potential outcomes.
+Part (ii) is the analogue of the maximum variance-share condition in Assumption 3(ii), with projection residuals replacing centered potential outcomes.
 Part (iii) is the covariate analogue of the maximum variance-share condition; indeed, when $k=1$, the two conditions are exactly equivalent with the centered potential outcome replaced by the centered covariate.
 In the [Appendix](#sec-regression-stationary-ergodic-conditions), we show that
 these restrictions hold on a set of arbitrarily high probability when the
@@ -246,131 +246,8 @@ y_{i,d}
 \end{aligned}
 $$ {#eq-regression-potential-outcome-decomposition-centered}
 
-Plugging in to the observation equation from [Assumption 2](../treatment-group-means/#asm-sutva) gives
-$$
-\begin{aligned}
-Y_i
-&= (1 - D_i) y_{i,0} + D_i y_{i,1} \\[1ex]
-&=
-\left[
-(1-D_i)\overline y_{0,n}
-+D_i\overline y_{1,n}
-\right]
-\\
-&\quad+
-\left[
-(1-D_i)
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
-\boldsymbol\beta_{0,n}
-+D_i
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
-\boldsymbol\beta_{1,n}
-\right]
-\\
-&\quad+
-\left[
-(1-D_i)\epsilon_{i,0,n}
-+D_i\epsilon_{i,1,n}
-\right].
-\end{aligned}
-$$ {#eq-regression-observed-outcome-projection-decomposition}
+Define
 
-Because $\mathbf a_n\neq\mathbf0$, the vectors $(a_{0,n},a_{1,n})'$ and $(-a_{1,n},a_{0,n})'$ form an orthogonal basis of $\mathbb R^2$.
-Define $\lambda_n$ via the change of coordinates
-
-$$
-\begin{pmatrix}
-\psi_n \\
-\lambda_n
-\end{pmatrix}
-=
-\begin{pmatrix}
-a_{0,n} & a_{1,n} \\
--a_{1,n} & a_{0,n}
-\end{pmatrix}
-\begin{pmatrix}
-\overline y_{0,n} \\
-\overline y_{1,n}
-\end{pmatrix}.
-$$ {#eq-regression-mean-reparameterization}
-
-Inverting this transformation yields
-
-$$
-\begin{pmatrix}
-\overline y_{0,n} \\
-\overline y_{1,n}
-\end{pmatrix}
-=
-\frac{1}{a_{0,n}^2+a_{1,n}^2}
-\begin{pmatrix}
- a_{0,n} & -a_{1,n} \\
- a_{1,n} & a_{0,n}
-\end{pmatrix}
-\begin{pmatrix}
-\psi_n \\
-\lambda_n
-\end{pmatrix}.
-$$ {#eq-regression-mean-reparameterization-inverse}
-
-We can therefore re-write the first term in (-@eq-regression-observed-outcome-projection-decomposition) as
-$$
-\begin{aligned}
-(1-D_i)\overline y_{0,n}+D_i\overline y_{1,n}
-&=
-\psi_n D_i^{\psi} +
-\lambda_n D_i^{\lambda}
-\end{aligned}
-$$ {#eq-regression-transformed-means}
-
-where
-
-$$
-\begin{aligned}
-D_{i,n}^{\psi}
-&=
-\frac{a_{0,n}(1-D_i)+a_{1,n}D_i}
-{a_{0,n}^2+a_{1,n}^2},
-\\[2ex]
-D_{i,n}^{\lambda}
-&=
-\frac{-a_{1,n}(1-D_i)+a_{0,n}D_i}
-{a_{0,n}^2+a_{1,n}^2}.
-\end{aligned}
-$$ {#eq-regression-transformed-treatment-regressors}
-
-For the control mean, treatment mean, and ATE, respectively, these regressors
-simplify to
-
-$$
-\begin{array}{c|cc}
-\psi_n
-& D_{i,n}^{\psi}
-& D_{i,n}^{\lambda}
-\\ \hline
-\overline y_{0,n}
-& 1-D_i
-& D_i
-\\[1ex]
-\overline y_{1,n}
-& D_i
-& -(1-D_i)
-\\[1ex]
-\overline y_{1,n}-\overline y_{0,n}
-& D_i-\frac{1}{2}
-& -\frac{1}{2}.
-\end{array}
-$$
-
-Plugging into (-@eq-regression-observed-outcome-projection-decomposition) gives
-$$
-\begin{aligned}
-Y_i
-&= \psi_nD_{i,n}^{\psi} + \lambda_nD_{i,n}^{\lambda} + (1-D_i)\left(\mathbf w_i-\overline{\mathbf w}_n\right)'\boldsymbol\beta_{0,n} \\
-&\quad\, + D_i\left(\mathbf w_i-\overline{\mathbf w}_n\right)'\boldsymbol\beta_{1,n} + U_{i,n}.
-\end{aligned}
-$$ {#eq-regression-fully-interacted-observed-outcome}
-where
 $$
 U_{i,n}
 =
@@ -378,25 +255,32 @@ U_{i,n}
 +D_i\epsilon_{i,1,n}.
 $$
 
+Plugging into the observation equation from
+[Assumption 2](../treatment-group-means/#asm-sutva) gives
+
+$$
+\begin{aligned}
+Y_i
+&=
+(1-D_i)\overline y_{0,n}
++D_i\overline y_{1,n}
+\\
+&\quad+
+(1-D_i)
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{0,n}
+\\
+&\quad+
+D_i
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\boldsymbol\beta_{1,n}
++U_{i,n}.
+\end{aligned}
+$$ {#eq-regression-fully-interacted-observed-outcome}
+
 Now define the vectors
 
 $$
-\mathbf D_n^\psi
-=
-\begin{pmatrix}
-D_{1,n}^{\psi} \\
-\vdots \\
-D_{n,n}^{\psi}
-\end{pmatrix},
-\qquad
-\mathbf D_n^\lambda
-=
-\begin{pmatrix}
-D_{1,n}^{\lambda} \\
-\vdots \\
-D_{n,n}^{\lambda}
-\end{pmatrix},
-\qquad
 \mathbf D_n
 =
 \begin{pmatrix}
@@ -418,9 +302,9 @@ $$
 \mathbf X_n
 =
 \begin{pmatrix}
-\mathbf D_n^\psi
+\mathbf 1_n-\mathbf D_n
 &
-\mathbf D_n^\lambda
+\mathbf D_n
 &
 \operatorname{diag}(\mathbf 1_n-\mathbf D_n)\mathbf W_n
 &
@@ -428,12 +312,12 @@ $$
 \end{pmatrix}.
 $$
 
-The regression estimator is defined as
+The least-squares coefficients are defined as
 
 $$
 \begin{pmatrix}
-\widehat\psi_n^{\mathrm{reg}} \\
-\widehat\lambda_n \\
+\widehat\alpha_{0,n}^{\mathrm{reg}} \\
+\widehat\alpha_{1,n}^{\mathrm{reg}} \\
 \widehat{\boldsymbol\beta}_{0,n} \\
 \widehat{\boldsymbol\beta}_{1,n}
 \end{pmatrix}
@@ -444,7 +328,7 @@ $$
 \right]^\dagger
 \left(\mathbf X_n\right)'
 \mathbf Y_n,
-$$ {#eq-regression-fully-interacted-estimator}
+$$ {#eq-regression-fully-interacted-coefficient-estimator}
 where
 $$
 \mathbf Y_n
@@ -456,43 +340,24 @@ Y_n
 \end{pmatrix}
 $$
 
-In the [Appendix](#sec-regression-separate-regressions), we show that, with
-probability approaching one uniformly over $\Theta$, $\widehat\psi_n^{\mathrm{reg}}$ can alternatively be computed by running
-separate regressions for the control and treatment groups and then weighting the resulting
-intercepts by $a_{0,n}$ and $a_{1,n}$, respectively.
-
-## Treatment-group intercepts
-
-It will be convenient to transform the estimated coefficients into the implied treatment-group intercepts using the inverse
-transformation in (-@eq-regression-mean-reparameterization-inverse):
+The coefficients can equivalently be computed from separate regressions of $Y_i$
+on a constant and $\mathbf w_i-\overline{\mathbf w}_n$ within each treatment
+group.
+The
+first-order condition with respect to $\widehat\alpha_{d,n}^{\mathrm{reg}}$ is
 
 $$
-\begin{pmatrix}
-\widehat\alpha_{0,n}^{\mathrm{reg}} \\
-\widehat\alpha_{1,n}^{\mathrm{reg}}
-\end{pmatrix}
-=
-\frac{1}{a_{0,n}^2+a_{1,n}^2}
-\begin{pmatrix}
-a_{0,n} & -a_{1,n} \\
-a_{1,n} & a_{0,n}
-\end{pmatrix}
-\begin{pmatrix}
-\widehat\psi_n^{\mathrm{reg}} \\
-\widehat\lambda_n
-\end{pmatrix}.
-$$ {#eq-regression-implied-intercepts}
-
-In the [Appendix](#sec-regression-full-intercept-adjustment), we show
-
+\frac{1}{n_d}\sum_{i=1}^n
+D_{i,d}
+\left[
+Y_i
+-\widehat\alpha_{d,n}^{\mathrm{reg}}
+-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\beta}_{d,n}
+\right]
+=0,
+\qquad d\in\{0,1\}
 $$
-\widehat\alpha_{d,n}^{\mathrm{reg}}
-=
-\widehat y_{d,n}
--
-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
-\widehat{\boldsymbol\beta}_{d,n},
-$$ {#eq-regression-intercept-adjustments}
 where
 
 $$
@@ -501,15 +366,74 @@ $$
 \frac{1}{n_d}\sum_{i=1}^nD_{i,d}\mathbf w_i
 $$
 denotes the covariate means in treatment group $d \in \{0, 1\}$.
-The intercept estimator therefore adjusts the treatment-group mean $\widehat y_{d,n}$
-by subtracting the covariate imbalance weighted by the treatment-group-specific
-coefficient $\widehat{\boldsymbol\beta}_{d,n}$.
+Evaluating the sum and rearranging gives
+
+$$
+\widehat\alpha_{d,n}^{\mathrm{reg}}
+=
+\widehat y_{d,n}
+-
+\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\widehat{\boldsymbol\beta}_{d,n}.
+$$ {#eq-regression-intercept-adjustments}
+
+The intercept estimator adjusts the treatment-group mean $\widehat y_{d,n}$
+for covariate imbalance using the treatment-group-specific coefficient
+$\widehat{\boldsymbol\beta}_{d,n}$.
+
+The regression estimator of $\psi_n$ is the corresponding linear combination
+of the estimated treatment-group intercepts:
+
+$$
+\widehat\psi_n^{\mathrm{reg}}
+=
+a_{0,n}\widehat\alpha_{0,n}^{\mathrm{reg}}
++a_{1,n}\widehat\alpha_{1,n}^{\mathrm{reg}}.
+$$ {#eq-regression-fully-interacted-estimator}
+
+For the ATE, $\widehat\psi_n^{\mathrm{reg}}$ can be written as
+
+$$
+\begin{aligned}
+\widehat\psi_n^{\mathrm{reg}}
+&=
+\widehat\alpha_{1,n}^{\mathrm{reg}}
+-\widehat\alpha_{0,n}^{\mathrm{reg}}
+\\
+&=
+\left[\left(
+\widehat y_{1,n}
+-\widehat{\mathbf w}_{1,n}'\widehat{\boldsymbol\beta}_{1,n}
+\right)
+-
+\left(
+\widehat y_{0,n}
+-\widehat{\mathbf w}_{0,n}'\widehat{\boldsymbol\beta}_{0,n}
+\right)\right]
++
+\overline{\mathbf w}_n'
+\left(
+\widehat{\boldsymbol\beta}_{1,n}
+-\widehat{\boldsymbol\beta}_{0,n}
+\right).
+\end{aligned}
+$$ {#eq-regression-ate-decomposition}
+
+This decomposition has an intuitive interpretation. The quantity
+$\widehat y_{d,n}-\widehat{\mathbf w}_{d,n}'
+\widehat{\boldsymbol\beta}_{d,n}$ is the mean outcome in treatment group $d$
+in excess of its fitted covariate contribution. The bracketed difference is
+therefore the intercept component of the estimated average treatment effect. The
+remaining term is the interaction component, measuring the difference
+between the two fitted covariate contributions at the
+overall covariate mean.
+
 
 # Inference
 
 ## Error decomposition
 
-In this section, we decompose the estimator's error into a weighted combination
+In this section, we decompose the regression estimator's error into a weighted combination
 of residual means and a remainder term.
 Averaging (-@eq-regression-potential-outcome-decomposition-centered) over
 treatment group $d$ gives
@@ -673,8 +597,8 @@ $$
 \widehat U_{i,n}
 &=
 Y_i
--\widehat\psi_n^{\mathrm{reg}}D_{i,n}^{\psi}
--\widehat\lambda_nD_{i,n}^{\lambda}
+-(1-D_i)\widehat\alpha_{0,n}^{\mathrm{reg}}
+-D_i\widehat\alpha_{1,n}^{\mathrm{reg}}
 \\
 &\quad-
 (1-D_i)
@@ -888,8 +812,7 @@ $$
 +O\left(R_{d,n}^4\right).
 $$
 
-Thus, when both armwise $R^2$ values are small, the relative reduction in the
-conservative standard deviation is approximately
+Thus, when both armwise $R^2$ values are small, the relative reduction is approximately
 
 $$
 \frac{\widetilde\sigma_n - \widetilde\sigma_n^{\mathrm{reg}}}{\widetilde\sigma_n}
@@ -936,7 +859,34 @@ a_{0,n}\widehat\alpha_{0,n}^{\mathrm{cuped}}
 \end{aligned}
 $$ {#eq-regression-cuped-estimator}
 
-To describe its asymptotic behavior, define
+For the ATE, $\widehat\psi_n^{\mathrm{cuped}}$ reduces to
+
+$$
+\begin{aligned}
+\widehat\psi_n^{\mathrm{cuped}}
+&=
+\widehat\alpha_{1,n}^{\mathrm{cuped}}
+-\widehat\alpha_{0,n}^{\mathrm{cuped}}
+\\
+&=
+\left(
+\widehat y_{1,n}
+-\widehat{\mathbf w}_{1,n}'\widehat{\boldsymbol\gamma}_n
+\right)
+-
+\left(
+\widehat y_{0,n}
+-\widehat{\mathbf w}_{0,n}'\widehat{\boldsymbol\gamma}_n
+\right)
+\end{aligned}
+$$ {#eq-regression-cuped-ate-decomposition}
+
+In contrast to the regression ATE estimator in
+(-@eq-regression-ate-decomposition), the CUPED estimator has only the
+intercept component because it uses the same coefficient vector to adjust both
+treatment groups.
+
+To describe the CUPED estimator's asymptotic behavior, define
 
 $$
 \begin{aligned}
@@ -1056,9 +1006,9 @@ $$
 \left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right).
 $$
 
-The quadratic form is nonnegative, so
+Therefore
 $\sigma_{d,n}^{2,\mathrm{cuped}}\geq\sigma_{d,n}^{2,\mathrm{reg}}$ for each
-$d\in\{0,1\}$. Consequently, the conservative CUPED variance satisfies
+$d\in\{0,1\}$, so the conservative CUPED variance satisfies
 
 $$
 \begin{aligned}
@@ -1651,11 +1601,11 @@ Thus, for every $\eta>0$, the mixture law assigns probability greater than
 $1-\eta$ to a set of paths that induces a parameter space satisfying
 Assumption 3''.
 
-## Separate-regression representation {#sec-regression-separate-regressions}
+## Equivalence of oracle and fitted-residual variances {#sec-regression-oracle-feasible-arm-variance}
 
-We first show that the intercept and effective covariate coefficients are
-uniquely identified within each treatment group with probability approaching
-one uniformly over $\Theta$. Let
+### Effective covariate coordinates
+
+We first establish properties of the centered covariates used below. Let
 
 $$
 r_n
@@ -1674,9 +1624,8 @@ $$
 where the columns of $\mathbf U_n\in\mathbb R^{k\times r_n}$ are orthonormal
 and $\boldsymbol\Lambda_n\in\mathbb R^{r_n\times r_n}$ is diagonal and
 positive definite. If $r_n=0$, then $\mathbf W_n=\mathbf0$. In that case,
-the two treatment-group intercepts are uniquely identified whenever both
-treatment groups are nonempty, an event whose probability approaches one
-uniformly. Suppose below that $r_n>0$, and define
+there are no effective covariate directions. Suppose below that $r_n>0$, and
+define
 
 $$
 \mathbf z_{i,n}
@@ -1714,38 +1663,118 @@ $$
 =
 \frac{p_d(1-p_d)r_n}{n}
 \leq
-\frac{k}{4n},
+\frac{k}{4n}.
 $$
 
-so $n^{-1}\sum_iD_{i,d}\mathbf z_{i,n}=o_{\mathcal P}(1)$.
-Because $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
-$p_d\geq\underline p$, @prp-joint-convergence(i) and
-@prp-continuous-mapping(i) give
-$\widehat{\mathbf z}_{d,n}=o_{\mathcal P}(1)$. Moreover,
+Because $n^{-1}\sum_i\mathbf z_{i,n}=\mathbf0$, the preceding bound and
+Markov's inequality give
 
 $$
 \begin{aligned}
-&\mathbb E_\theta
+\frac{1}{n}\sum_{i=1}^nD_{i,d}\mathbf z_{i,n}
+&=
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}
+=
+o_{\mathcal P}(1).
+\end{aligned}
+$$
+
+Because $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
+$p_d\geq\underline p$, @prp-joint-convergence(i) and
+@prp-continuous-mapping(i) give
+$\sqrt n\,\widehat{\mathbf z}_{d,n}=O_{\mathcal P}(1)$ and hence
+$\widehat{\mathbf z}_{d,n}=o_{\mathcal P}(1)$.
+
+Since $\sum_{i=1}^n\|\mathbf z_{i,n}\|^2=nr_n$, we have
+
+$$
+\begin{aligned}
+\mathbb E_\theta
 \left\|
 \frac{1}{n}\sum_{i=1}^n
 (D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
-\right\|_{\mathrm F}^2
-\\
-&\qquad=
+\right\|^2
+&\leq
+\mathbb E_\theta
+\operatorname{tr}
+\left[
+\left\{
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+\right\}^2
+\right]\\
+&=
 \frac{p_d(1-p_d)}{n^2}
 \sum_{i=1}^n\|\mathbf z_{i,n}\|^4
 \\
-&\qquad\leq
+&\leq
+\frac{p_d(1-p_d)}{n^2}
+\max_{1\leq i\leq n}\|\mathbf z_{i,n}\|^2
+\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\\
+&=
+p_d(1-p_d)r_n
+\max_{1\leq i\leq n}
+\frac{\|\mathbf z_{i,n}\|^2}{n}
+\\
+&\leq
 \frac{k}{4}
 \max_{1\leq i\leq n}
 \frac{\|\mathbf z_{i,n}\|^2}{n}
-\leq
+\\
+&\leq
 \frac{k}{4}
 \max_{1\leq i\leq n}h_{i,n}.
 \end{aligned}
 $$
 
-Assumption 3''(iii) therefore implies
+Assumption 3''(iii) and Markov's inequality therefore imply
+
+$$
+\left\|
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+\right\|
+\stackrel{\mathcal P}{\to}
+0.
+$$
+
+It follows that the uncentered second moment within treatment group $d$
+satisfies
+
+$$
+\begin{aligned}
+&\left\|
+\frac{1}{n}\sum_{i=1}^n
+D_{i,d}\mathbf z_{i,n}\mathbf z_{i,n}'
+-p_d\mathbf I_{r_n}
+\right\|
+\\
+&\qquad=
+\left\|
+\frac{1}{n}\sum_{i=1}^n
+(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+\right\|
+\stackrel{\mathcal P}{\to}
+0.
+\end{aligned}
+$$
+
+Moreover,
+
+$$
+\left\|
+\overline D_{d,n}
+\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'
+\right\|
+=
+\overline D_{d,n}\|\widehat{\mathbf z}_{d,n}\|^2
+\stackrel{\mathcal P}{\to}
+0.
+$$
+
+The exact centering identity is
 
 $$
 \begin{aligned}
@@ -1759,177 +1788,54 @@ D_{i,d}
 D_{i,d}\mathbf z_{i,n}\mathbf z_{i,n}'
 -
 \overline D_{d,n}
-\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'
-\stackrel{\mathcal P}{\to}
-p_d\mathbf I_{r_n}
+\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'.
 \end{aligned}
-$$ {#eq-regression-arm-effective-covariate-rank}
-
-uniformly over $\Theta$. Since $p_d\geq\underline p$, both armwise centered
-matrices in (-@eq-regression-arm-effective-covariate-rank) are positive
-definite with probability approaching one uniformly. On this event, no
-nonzero effective linear combination of the covariates is constant within a
-treatment group. Hence the intercept and effective slope are uniquely
-identified in each of the two separate treatment-group regressions. Any
-remaining slope nonuniqueness belongs to $\operatorname{null}(\mathbf W_n)$
-and does not affect the fitted values or intercepts.
-
-After permuting observations by treatment group, the fully interacted
-least-squares criterion is the sum of the two separate treatment-group
-criteria. The unique intercepts and effective slopes must therefore agree
-with those from the two separate regressions. Finally,
-(-@eq-regression-implied-intercepts) gives
-
-$$
-\widehat\psi_n^{\mathrm{reg}}
-=
-a_{0,n}\widehat\alpha_{0,n}^{\mathrm{reg}}
-+
-a_{1,n}\widehat\alpha_{1,n}^{\mathrm{reg}},
 $$
 
-which proves the claimed representation.
-
-## Fully interacted intercept adjustment {#sec-regression-full-intercept-adjustment}
-
-By the definitions of $D_{i,n}^{\psi}$ and
-$D_{i,n}^{\lambda}$,
-
-$$
-\begin{pmatrix}
-\mathbf D_n^\psi & \mathbf D_n^\lambda
-\end{pmatrix}
-'
-=
-\frac{1}{a_{0,n}^2+a_{1,n}^2}
-\begin{pmatrix}
-a_{0,n} & -a_{1,n} \\
-a_{1,n} & a_{0,n}
-\end{pmatrix}
-\begin{pmatrix}
-\mathbf 1_n-\mathbf D_n & \mathbf D_n
-\end{pmatrix}
-'
-$$ {#eq-regression-treatment-column-transformation}
-
-Together with (-@eq-regression-implied-intercepts), this gives
+Combining the preceding results gives
 
 $$
 \begin{aligned}
-\mathbf D_n^\psi\widehat\psi_n^{\mathrm{reg}}
-+\mathbf D_n^\lambda\widehat\lambda_n
-&=
-\begin{pmatrix}
-\mathbf 1_n-\mathbf D_n & \mathbf D_n
-\end{pmatrix}
-\frac{1}{a_{0,n}^2+a_{1,n}^2}
-\begin{pmatrix}
-a_{0,n} & -a_{1,n} \\
-a_{1,n} & a_{0,n}
-\end{pmatrix}
-\begin{pmatrix}
-\widehat\psi_n^{\mathrm{reg}} \\
-\widehat\lambda_n
-\end{pmatrix}
-\\[1ex]
-&=
-\begin{pmatrix}
-\mathbf 1_n-\mathbf D_n & \mathbf D_n
-\end{pmatrix}
-\begin{pmatrix}
-\widehat\alpha_{0,n}^{\mathrm{reg}} \\
-\widehat\alpha_{1,n}^{\mathrm{reg}}
-\end{pmatrix}
-\\[1ex]
-&=
-(\mathbf 1_n-\mathbf D_n)\widehat\alpha_{0,n}^{\mathrm{reg}}
-+\mathbf D_n\widehat\alpha_{1,n}^{\mathrm{reg}}.
-\end{aligned}
-$$ {#eq-regression-full-fitted-treatment-group-intercepts}
-
-The fully interacted estimator solves the least-squares problem
-
-$$
-\begin{pmatrix}
-\widehat\psi_n^{\mathrm{reg}} \\
-\widehat\lambda_n \\
-\widehat{\boldsymbol\beta}_{0,n} \\
-\widehat{\boldsymbol\beta}_{1,n}
-\end{pmatrix}
-\in
-\underset{\boldsymbol b\in\mathbb R^{2+2k}}{\operatorname{argmin}}
-\left\|
-\mathbf Y_n-\mathbf X_n\boldsymbol b
-\right\|^2
-$$ {#eq-regression-full-least-squares-problem}
-
-The first-order conditions for
-(-@eq-regression-full-least-squares-problem) imply
-
-$$
-\begin{pmatrix}
-\mathbf D_n^\psi & \mathbf D_n^\lambda
-\end{pmatrix}
-'
-\left[
-\mathbf Y_n
--\mathbf D_n^\psi\widehat\psi_n^{\mathrm{reg}}
--\mathbf D_n^\lambda\widehat\lambda_n
--\operatorname{diag}(\mathbf 1_n-\mathbf D_n)
-\mathbf W_n\widehat{\boldsymbol\beta}_{0,n}
--\operatorname{diag}(\mathbf D_n)
-\mathbf W_n\widehat{\boldsymbol\beta}_{1,n}
-\right]
-= \mathbf{0}.
-$$ {#eq-regression-full-transformed-treatment-normal-equations}
-
-Equations (-@eq-regression-treatment-column-transformation),
-(-@eq-regression-full-fitted-treatment-group-intercepts), and
-(-@eq-regression-full-transformed-treatment-normal-equations) imply
-
-$$
-\begin{pmatrix}
-\mathbf 1_n-\mathbf D_n & \mathbf D_n
-\end{pmatrix}
-'
-\left[
-\mathbf Y_n
--(\mathbf 1_n-\mathbf D_n)\widehat\alpha_{0,n}^{\mathrm{reg}}
--\mathbf D_n\widehat\alpha_{1,n}^{\mathrm{reg}}
--\operatorname{diag}(\mathbf 1_n-\mathbf D_n)
-\mathbf W_n\widehat{\boldsymbol\beta}_{0,n}
--\operatorname{diag}(\mathbf D_n)
-\mathbf W_n\widehat{\boldsymbol\beta}_{1,n}
-\right]
-= \mathbf{0}.
-$$ {#eq-regression-full-treatment-arm-normal-equations}
-
-Dividing the two normal equations by the corresponding treatment-group sample
-sizes gives, for each $d\in\{0,1\}$,
-
-$$
-\frac{1}{n_d}\sum_{i=1}^n
+&\left\|
+\frac{1}{n}\sum_{i=1}^n
 D_{i,d}
-\left[
-Y_i
--\widehat\alpha_{d,n}^{\mathrm{reg}}
--\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
-\widehat{\boldsymbol\beta}_{d,n}
-\right]
-=0.
-$$ {#eq-regression-full-treatment-arm-normal-equations-intercepts}
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+-p_d\mathbf I_{r_n}
+\right\|
+\stackrel{\mathcal P}{\to}
+0.
+\end{aligned}
+$$ {#eq-regression-arm-effective-covariate-rank}
 
-Evaluating the sum and rearranging yields
-(-@eq-regression-intercept-adjustments).
+uniformly over $\Theta$. Since $p_d\geq\underline p$, the minimum eigenvalue of
+the matrix in (-@eq-regression-arm-effective-covariate-rank) is at least
+$\underline p/2$ with probability approaching one uniformly over $\Theta$.
 
-## Equivalence of oracle and fitted-residual variances {#sec-regression-oracle-feasible-arm-variance}
+Because
+$\mathbf w_i-\overline{\mathbf w}_n\in\operatorname{col}(\mathbf U_n)$, the
+effective-coordinate definition also gives
 
-We show that replacing the centered projection residuals by the fully
-interacted fitted residuals has no asymptotic effect. The
-[separate-regression representation](#sec-regression-separate-regressions)
-defines $r_n$, $\mathbf U_n$, $\boldsymbol\Lambda_n$, $\mathbf z_{i,n}$,
-and $\widehat{\mathbf z}_{d,n}$. If $r_n=0$, then $\mathbf W_n=\mathbf0$
-and the fitted residuals equal
+$$
+\begin{aligned}
+\mathbf w_i-\overline{\mathbf w}_n
+&=
+\mathbf U_n\boldsymbol\Lambda_n^{1/2}\mathbf z_{i,n},
+\\[1ex]
+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'\boldsymbol b
+&=
+\mathbf z_{i,n}'
+\boldsymbol\Lambda_n^{1/2}\mathbf U_n'\boldsymbol b
+\end{aligned}
+$$
+
+for every $\boldsymbol b\in\mathbb R^k$.
+
+### Fitted-residual variances
+
+We now show that replacing the centered projection residuals by the fully
+interacted fitted residuals has no asymptotic effect. If $r_n=0$, then
+$\mathbf W_n=\mathbf0$ and the fitted residuals equal
 $\epsilon_{i,d,n}-\widehat\epsilon_{d,n}$ within
 treatment group $d$.
 Suppose below that $r_n>0$.
@@ -1984,11 +1890,9 @@ p_d(1-p_d)
 \end{aligned}
 $$
 
-Moreover,
+The treatment-group-means results also give
 
 $$
-\sqrt n\,\widehat{\mathbf z}_{d,n}=O_{\mathcal P}(1),
-\qquad
 \sqrt n\,\frac{|\widehat\epsilon_{d,n}|}{v_{d,n}}
 =O_{\mathcal P}(1).
 $$

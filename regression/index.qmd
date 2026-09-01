@@ -39,13 +39,13 @@ or CUPED.
 
 # Model
 
-In addition to $(D_i,Y_i)$, suppose that for each unit we observe a $k$-dimensional vector of covariates $\mathbf{w}_i\in\mathbb{R}^k$. Unlike the outcome $Y_i$, the observed covariate vector $\mathbf{w}_i$ is assumed to be unaffected by treatment assignment. In practice, this condition is often satisfied by constructing $\mathbf{w}_i$ from information recorded before unit $i$ was first assigned a treatment group. We treat the sequence $\{\mathbf{w}_i\}_{i=1}^\infty$ as fixed, so treatment assignment remains the only source of randomness in the model.
+In addition to $(D_i,Y_i)$, suppose that for each unit we observe a $k$-dimensional vector of covariates $\boldsymbol{w}_i\in\mathbb{R}^k$. Unlike the outcome $Y_i$, the observed covariate vector $\boldsymbol{w}_i$ is assumed to be unaffected by treatment assignment. In practice, this condition is often satisfied by constructing $\boldsymbol{w}_i$ from information recorded before unit $i$ was first assigned a treatment group. We treat the sequence $\{\boldsymbol{w}_i\}_{i=1}^\infty$ as fixed, so treatment assignment remains the only source of randomness in the model.
 
-Let $\overline{\mathbf w}_n$ denote the covariate mean vector:
+Let $\overline{\boldsymbol w}_n$ denote the covariate mean vector:
 $$
-\overline{\mathbf w}_n
+\overline{\boldsymbol w}_n
 =
-\frac{1}{n}\sum_{i=1}^n\mathbf w_i.
+\frac{1}{n}\sum_{i=1}^n\boldsymbol w_i.
 $$ {#eq-regression-covariate-mean}
 
 Also define the centered covariate matrix and the
@@ -55,12 +55,12 @@ $$
 \mathbf W_n
 =
 \begin{pmatrix}
-(\mathbf w_1-\overline{\mathbf w}_n)' \\
+(\boldsymbol w_1-\overline{\boldsymbol w}_n)' \\
 \vdots \\
-(\mathbf w_n-\overline{\mathbf w}_n)'
+(\boldsymbol w_n-\overline{\boldsymbol w}_n)'
 \end{pmatrix},
 \qquad
-\mathbf y_{0,n}
+\boldsymbol y_{0,n}
 =
 \begin{pmatrix}
 y_{1,0} \\
@@ -68,7 +68,7 @@ y_{1,0} \\
 y_{n,0}
 \end{pmatrix},
 \qquad
-\mathbf y_{1,n}
+\boldsymbol y_{1,n}
 =
 \begin{pmatrix}
 y_{1,1} \\
@@ -84,7 +84,7 @@ $$
 =
 \left(\mathbf W_n'\mathbf W_n
 \right)^\dagger
-\mathbf W_n'\mathbf y_{d,n}
+\mathbf W_n'\boldsymbol y_{d,n}
 $$
 denote the vector of linear projection
 coefficients, where $\mathbf A^\dagger$ denotes the Moore-Penrose pseudoinverse of a matrix $\mathbf A$.
@@ -92,13 +92,13 @@ The vector $\boldsymbol\beta_{d,n}$ minimizes the sum of squared residuals:
 $$
 \boldsymbol\beta_{d,n}
 \in
-\underset{\mathbf b\in\mathbb R^k}{\operatorname{argmin}}
+\underset{\boldsymbol b\in\mathbb R^k}{\operatorname{argmin}}
 \sum_{i=1}^n
 \left[
 y_{i,d}
 -\overline y_{d,n}
--\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
-\mathbf b
+-\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
+\boldsymbol b
 \right]^2.
 $$ {#eq-regression-projection-minimization}
 
@@ -108,7 +108,7 @@ $$
 =
 y_{i,d}
 -\overline y_{d,n}
--\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+-\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \boldsymbol\beta_{d,n}
 $$ {#eq-regression-projection-residuals}
 
@@ -123,9 +123,9 @@ The first-order conditions for the minimization problem in
 (-@eq-regression-projection-minimization) also imply
 $$
 \sum_{i=1}^n
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)
 \epsilon_{i,d,n}
-=\mathbf0.
+=\boldsymbol0.
 $$ {#eq-regression-population-normal-equations}
 
 Collect the residuals into the vector
@@ -159,9 +159,9 @@ h_{i,n}
 =
 \frac{1}{n}
 +
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \left(\mathbf W_n'\mathbf W_n\right)^\dagger
-\left(\mathbf w_i-\overline{\mathbf w}_n\right),
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right),
 $$
 
 Collect the model primitives into the parameter vector
@@ -173,7 +173,7 @@ $$
 p,
 \{y_{i,0}\}_{i=1}^\infty,
 \{y_{i,1}\}_{i=1}^\infty,
-\{\mathbf w_i\}_{i=1}^\infty
+\{\boldsymbol w_i\}_{i=1}^\infty
 \right)
 $$
 
@@ -238,7 +238,7 @@ y_{i,d}
 &=
 \overline y_{d,n}
 +
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \boldsymbol\beta_{d,n}
 +
 \epsilon_{i,d,n},
@@ -265,14 +265,14 @@ Y_i
 (1-D_i)\overline y_{0,n}
 +
 (1-D_i)
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \boldsymbol\beta_{0,n}
 \\
 &\quad+
 D_i\overline y_{1,n}
 +
 D_i
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \boldsymbol\beta_{1,n}
 +U_{i,n}.
 \end{aligned}
@@ -289,7 +289,7 @@ D_1 \\
 D_n
 \end{pmatrix},
 \qquad
-\mathbf 1_n
+\boldsymbol 1_n
 =
 \begin{pmatrix}
 1 \\
@@ -302,11 +302,11 @@ $$
 \mathbf X_n
 =
 \begin{pmatrix}
-\mathbf 1_n-\boldsymbol D_n
+\boldsymbol 1_n-\boldsymbol D_n
 &
 \boldsymbol D_n
 &
-\operatorname{diag}(\mathbf 1_n-\boldsymbol D_n)\mathbf W_n
+\operatorname{diag}(\boldsymbol 1_n-\boldsymbol D_n)\mathbf W_n
 &
 \operatorname{diag}(\boldsymbol D_n)\mathbf W_n
 \end{pmatrix}.
@@ -341,7 +341,7 @@ Y_n
 $$
 
 These coefficients can equivalently be computed from separate regressions of $Y_i$
-on a constant and $\mathbf w_i-\overline{\mathbf w}_n$ within each treatment
+on a constant and $\boldsymbol w_i-\overline{\boldsymbol w}_n$ within each treatment
 group.
 The first-order condition with respect to
 $\widehat\alpha_{d,n}^{\mathrm{reg}}$ is
@@ -352,7 +352,7 @@ D_{i,d}
 \left[
 Y_i
 -\widehat\alpha_{d,n}^{\mathrm{reg}}
--\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+-\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \widehat{\boldsymbol\beta}_{d,n}
 \right]
 =0,
@@ -361,9 +361,9 @@ $$
 where
 
 $$
-\widehat{\mathbf w}_{d,n}
+\widehat{\boldsymbol w}_{d,n}
 =
-\frac{1}{N_{d,n}}\sum_{i=1}^nD_{i,d}\mathbf w_i
+\frac{1}{N_{d,n}}\sum_{i=1}^nD_{i,d}\boldsymbol w_i
 $$
 denotes the covariate mean in treatment group $d\in\{0,1\}$.
 Evaluating the sum and rearranging gives
@@ -373,7 +373,7 @@ $$
 =
 \widehat y_{d,n}
 -
-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n\right)'
 \widehat{\boldsymbol\beta}_{d,n}.
 $$ {#eq-regression-intercept-adjustments}
 
@@ -399,15 +399,15 @@ $$
 &=
 \left[\left(
 \widehat y_{1,n}
--\widehat{\mathbf w}_{1,n}'\widehat{\boldsymbol\beta}_{1,n}
+-\widehat{\boldsymbol w}_{1,n}'\widehat{\boldsymbol\beta}_{1,n}
 \right)
 -
 \left(
 \widehat y_{0,n}
--\widehat{\mathbf w}_{0,n}'\widehat{\boldsymbol\beta}_{0,n}
+-\widehat{\boldsymbol w}_{0,n}'\widehat{\boldsymbol\beta}_{0,n}
 \right)\right]
 +
-\overline{\mathbf w}_n'
+\overline{\boldsymbol w}_n'
 \left(
 \widehat{\boldsymbol\beta}_{1,n}
 -\widehat{\boldsymbol\beta}_{0,n}
@@ -416,7 +416,7 @@ $$
 $$ {#eq-regression-ate-decomposition}
 
 This decomposition has an intuitive interpretation. The quantity
-$\widehat y_{d,n}-\widehat{\mathbf w}_{d,n}'
+$\widehat y_{d,n}-\widehat{\boldsymbol w}_{d,n}'
 \widehat{\boldsymbol\beta}_{d,n}$ is the mean outcome in treatment group $d$
 net of the fitted covariate component. The bracketed difference is
 therefore the "level" component of the estimated ATE. The
@@ -439,7 +439,7 @@ $$
 =
 \overline y_{d,n}
 +
-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n\right)'
 \boldsymbol\beta_{d,n}
 +
 \widehat\epsilon_{d,n},
@@ -461,7 +461,7 @@ $$
 &=
 \overline y_{d,n}
 -
-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right) +
 \widehat\epsilon_{d,n}.
 \end{aligned}
@@ -487,10 +487,10 @@ $$
 R_n^{\mathrm{reg}}
 =
 -a_{0,n}
-\left(\widehat{\mathbf w}_{0,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{0,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\beta}_{0,n}-\boldsymbol\beta_{0,n}\right)
 -a_{1,n}
-\left(\widehat{\mathbf w}_{1,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{1,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\beta}_{1,n}-\boldsymbol\beta_{1,n}\right).
 $$ {#eq-regression-full-remainder-definition}
 
@@ -593,10 +593,10 @@ Y_i
 \\
 &\quad-
 (1-D_i)
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \widehat{\boldsymbol\beta}_{0,n}
 -D_i
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \widehat{\boldsymbol\beta}_{1,n}.
 \end{aligned}
 $$ {#eq-regression-full-fitted-residual}
@@ -691,7 +691,8 @@ C_{1-\alpha,n}^{\mathrm{reg}}
 \right].
 $$ {#eq-regression-confidence-interval}
 
-The uniform-coverage argument from the treatment-group-means note then gives
+The [uniform-coverage argument](../treatment-group-means/#confidence-interval)
+from the treatment-group-means note then gives
 
 $$
 \liminf_{n\to\infty}
@@ -829,7 +830,7 @@ $$
 \widehat\alpha_{d,n}^{\mathrm{cuped}}
 =
 \widehat y_{d,n}
--\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+-\left(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n\right)'
 \widehat{\boldsymbol\gamma}_n,
 \qquad d\in\{0,1\}.
 $$ {#eq-regression-cuped-intercept}
@@ -860,12 +861,12 @@ $$
 &=
 \left(
 \widehat y_{1,n}
--\widehat{\mathbf w}_{1,n}'\widehat{\boldsymbol\gamma}_n
+-\widehat{\boldsymbol w}_{1,n}'\widehat{\boldsymbol\gamma}_n
 \right)
 -
 \left(
 \widehat y_{0,n}
--\widehat{\mathbf w}_{0,n}'\widehat{\boldsymbol\gamma}_n
+-\widehat{\boldsymbol w}_{0,n}'\widehat{\boldsymbol\gamma}_n
 \right)
 .
 \end{aligned}
@@ -887,7 +888,7 @@ $$
 &=
 \left(\mathbf W_n'\mathbf W_n\right)^\dagger
 \mathbf W_n'
-\left[(1-p)\mathbf y_{0,n}+p\mathbf y_{1,n}\right]
+\left[(1-p)\boldsymbol y_{0,n}+p\boldsymbol y_{1,n}\right]
 \\
 &=
 (1-p)\boldsymbol\beta_{0,n}
@@ -905,7 +906,7 @@ $$
 &=
 \overline y_{d,n}
 +\widehat u_{d,n}^{\mathrm{cuped}}
--\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+-\left(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right),
 \end{aligned}
 $$ {#eq-regression-cuped-residual}
@@ -922,7 +923,7 @@ D_{i,d}u_{i,d,n}^{\mathrm{cuped}},
 u_{i,d,n}^{\mathrm{cuped}}
 &=
 \epsilon_{i,d,n}
-+\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
++\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
 \left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)
 .
 \end{aligned}
@@ -946,12 +947,12 @@ $$
 R_n^{\mathrm{cuped}}
 &=
 -a_{0,n}
-\left(\widehat{\mathbf w}_{0,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{0,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right)
 \\
 &\quad-
 a_{1,n}
-\left(\widehat{\mathbf w}_{1,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{1,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right).
 \end{aligned}
 $$ {#eq-regression-cuped-remainder}
@@ -971,7 +972,7 @@ $$
 
 Because $\boldsymbol\beta_{d,n}$ is the projection coefficient, the population
 normal equations (-@eq-regression-population-normal-equations) give
-$\sum_{i=1}^n(\mathbf w_i-\overline{\mathbf w}_n)\epsilon_{i,d,n}=\mathbf0$.
+$\sum_{i=1}^n(\boldsymbol w_i-\overline{\boldsymbol w}_n)\epsilon_{i,d,n}=\boldsymbol0$.
 Therefore,
 
 $$
@@ -1231,7 +1232,7 @@ $$
 **Case 2: zero rank**. If $r=0$, then $\boldsymbol\Sigma_w(Q)=\mathbf0$, so
 $\boldsymbol W_i=\boldsymbol\mu_w(Q)$ simultaneously for every $i\geq1$,
 $Q$-almost surely. Hence $\mathbf W_n=\mathbf0$ and
-$\boldsymbol\beta_{d,n}=\boldsymbol\beta_d(Q)=\mathbf0$ for every $n$.
+$\boldsymbol\beta_{d,n}=\boldsymbol\beta_d(Q)=\boldsymbol0$ for every $n$.
 
 **Case 3: intermediate rank**. Suppose instead that $0<r<k$.
 Since the Moore--Penrose inverse is continuous along fixed-rank sequences, it
@@ -1239,7 +1240,7 @@ suffices to show that the empirical covariance matrix
 $\frac{1}{n}\mathbf W_n'\mathbf W_n$ has rank $r$ for all sufficiently large
 $n$, $Q$-almost surely.
 Toward this end, let
-$\left\{\mathbf q_1(Q),\ldots,\mathbf q_{k-r}(Q)\right\}$ be an orthonormal basis of
+$\left\{\boldsymbol q_1(Q),\ldots,\boldsymbol q_{k-r}(Q)\right\}$ be an orthonormal basis of
 $\operatorname{null}(\boldsymbol\Sigma_w(Q))$. For each
 $j\in\{1,\ldots,k-r\}$,
 
@@ -1247,12 +1248,12 @@ $$
 \begin{aligned}
 0
 &=
-\mathbf q_j(Q)'\boldsymbol\Sigma_w(Q)\mathbf q_j(Q)
+\boldsymbol q_j(Q)'\boldsymbol\Sigma_w(Q)\boldsymbol q_j(Q)
 \\
 &=
 \mathbb E_Q\left[
 \left\{
-\mathbf q_j(Q)'
+\boldsymbol q_j(Q)'
 \left(\boldsymbol W_1-\boldsymbol\mu_w(Q)\right)
 \right\}^2
 \right].
@@ -1262,7 +1263,7 @@ $$
 Therefore, for all $j\in\{1,\ldots,k-r\}$,
 
 $$
-\mathbf q_j(Q)'
+\boldsymbol q_j(Q)'
 \left(\boldsymbol W_1-\boldsymbol\mu_w(Q)\right)
 =0
 $$
@@ -1551,11 +1552,11 @@ one for every $Q\in\mathcal Q$. Their intersection, taken over $d\in\{0,1\}$
 where applicable, therefore has probability one under
 $\mathbb P_{\boldsymbol Y,\boldsymbol W}$.
 
-For a realized path $(\mathbf y,\mathbf w)$, define the measurable pathwise
+For a realized path $(\boldsymbol y,\boldsymbol w)$, define the measurable pathwise
 limit
 
 $$
-v_d^*(\mathbf y,\mathbf w)
+v_d^*(\boldsymbol y,\boldsymbol w)
 =
 \limsup_{n\to\infty}v_{d,n}^2.
 $$
@@ -1569,18 +1570,18 @@ $d\in\{0,1\}$,
 
 $$
 \begin{gathered}
-\inf_{(\mathbf y,\mathbf w)\in E}v_d^*(\mathbf y,\mathbf w)\geq c,
+\inf_{(\boldsymbol y,\boldsymbol w)\in E}v_d^*(\boldsymbol y,\boldsymbol w)\geq c,
 \\
-\sup_{(\mathbf y,\mathbf w)\in E}
-\left|v_{d,n}^2-v_d^*(\mathbf y,\mathbf w)\right|
+\sup_{(\boldsymbol y,\boldsymbol w)\in E}
+\left|v_{d,n}^2-v_d^*(\boldsymbol y,\boldsymbol w)\right|
 \to0,
 \\
-\sup_{(\mathbf y,\mathbf w)\in E}
+\sup_{(\boldsymbol y,\boldsymbol w)\in E}
 \frac{1}{\sqrt n}
 \max_{1\leq i\leq n}|\epsilon_{i,d,n}|
 \to0,
 \qquad
-\sup_{(\mathbf y,\mathbf w)\in E}
+\sup_{(\boldsymbol y,\boldsymbol w)\in E}
 \max_{1\leq i\leq n}h_{i,n}
 \to0.
 \end{gathered}
@@ -1613,7 +1614,7 @@ Moore--Penrose coefficients satisfy
 $$
 \widehat\alpha_{d,n}^{\mathrm{reg}}=\widehat y_{d,n},
 \qquad
-\widehat{\boldsymbol\beta}_{d,n}=\mathbf0
+\widehat{\boldsymbol\beta}_{d,n}=\boldsymbol0
 $$
 for each non-empty treatment group $d$.
 Consequently, for every unit in treatment group $d$,
@@ -1657,14 +1658,14 @@ positive definite.
 Define
 
 $$
-\mathbf z_{i,n}
+\boldsymbol z_{i,n}
 =
 \boldsymbol\Lambda_n^{-1/2}\mathbf U_n'
-\left(\mathbf w_i-\overline{\mathbf w}_n\right),
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right),
 \qquad
-\widehat{\mathbf z}_{d,n}
+\widehat{\boldsymbol z}_{d,n}
 =
-\frac{1}{N_{d,n}}\sum_{i=1}^nD_{i,d}\mathbf z_{i,n}.
+\frac{1}{N_{d,n}}\sum_{i=1}^nD_{i,d}\boldsymbol z_{i,n}.
 $$
 
 Since
@@ -1699,43 +1700,43 @@ $$
 $$
 
 Therefore, for each $i$, there exists a vector
-$\mathbf c_{i,n}\in\mathbb R^{r_n}$ such that
+$\boldsymbol c_{i,n}\in\mathbb R^{r_n}$ such that
 
 $$
-\mathbf w_i-\overline{\mathbf w}_n=\mathbf U_n\mathbf c_{i,n}.
+\boldsymbol w_i-\overline{\boldsymbol w}_n=\mathbf U_n\boldsymbol c_{i,n}.
 $$
 
 This implies
 
 $$
 \begin{aligned}
-\mathbf U_n\boldsymbol\Lambda_n^{1/2}\mathbf z_{i,n}
+\mathbf U_n\boldsymbol\Lambda_n^{1/2}\boldsymbol z_{i,n}
 &=
 \mathbf U_n\boldsymbol\Lambda_n^{1/2}
 \boldsymbol\Lambda_n^{-1/2}\mathbf U_n'
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)
 \\
 &=
 \mathbf U_n\mathbf U_n'
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)
 \\
 &=
-\mathbf U_n\mathbf U_n'\mathbf U_n\mathbf c_{i,n}
+\mathbf U_n\mathbf U_n'\mathbf U_n\boldsymbol c_{i,n}
 \\
 &=
-\mathbf U_n\mathbf c_{i,n}
+\mathbf U_n\boldsymbol c_{i,n}
 \\
 &=
-\mathbf w_i-\overline{\mathbf w}_n.
+\boldsymbol w_i-\overline{\boldsymbol w}_n.
 \end{aligned}
 $$
 
 Averaging within treatment group $d$ gives
 
 $$
-\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n
+\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n
 =
-\mathbf U_n\boldsymbol\Lambda_n^{1/2}\widehat{\mathbf z}_{d,n}.
+\mathbf U_n\boldsymbol\Lambda_n^{1/2}\widehat{\boldsymbol z}_{d,n}.
 $$ {#eq-regression-arm-standardized-covariate-mean}
 
 Averaging (-@eq-regression-potential-outcome-decomposition-centered) over
@@ -1746,7 +1747,7 @@ $$
 \widehat y_{d,n}
 =
 \overline y_{d,n}
-+\widehat{\mathbf z}_{d,n}'
++\widehat{\boldsymbol z}_{d,n}'
 \boldsymbol\Lambda_n^{1/2}\mathbf U_n'\boldsymbol\beta_{d,n}
 +\widehat\epsilon_{d,n}.
 $$
@@ -1760,23 +1761,23 @@ $$
 \widehat\alpha_{d,n}^{\mathrm{reg}}
 &=
 \widehat y_{d,n}
--\widehat{\mathbf z}_{d,n}'
+-\widehat{\boldsymbol z}_{d,n}'
 \boldsymbol\Lambda_n^{1/2}\mathbf U_n'
 \widehat{\boldsymbol\beta}_{d,n}
 \\[1ex]
 &=
 \overline y_{d,n}
-+\widehat{\mathbf z}_{d,n}'
++\widehat{\boldsymbol z}_{d,n}'
 \boldsymbol\Lambda_n^{1/2}\mathbf U_n'\boldsymbol\beta_{d,n}
 +\widehat\epsilon_{d,n}
--\widehat{\mathbf z}_{d,n}'
+-\widehat{\boldsymbol z}_{d,n}'
 \boldsymbol\Lambda_n^{1/2}\mathbf U_n'
 \widehat{\boldsymbol\beta}_{d,n}
 \\[1ex]
 &=
 \overline y_{d,n}
 +\widehat\epsilon_{d,n}
--\widehat{\mathbf z}_{d,n}'
+-\widehat{\boldsymbol z}_{d,n}'
 \boldsymbol\Delta_{d,n},
 \end{aligned}
 $$
@@ -1800,7 +1801,7 @@ $$
 (1-D_i)\left[
 \epsilon_{i,0,n}-\widehat\epsilon_{0,n}
 -
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{0,n}\right)'
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{0,n}\right)'
 \boldsymbol\Delta_{0,n}
 \right]
 \\
@@ -1808,7 +1809,7 @@ $$
 D_i\left[
 \epsilon_{i,1,n}-\widehat\epsilon_{1,n}
 -
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{1,n}\right)'
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{1,n}\right)'
 \boldsymbol\Delta_{1,n}
 \right].
 \end{aligned}
@@ -1827,7 +1828,7 @@ $$
 \Bigg[
 \epsilon_{i,d,n}-\widehat\epsilon_{d,n}
 -
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)'
 \boldsymbol\Delta_{d,n}
 \Bigg]^2
 \\[1ex]
@@ -1852,13 +1853,13 @@ $$
 \boldsymbol M_{d,n}
 &=
 \frac{1}{n}\sum_{i=1}^nD_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
 \left(\epsilon_{i,d,n}-\widehat\epsilon_{d,n}\right),\\[1ex]
 \mathbf G_{d,n}
 &=
 \frac{1}{n}\sum_{i=1}^nD_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'.
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)'.
 \end{aligned}
 $$ {#eq-regression-arm-standardized-moment-definitions}
 
@@ -1977,9 +1978,9 @@ $$
 \boldsymbol M_{d,n}
 &=
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\epsilon_{i,d,n}
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\epsilon_{i,d,n}
 -
-\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 \widehat\epsilon_{d,n}.
 \end{aligned}
 $$ {#eq-regression-arm-residual-covariate-cross-moment-decomposition}
@@ -1992,14 +1993,14 @@ h_{i,n}
 &=
 \frac{1}{n}
 +
-\mathbf z_{i,n}'\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
+\boldsymbol z_{i,n}'\boldsymbol\Lambda_n^{1/2}\mathbf U_n'
 \left(
 \frac{1}{n}\mathbf U_n\boldsymbol\Lambda_n^{-1}\mathbf U_n'
 \right)
-\mathbf U_n\boldsymbol\Lambda_n^{1/2}\mathbf z_{i,n}
+\mathbf U_n\boldsymbol\Lambda_n^{1/2}\boldsymbol z_{i,n}
 \\
 &=
-\frac{1+\|\mathbf z_{i,n}\|^2}{n},
+\frac{1+\|\boldsymbol z_{i,n}\|^2}{n},
 \end{aligned}
 $$
 
@@ -2011,12 +2012,12 @@ $$
 \mathbb E_{\boldsymbol\theta}
 \left\|
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\epsilon_{i,d,n}
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\epsilon_{i,d,n}
 \right\|^2
 &=
 \frac{p_d(1-p_d)}{n^2}
 \sum_{i=1}^n
-\|\mathbf z_{i,n}\|^2\epsilon_{i,d,n}^2
+\|\boldsymbol z_{i,n}\|^2\epsilon_{i,d,n}^2
 \\[1ex]
 &\leq
 p_d(1-p_d)v_{d,n}^2
@@ -2034,7 +2035,7 @@ $$
 \left\|
 \frac{1}{n v_{d,n}}
 \sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\epsilon_{i,d,n}
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\epsilon_{i,d,n}
 \right\|^2
 \to0.
 \end{aligned}
@@ -2046,7 +2047,7 @@ implies
 $$
 \frac{1}{n v_{d,n}}
 \sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\epsilon_{i,d,n}
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\epsilon_{i,d,n}
 =o_{\mathcal P}(1).
 $$ {#eq-regression-arm-residual-covariate-assignment-fluctuation-negligibility}
 
@@ -2055,7 +2056,7 @@ For the second term in
 
 $$
 \begin{aligned}
-\frac{1}{n}\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\frac{1}{n}\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 &=
 \frac{1}{n}
 \operatorname{tr}\left(
@@ -2089,31 +2090,31 @@ $$
 \begin{aligned}
 \mathbb E_{\boldsymbol\theta}
 \left\|
-\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\sqrt n\,\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 \right\|^2
 &=
-\frac{p_d}{n}\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\frac{p_d}{n}\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 +
-\frac{p_d^2}{n}\sum_{i\ne j}\mathbf z_{i,n}'\mathbf z_{j,n}
+\frac{p_d^2}{n}\sum_{i\ne j}\boldsymbol z_{i,n}'\boldsymbol z_{j,n}
 \\
 &=
-\frac{p_d}{n}\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\frac{p_d}{n}\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 +
 \frac{p_d^2}{n}
 \left(
-\left\|\sum_{i=1}^n\mathbf z_{i,n}\right\|^2
+\left\|\sum_{i=1}^n\boldsymbol z_{i,n}\right\|^2
 -
-\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 \right)
 \\
 &=
-\frac{p_d}{n}\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\frac{p_d}{n}\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 -
-\frac{p_d^2}{n}\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\frac{p_d^2}{n}\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 \\
 &=
 \frac{p_d(1-p_d)}{n}
-\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 \\
 &=
 p_d(1-p_d)r_n
@@ -2126,7 +2127,7 @@ $$ {#eq-regression-arm-standardized-covariate-mean-second-moment}
 @prp-uniform-moment-bounds(ii) therefore gives
 
 $$
-\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\sqrt n\,\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 =O_{\mathcal P}(1).
 $$ {#eq-regression-arm-standardized-covariate-mean-order}
 
@@ -2143,13 +2144,13 @@ Consequently,
 
 $$
 \frac{
-\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 \widehat\epsilon_{d,n}
 }{v_{d,n}}
 =
 \frac{1}{n}
 \left(
-\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\sqrt n\,\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 \right)
 \left(
 \sqrt n\,\frac{\widehat\epsilon_{d,n}}{v_{d,n}}
@@ -2177,14 +2178,14 @@ $$
 \mathbf G_{d,n}
 =
 \frac{1}{n}\sum_{i=1}^n
-D_{i,d}\mathbf z_{i,n}\mathbf z_{i,n}'
+D_{i,d}\boldsymbol z_{i,n}\boldsymbol z_{i,n}'
 -
 \overline D_{d,n}
-\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'.
+\widehat{\boldsymbol z}_{d,n}\widehat{\boldsymbol z}_{d,n}'.
 $$
 
 Since
-$n^{-1}\sum_{i=1}^n\mathbf z_{i,n}\mathbf z_{i,n}'=\mathbf I_{r_n}$,
+$n^{-1}\sum_{i=1}^n\boldsymbol z_{i,n}\boldsymbol z_{i,n}'=\mathbf I_{r_n}$,
 subtracting $p_d\mathbf I_{r_n}$ gives
 
 $$
@@ -2192,22 +2193,22 @@ $$
 \mathbf G_{d,n}-p_d\mathbf I_{r_n}
 &=
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\boldsymbol z_{i,n}'
 -
 \overline D_{d,n}
-\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'.
+\widehat{\boldsymbol z}_{d,n}\widehat{\boldsymbol z}_{d,n}'.
 \end{aligned}
 $$ {#eq-regression-arm-standardized-covariate-second-moment-decomposition}
 
 By (-@eq-regression-standardized-covariate-average-squared-norm),
-$\sum_{i=1}^n\|\mathbf z_{i,n}\|^2=nr_n$. Therefore,
+$\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2=nr_n$. Therefore,
 
 $$
 \begin{aligned}
 \mathbb E_{\boldsymbol\theta}
 \left\|
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\boldsymbol z_{i,n}'
 \right\|^2
 &\leq
 \mathbb E_{\boldsymbol\theta}
@@ -2215,28 +2216,28 @@ $$
 \left[
 \left\{
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\boldsymbol z_{i,n}'
 \right\}^2
 \right]
 \\
 &=
 \frac{p_d(1-p_d)}{n^2}
-\sum_{i=1}^n\|\mathbf z_{i,n}\|^4
+\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^4
 \\
 &\leq
 \frac{p_d(1-p_d)}{n^2}
-\max_{1\leq i\leq n}\|\mathbf z_{i,n}\|^2
-\sum_{i=1}^n\|\mathbf z_{i,n}\|^2
+\max_{1\leq i\leq n}\|\boldsymbol z_{i,n}\|^2
+\sum_{i=1}^n\|\boldsymbol z_{i,n}\|^2
 \\
 &=
 p_d(1-p_d)r_n
 \max_{1\leq i\leq n}
-\frac{\|\mathbf z_{i,n}\|^2}{n}
+\frac{\|\boldsymbol z_{i,n}\|^2}{n}
 \\
 &\leq
 \frac{k}{4}
 \max_{1\leq i\leq n}
-\frac{\|\mathbf z_{i,n}\|^2}{n}
+\frac{\|\boldsymbol z_{i,n}\|^2}{n}
 \\
 &\leq
 \frac{k}{4}
@@ -2249,7 +2250,7 @@ Assumption 3''(iii) and @prp-uniform-moment-bounds(i) therefore imply
 $$
 \left\|
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\boldsymbol z_{i,n}'
 \right\|
 =o_{\mathcal P}(1).
 $$ {#eq-regression-arm-standardized-covariate-assignment-fluctuation-negligibility}
@@ -2261,15 +2262,15 @@ $$
 \begin{aligned}
 \left\|
 \overline D_{d,n}
-\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'
+\widehat{\boldsymbol z}_{d,n}\widehat{\boldsymbol z}_{d,n}'
 \right\|
 &=
-\overline D_{d,n}\|\widehat{\mathbf z}_{d,n}\|^2
+\overline D_{d,n}\|\widehat{\boldsymbol z}_{d,n}\|^2
 \\[1ex]
 &=
 \frac{1}{n\overline D_{d,n}}
 \left\|
-\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\sqrt n\,\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 \right\|^2
 \\[1ex]
 &=o_{\mathcal P}(1).
@@ -2288,13 +2289,13 @@ $$
 &\leq
 \left\|
 \frac{1}{n}\sum_{i=1}^n
-(D_{i,d}-p_d)\mathbf z_{i,n}\mathbf z_{i,n}'
+(D_{i,d}-p_d)\boldsymbol z_{i,n}\boldsymbol z_{i,n}'
 \right\|
 \\
 &\quad+
 \left\|
 \overline D_{d,n}
-\widehat{\mathbf z}_{d,n}\widehat{\mathbf z}_{d,n}'
+\widehat{\boldsymbol z}_{d,n}\widehat{\boldsymbol z}_{d,n}'
 \right\|
 \\[1ex]
 &=o_{\mathcal P}(1).
@@ -2312,23 +2313,23 @@ $$
 \qquad
 \frac{1}{n}\sum_{i=1}^n
 D_{i,d}
-\left(\mathbf w_i-\overline{\mathbf w}_n\right)
+\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)
 \widehat U_{i,n}
-=\mathbf0.
+=\boldsymbol0.
 $$
 
 Subtracting
-$(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n)$ times the first
+$(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n)$ times the first
 condition from the second and applying
 (-@eq-regression-arm-standardized-covariate-mean) gives
 
 $$
 \begin{aligned}
-\mathbf0
+\boldsymbol0
 &=
 \frac{1}{n}\sum_{i=1}^n
 D_{i,d}
-\left(\mathbf w_i-\widehat{\mathbf w}_{d,n}\right)
+\left(\boldsymbol w_i-\widehat{\boldsymbol w}_{d,n}\right)
 \widehat U_{i,n}
 \\
 &=
@@ -2336,7 +2337,7 @@ D_{i,d}
 \left[
 \frac{1}{n}\sum_{i=1}^n
 D_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
 \widehat U_{i,n}
 \right].
 \end{aligned}
@@ -2348,9 +2349,9 @@ Because $\mathbf U_n\boldsymbol\Lambda_n^{1/2}$ has full column rank,
 $$
 \frac{1}{n}\sum_{i=1}^n
 D_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
 \widehat U_{i,n}
-=\mathbf0.
+=\boldsymbol0.
 $$ {#eq-regression-arm-standardized-fitted-residual-normal-equation}
 
 Substituting (-@eq-regression-standardized-fitted-residual-decomposition) into
@@ -2358,27 +2359,27 @@ Substituting (-@eq-regression-standardized-fitted-residual-decomposition) into
 
 $$
 \begin{aligned}
-\mathbf0
+\boldsymbol0
 &=
 \frac{1}{n}\sum_{i=1}^nD_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
 \left[
 \epsilon_{i,d,n}-\widehat\epsilon_{d,n}
 -
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)'
 \boldsymbol\Delta_{d,n}
 \right]
 \\
 &=
 \frac{1}{n}\sum_{i=1}^nD_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
 \left(\epsilon_{i,d,n}-\widehat\epsilon_{d,n}\right)
 \\
 &\quad-
 \left[
 \frac{1}{n}\sum_{i=1}^nD_{i,d}
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)
-\left(\mathbf z_{i,n}-\widehat{\mathbf z}_{d,n}\right)'
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)
+\left(\boldsymbol z_{i,n}-\widehat{\boldsymbol z}_{d,n}\right)'
 \right]
 \boldsymbol\Delta_{d,n}
 \\
@@ -2397,25 +2398,25 @@ $$
 \boldsymbol M_{d,n}.
 $$ {#eq-regression-arm-slope-normal-equations}
 
-For every unit vector $\mathbf a\in\mathbb R^{r_n}$,
+For every unit vector $\boldsymbol a\in\mathbb R^{r_n}$,
 
 $$
 \begin{aligned}
-\mathbf a'\mathbf G_{d,n}\mathbf a
+\boldsymbol a'\mathbf G_{d,n}\boldsymbol a
 &=
 p_d
 +
-\mathbf a'
+\boldsymbol a'
 \left(\mathbf G_{d,n}-p_d\mathbf I_{r_n}\right)
-\mathbf a
+\boldsymbol a
 \\
 &\geq
 p_d
 -
 \left|
-\mathbf a'
+\boldsymbol a'
 \left(\mathbf G_{d,n}-p_d\mathbf I_{r_n}\right)
-\mathbf a
+\boldsymbol a
 \right|
 \\
 &\geq
@@ -2717,10 +2718,10 @@ Equations (-@eq-regression-arm-standardized-covariate-mean) and
 (-@eq-regression-standardized-slope-error) imply
 
 $$
-\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
+\left(\widehat{\boldsymbol w}_{d,n}-\overline{\boldsymbol w}_n\right)'
 \left(\widehat{\boldsymbol\beta}_{d,n}-\boldsymbol\beta_{d,n}\right)
 =
-\widehat{\mathbf z}_{d,n}'
+\widehat{\boldsymbol z}_{d,n}'
 \boldsymbol\Delta_{d,n}.
 $$ {#eq-regression-remainder-standardized-arm-inner-product}
 
@@ -2733,11 +2734,11 @@ $$
 {\widetilde\sigma_n^{\mathrm{reg}}}
 &=
 -b_{0,n}^{\mathrm{reg}}
-\left(\sqrt n\,\widehat{\mathbf z}_{0,n}\right)'
+\left(\sqrt n\,\widehat{\boldsymbol z}_{0,n}\right)'
 \frac{\boldsymbol\Delta_{0,n}}
 {\sigma_{0,n}^{\mathrm{reg}}} -
 b_{1,n}^{\mathrm{reg}}
-\left(\sqrt n\,\widehat{\mathbf z}_{1,n}\right)'
+\left(\sqrt n\,\widehat{\boldsymbol z}_{1,n}\right)'
 \frac{\boldsymbol\Delta_{1,n}}
 {\sigma_{1,n}^{\mathrm{reg}}},
 \end{aligned}
@@ -2761,28 +2762,28 @@ $$
 {\widetilde\sigma_n^{\mathrm{reg}}}
 &\leq
 \left|b_{0,n}^{\mathrm{reg}}\right|
-\left\|\sqrt n\,\widehat{\mathbf z}_{0,n}\right\|
+\left\|\sqrt n\,\widehat{\boldsymbol z}_{0,n}\right\|
 \frac{\left\|\boldsymbol\Delta_{0,n}\right\|}
 {\sigma_{0,n}^{\mathrm{reg}}} +
 \left|b_{1,n}^{\mathrm{reg}}\right|
-\left\|\sqrt n\,\widehat{\mathbf z}_{1,n}\right\|
+\left\|\sqrt n\,\widehat{\boldsymbol z}_{1,n}\right\|
 \frac{\left\|\boldsymbol\Delta_{1,n}\right\|}
 {\sigma_{1,n}^{\mathrm{reg}}}.
 \end{aligned}
 $$ {#eq-regression-remainder-conservative-scale-bound}
 
 By (-@eq-regression-arm-standardized-covariate-mean-order),
-$\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}=O_{\mathcal P}(1)$.
+$\sqrt n\,\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}=O_{\mathcal P}(1)$.
 Since $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
 $p_d\geq\underline p$, @prp-joint-convergence(i) and
 @prp-continuous-mapping(i) imply, for each $d\in\{0,1\}$,
 
 $$
-\sqrt n\,\widehat{\mathbf z}_{d,n}
+\sqrt n\,\widehat{\boldsymbol z}_{d,n}
 =
 \frac{1}{\overline D_{d,n}}
 \left(
-\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\sqrt n\,\overline D_{d,n}\widehat{\boldsymbol z}_{d,n}
 \right)
 =O_{\mathcal P}(1).
 $$ {#eq-regression-remainder-standardized-covariate-mean-order}

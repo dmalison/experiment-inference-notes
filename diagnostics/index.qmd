@@ -56,7 +56,7 @@ $$
 The maximum variance-share condition in [Assumption 3(ii)](../treatment-group-means/#asm-nondegenerate) is equivalent to requiring
 
 $$
-\lim_{n\to\infty}\sup_{\theta \in \Theta}\kappa_{n} =0.
+\lim_{n\to\infty}\sup_{\boldsymbol\theta \in \Theta}\kappa_{n} =0.
 $$
 
 Thus, if $\kappa_n$ is large in a finite sample, the asymptotic approximations that rely on Assumption 3(ii) may be unreliable.
@@ -65,13 +65,13 @@ Because only one potential outcome is observed for each unit, $\kappa_n$ cannot 
 A feasible sample analogue uses observed within-treatment-group residuals in place of the unobserved potential-outcome deviations.
 For $d\in\{0,1\}$, let
 $$
-n_d=n\overline{D}_{d,n}
+N_{d,n}=n\overline{D}_{d,n}
 $$
 denote the number of units assigned to treatment $d$. Define
 $$
 \widehat\kappa_{d,n}
 =
-\frac{1}{n_d}\frac{\max_{1\leq i\leq n}
+\frac{1}{N_{d,n}}\frac{\max_{1\leq i\leq n}
 |Y_i-\widehat{y}_{d,n}|^2 D_{i,d}}{\widehat{s}_{dd,n}^2},
 $$ {#eq-dominant-unit-diagnostic}
 and let
@@ -173,20 +173,20 @@ $$
 \begin{aligned}
 \sup_{t\in\mathbb R}
 \left|
-\mathbb P_\theta(T_n\leq t)
+\mathbb P_{\boldsymbol\theta}(T_n\leq t)
 -\Phi(t)
 \right|
 &\leq
-C
+c_{\mathrm{BE}}
 \frac{p_0^2+p_1^2}{\sqrt{p_0p_1}}
 \lambda_n \\
 &\leq
-C
+c_{\mathrm{BE}}
 \frac{p_0^2+p_1^2}{\sqrt{p_0p_1}}
 \sqrt{\kappa_n},
 \end{aligned}
 $$ {#eq-kappa-be-bound}
-where $C$ is a universal constant.
+where $c_{\mathrm{BE}}$ is a universal constant.
 Thus, as a heuristic for assessing the normal approximation to the standardized ATE estimator under the strong null, we can choose $\overline\kappa$ so that the Berry--Esseen bound in (-@eq-kappa-be-bound) is no greater than a desired tolerance $\overline\delta$ whenever $\kappa_n\leq\overline\kappa$.
 It suffices to set
 
@@ -194,7 +194,7 @@ $$
 \overline\kappa
 =
 \left(
-\frac{\overline\delta}{C}
+\frac{\overline\delta}{c_{\mathrm{BE}}}
 \frac{\sqrt{p_0p_1}}{p_0^2+p_1^2}
 \right)^2.
 $$ {#eq-kappa-tolerance}
@@ -203,7 +203,7 @@ $$ {#eq-kappa-tolerance}
 
 To illustrate the diagnostic's finite-sample behavior, we simulate the sampling distribution of the ATE estimator under two different populations of potential outcomes.
 In both cases, the strong null holds, $n=1{,}000$, and $p=0.5$.
-Using $\overline\delta=0.10$ and the upper bound $C\leq0.5583$ from [Shevtsova (2013)](https://www.mathnet.ru/eng/ia252), (-@eq-kappa-tolerance) gives the calibrated tolerance
+Using $\overline\delta=0.10$ and the upper bound $c_{\mathrm{BE}}\leq0.5583$ from [Shevtsova (2013)](https://www.mathnet.ru/eng/ia252), (-@eq-kappa-tolerance) gives the calibrated tolerance
 
 $$
 \overline\kappa

@@ -37,7 +37,7 @@ Let $y_{i,d}$ and $z_{i,d}$ denote unit $i$'s potential outcomes for $Y_i$ and $
 We replace Assumption 2 with the following multivariate analogue:
 
 ::: {.assumption #asm-sutva}
-**Assumption 2' (Stable unit treatment value)**
+**Assumption 2' (Ratio stable unit treatment value)**
 
 The observed outcomes are determined by
 
@@ -105,7 +105,7 @@ and let $\Theta \subseteq (0,1)\times (\mathbb R^2)^\mathbb N\times (\mathbb R^2
 We replace Assumption 3 with the following multivariate regularity condition:
 
 ::: {.assumption #asm-nondegenerate}
-**Assumption 3' (Regularity)**
+**Assumption 3' (Ratio regularity)**
 
 [**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $n_0$ for which
 $\mathbf S_{dd,n}$ is positive definite for all $n\geq n_0$, $d\in\{0,1\}$,

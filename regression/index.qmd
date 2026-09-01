@@ -33,7 +33,7 @@ format:
 
 In this note, we extend our data model to include a vector of covariates and
 then use them to construct a least-squares estimator for a linear combination of
-treatment-group means. The resulting estimator has smaller conservative
+treatment-group means. The resulting estimator has weakly smaller conservative
 asymptotic variance than either the unadjusted treatment-group-means estimator
 or CUPED.
 
@@ -88,7 +88,7 @@ $$
 $$
 denote the vector of linear projection
 coefficients, where $\mathbf A^\dagger$ denotes the Moore-Penrose pseudoinverse of a matrix $\mathbf A$.
-$\boldsymbol\beta_{d,n}$ minimizes the sum of squared residuals:
+The vector $\boldsymbol\beta_{d,n}$ minimizes the sum of squared residuals:
 $$
 \boldsymbol\beta_{d,n}
 \in
@@ -205,7 +205,7 @@ $$
 \sup_{\boldsymbol\theta\in\Theta}
 \max_{1\leq i\leq n}
 \frac{|\epsilon_{i,d,n}|}{\sqrt n\,v_{d,n}}
-=0
+=0.
 $$
 
 [**(iii)**]{.part-label} **(Maximum leverage)**
@@ -221,7 +221,7 @@ $$
 
 Part (i) ensures that the residual variances are nonzero for all sufficiently large sample sizes and is analogous to the non-degeneracy condition in Assumption 3.
 Part (ii) is the analogue of the maximum variance-share condition in Assumption 3(ii), with projection residuals replacing centered potential outcomes.
-Part (iii) is the covariate analogue of the maximum variance-share condition; indeed, when $k=1$, the two conditions are exactly equivalent with the centered potential outcome replaced by the centered covariate.
+Part (iii) is the covariate analogue of the maximum variance-share condition; indeed, when $k=1$, the two conditions are equivalent with the centered potential outcome replaced by the centered covariate.
 In the [Appendix](#sec-regression-stationary-ergodic-conditions), we show that
 these restrictions hold on a set of arbitrarily high probability when the
 potential outcomes and covariates are generated jointly by a stationary
@@ -229,8 +229,8 @@ ergodic process with finite second moments and positive residual variances.
 
 # Estimator
 
-In this section, we derive a least squares estimator
-for a linear combination of treatment group means.
+In this section, we derive a least-squares estimator
+for a linear combination of treatment-group means.
 Rearrange (-@eq-regression-projection-residuals) to obtain
 $$
 \begin{aligned}
@@ -263,14 +263,14 @@ $$
 Y_i
 &=
 (1-D_i)\overline y_{0,n}
-+D_i\overline y_{1,n}
-\\
-&\quad+
++
 (1-D_i)
 \left(\mathbf w_i-\overline{\mathbf w}_n\right)'
 \boldsymbol\beta_{0,n}
 \\
 &\quad+
+D_i\overline y_{1,n}
++
 D_i
 \left(\mathbf w_i-\overline{\mathbf w}_n\right)'
 \boldsymbol\beta_{1,n}
@@ -340,11 +340,11 @@ Y_n
 \end{pmatrix}
 $$
 
-The coefficients can equivalently be computed from separate regressions of $Y_i$
+These coefficients can equivalently be computed from separate regressions of $Y_i$
 on a constant and $\mathbf w_i-\overline{\mathbf w}_n$ within each treatment
 group.
-The
-first-order condition with respect to $\widehat\alpha_{d,n}^{\mathrm{reg}}$ is
+The first-order condition with respect to
+$\widehat\alpha_{d,n}^{\mathrm{reg}}$ is
 
 $$
 \frac{1}{N_{d,n}}\sum_{i=1}^n
@@ -356,7 +356,7 @@ Y_i
 \widehat{\boldsymbol\beta}_{d,n}
 \right]
 =0,
-\qquad d\in\{0,1\}
+\qquad d\in\{0,1\},
 $$
 where
 
@@ -365,7 +365,7 @@ $$
 =
 \frac{1}{N_{d,n}}\sum_{i=1}^nD_{i,d}\mathbf w_i
 $$
-denotes the covariate means in treatment group $d \in \{0, 1\}$.
+denotes the covariate mean in treatment group $d\in\{0,1\}$.
 Evaluating the sum and rearranging gives
 
 $$
@@ -376,10 +376,6 @@ $$
 \left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
 \widehat{\boldsymbol\beta}_{d,n}.
 $$ {#eq-regression-intercept-adjustments}
-
-The intercept estimator therefore adjusts the treatment-group mean $\widehat y_{d,n}$
-for covariate imbalance using the treatment-group-specific coefficient
-$\widehat{\boldsymbol\beta}_{d,n}$.
 
 The regression estimator of $\psi_n$ is the corresponding linear combination
 of the estimated treatment-group intercepts:
@@ -422,10 +418,10 @@ $$ {#eq-regression-ate-decomposition}
 This decomposition has an intuitive interpretation. The quantity
 $\widehat y_{d,n}-\widehat{\mathbf w}_{d,n}'
 \widehat{\boldsymbol\beta}_{d,n}$ is the mean outcome in treatment group $d$
-in excess of its fitted covariate contribution. The bracketed difference is
-therefore the intercept component of the estimated average treatment effect. The
-remaining term is the interaction component, measuring the difference
-between the two fitted covariate contributions at the
+net of the fitted covariate component. The bracketed difference is
+therefore the "level" component of the estimated ATE. The
+remaining term is the "interaction" component, which measures the difference
+between the two covariate components at the
 overall covariate mean.
 
 
@@ -456,7 +452,7 @@ $$
 $$
 
 
-Substituting this expression into the first identity in
+Substituting this expression into
 (-@eq-regression-intercept-adjustments) gives
 
 $$
@@ -501,49 +497,25 @@ $$ {#eq-regression-full-remainder-definition}
 ## Normality approximation
 
 The leading term in
-(-@eq-regression-full-target-error-decomposition) applies the treatment-group-means estimator to the residual arrays
-$\{\epsilon_{i,0,n}\}$ and $\{\epsilon_{i,1,n}\}$. The row-wise means of these arrays are
-zero by (-@eq-regression-population-residual-sum-zero), while
+(-@eq-regression-full-target-error-decomposition) is the treatment-group-means estimator applied to the residual arrays
+$\{\epsilon_{i,0,n}\}$ and $\{\epsilon_{i,1,n}\}$. The finite-population mean
+of each residual array is zero by
+(-@eq-regression-population-residual-sum-zero), while
 Assumption
-3''(i) and (ii) provide the non-degeneracy and maximum variance-share
-conditions needed to apply the results from the [treatment-group-means note](../treatment-group-means/#sec-estimator-asymptotics).
-Define
+3''(i) and (ii) provide the regularity conditions required by Assumption 3. We can therefore directly apply [the normality approximation](../treatment-group-means/#normal-approximation) from the treatment-group-means note to this term.
+
+Define the armwise asymptotic variances by
 
 $$
 \sigma_{d,n}^{2,\mathrm{reg}}
 =
 \frac{1-p_d}{p_d}v_{d,n}^2,
 \qquad
-\sigma_{01,n}^{\mathrm{reg}}
-=v_{01,n}.
-$$ {#eq-regression-full-treatment-group-variance}
+d\in\{0,1\}.
+$$ {#eq-regression-arm-asymptotic-variances}
 
-The variance of the leading term in
-(-@eq-regression-full-target-error-decomposition) is
-
-$$
-\begin{aligned}
-\sigma_n^{2,\mathrm{reg}}
-&=
-a_{0,n}^2\sigma_{0,n}^{2,\mathrm{reg}}
-+a_{1,n}^2\sigma_{1,n}^{2,\mathrm{reg}}
--2a_{0,n}a_{1,n}\sigma_{01,n}^{\mathrm{reg}}.
-\end{aligned}
-$$ {#eq-regression-full-treatment-group-means-variance}
-
-The corresponding conservative variance is
-
-$$
-\widetilde\sigma_n^{2,\mathrm{reg}}
-=
-\left(
-|a_{0,n}|\sigma_{0,n}^{\mathrm{reg}}
-+|a_{1,n}|\sigma_{1,n}^{\mathrm{reg}}
-\right)^2.
-$$ {#eq-regression-full-conservative-variance}
-
-If the projection residuals were observed, we could estimate the
-treatment-group-specific variances by
+If the projection residuals were observed, the corresponding oracle estimators
+would be
 
 $$
 \check\sigma_{d,n}^{2,\mathrm{reg}}
@@ -553,22 +525,32 @@ $$
 \frac{1}{N_{d,n}}\sum_{i=1}^n
 D_{i,d}\left(\epsilon_{i,d,n}-\widehat\epsilon_{d,n}\right)^2
 \right],
-\qquad d\in\{0,1\},
-$$ {#eq-regression-full-oracle-treatment-group-variance-estimator}
+\qquad d\in\{0,1\}.
+$$ {#eq-regression-arm-oracle-variance-estimators}
 
-and construct
+Use these quantities to define the conservative asymptotic variance and its
+oracle estimator:
 
 $$
+\begin{aligned}
+\widetilde\sigma_n^{2,\mathrm{reg}}
+&=
+\left(
+|a_{0,n}|\sigma_{0,n}^{\mathrm{reg}}
++|a_{1,n}|\sigma_{1,n}^{\mathrm{reg}}
+\right)^2,
+\\[1ex]
 \check\sigma_n^{2,\mathrm{reg}}
-=
+&=
 \left(
 |a_{0,n}|\check\sigma_{0,n}^{\mathrm{reg}}
 +|a_{1,n}|\check\sigma_{1,n}^{\mathrm{reg}}
 \right)^2.
-$$ {#eq-regression-full-oracle-conservative-variance-estimator}
+\end{aligned}
+$$ {#eq-regression-conservative-variance-and-oracle-estimator}
 
-The
-[studentized normal approximation](../treatment-group-means/#eq-feasible-normal-approximation){.quarto-xref} from the treatment-group-means note implies
+Applying the
+[studentized normal approximation](../treatment-group-means/#eq-feasible-normal-approximation){.quarto-xref} from the treatment-group-means note gives
 
 $$
 \sqrt n
@@ -585,12 +567,21 @@ N\left(
 0,
 \frac{\sigma_n^{2,\mathrm{reg}}}
 {\widetilde\sigma_n^{2,\mathrm{reg}}}
-\right).
+\right),
 $$ {#eq-regression-full-oracle-normal-approximation}
+where
 
-$\check\sigma_{d,n}^{2,\mathrm{reg}}$ is infeasible
-because the projection residuals are unobserved. To obtain a feasible
-estimator, we replace the population residuals with the fitted residuals:
+$$
+\sigma_n^{2,\mathrm{reg}}
+=
+a_{0,n}^2\sigma_{0,n}^{2,\mathrm{reg}}
++a_{1,n}^2\sigma_{1,n}^{2,\mathrm{reg}}
+-2a_{0,n}a_{1,n}v_{01,n}.
+$$ {#eq-regression-leading-term-asymptotic-variance}
+
+Relative to the treatment-group-means setting, the regression case requires
+one additional step because the projection residuals are unobserved. To obtain a feasible
+estimator, we replace the projection residuals with their fitted counterparts:
 
 $$
 \begin{aligned}
@@ -616,7 +607,7 @@ $$
 \widehat v_{d,n}^{2,\mathrm{reg}}
 =
 \frac{1}{N_{d,n}}\sum_{i=1}^n
-D_{i,d}\left(\widehat U_{i,n}\right)^2
+D_{i,d}\widehat U_{i,n}^2
 $$ {#eq-regression-full-sample-residual-variances}
 
 and construct
@@ -643,9 +634,7 @@ $$
 \stackrel{\mathcal P}{\to}1.
 $$ {#eq-regression-full-oracle-feasible-variance-consistency}
 
-Since $\check\sigma_n^{\mathrm{reg}}$ and
-$\widehat\sigma_n^{\mathrm{reg}}$ are nonnegative,
-@prp-continuous-mapping(i) gives
+Applying @prp-continuous-mapping(i) with the nonnegative square-root map gives
 $\check\sigma_n^{\mathrm{reg}}/\widehat\sigma_n^{\mathrm{reg}}
 \stackrel{\mathcal P}{\to}1$. Moreover,
 $\sigma_n^{2,\mathrm{reg}}\leq\widetilde\sigma_n^{2,\mathrm{reg}}$
@@ -674,7 +663,9 @@ $$
 $$ {#eq-regression-remainder-negligibility}
 
 Combining
-(-@eq-regression-full-target-error-decomposition), (-@eq-regression-full-feasible-residual-means-normal-approximation) and (-@eq-regression-remainder-negligibility) and applying
+(-@eq-regression-full-target-error-decomposition),
+(-@eq-regression-full-feasible-residual-means-normal-approximation), and
+(-@eq-regression-remainder-negligibility), and applying
 @prp-asymptotic-equivalence-perturbation gives
 
 $$
@@ -716,8 +707,6 @@ unadjusted treatment-group-means estimator and CUPED.
 
 ## Unadjusted estimator
 
-We first compare the conservative variance of the regression estimator with
-that of the unadjusted treatment-group-means estimator.
 Squaring the decomposition in
 (-@eq-regression-potential-outcome-decomposition-centered) and applying the
 population normal equations in (-@eq-regression-population-normal-equations)
@@ -745,8 +734,7 @@ r_{d,n}^2
 \boldsymbol\beta_{d,n}
 }{
 \frac{1}{n}\sum_{i=1}^n\left(y_{i,d}-\overline y_{d,n}\right)^2
-}
-.
+}.
 $$
 
 The two terms on the right-hand side of
@@ -761,7 +749,7 @@ v_{d,n}^2
 \left(y_{i,d}-\overline y_{d,n}\right)^2.
 $$
 
-Using (-@eq-regression-full-treatment-group-variance), we then have
+Using (-@eq-regression-arm-asymptotic-variances), we then have
 
 $$
 \sigma_{d,n}^{2,\mathrm{reg}}
@@ -770,7 +758,7 @@ $$
 $$
 
 The conservative regression variance in
-(-@eq-regression-full-conservative-variance) therefore satisfies
+(-@eq-regression-conservative-variance-and-oracle-estimator) therefore satisfies
 
 $$
 \widetilde\sigma_n^{2,\mathrm{reg}}
@@ -812,7 +800,8 @@ $$
 +O\left(r_{d,n}^4\right).
 $$
 
-Thus, when both armwise $r^2$ values are small, the relative reduction is approximately
+Thus, when both armwise $r^2$ values are small, the relative reduction is
+approximately
 
 $$
 \frac{\widetilde\sigma_n - \widetilde\sigma_n^{\mathrm{reg}}}{\widetilde\sigma_n}
@@ -830,7 +819,7 @@ $$
 \widehat{\boldsymbol\gamma}_n
 =
 \left(\mathbf W_n'\mathbf W_n\right)^\dagger
-\mathbf W_n'\boldsymbol Y_n.
+\mathbf W_n'\boldsymbol Y_n
 $$ {#eq-regression-cuped-coefficient-estimator}
 
 denote the pooled coefficient estimator and
@@ -878,12 +867,13 @@ $$
 \widehat y_{0,n}
 -\widehat{\mathbf w}_{0,n}'\widehat{\boldsymbol\gamma}_n
 \right)
+.
 \end{aligned}
 $$ {#eq-regression-cuped-ate-decomposition}
 
 In contrast to the regression ATE estimator in
 (-@eq-regression-ate-decomposition), the CUPED estimator has only the
-intercept component because it uses the same coefficient vector to adjust both
+level component because it uses the same coefficient vector to adjust both
 treatment groups.
 
 To describe the CUPED estimator's asymptotic behavior, define
@@ -916,11 +906,12 @@ $$
 \overline y_{d,n}
 +\widehat u_{d,n}^{\mathrm{cuped}}
 -\left(\widehat{\mathbf w}_{d,n}-\overline{\mathbf w}_n\right)'
-\left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right).
+\left(\widehat{\boldsymbol\gamma}_n-\boldsymbol\gamma_n\right),
 \end{aligned}
 $$ {#eq-regression-cuped-residual}
 
 where
+
 $$
 \begin{aligned}
 \widehat u_{d,n}^{\mathrm{cuped}}
@@ -933,6 +924,7 @@ u_{i,d,n}^{\mathrm{cuped}}
 \epsilon_{i,d,n}
 +\left(\mathbf w_i-\overline{\mathbf w}_n\right)'
 \left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)
+.
 \end{aligned}
 $$
 
@@ -974,12 +966,13 @@ $$
 \frac{1}{n}\sum_{i=1}^n
 \left(u_{i,d,n}^{\mathrm{cuped}}\right)^2
 \right)
+.
 $$
 
 Because $\boldsymbol\beta_{d,n}$ is the projection coefficient, the population
-normal equations (-@eq-regression-population-normal-equations) make
-$\mathbf w_i-\overline{\mathbf w}_n$ orthogonal to $\epsilon_{i,d,n}$.
-Therefore
+normal equations (-@eq-regression-population-normal-equations) give
+$\sum_{i=1}^n(\mathbf w_i-\overline{\mathbf w}_n)\epsilon_{i,d,n}=\mathbf0$.
+Therefore,
 
 $$
 \begin{aligned}
@@ -991,10 +984,11 @@ v_{d,n}^2
 \left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)'
 \left(\frac{1}{n}\mathbf W_n'\mathbf W_n\right)
 \left(\boldsymbol\beta_{d,n}-\boldsymbol\gamma_n\right)
+.
 \end{aligned}
 $$ {#eq-regression-cuped-second-moments}
 
-which implies
+This implies
 $$
 \sigma_{d,n}^{2,\mathrm{cuped}}
 =
@@ -1912,7 +1906,7 @@ $$
 \qquad d\in\{0,1\}.
 $$
 
-Using (-@eq-regression-full-oracle-conservative-variance-estimator) and
+Using (-@eq-regression-conservative-variance-and-oracle-estimator) and
 (-@eq-regression-full-conservative-variance-estimator), we therefore have
 
 $$
@@ -2665,28 +2659,61 @@ This proves the armwise result used above and completes the proof of
 If $r_n=0$, then $\mathbf W_n=\mathbf0$ and $R_n^{\mathrm{reg}}=0$, so the
 result follows immediately. Suppose below that $r_n>0$.
 
-Because $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
-$p_d\geq\underline p$, the bound
-$\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
-=O_{\mathcal P}(1)$ established above, @prp-joint-convergence(i), and
-@prp-continuous-mapping(i) give
-$\sqrt n\,\widehat{\mathbf z}_{d,n}=O_{\mathcal P}(1)$.
-The slope bounds established above, together with Assumption 1 and the scale
-definitions, then give, for each $d\in\{0,1\}$,
+We can write the term on the left-hand side of
+(-@eq-regression-remainder-negligibility) as
 
 $$
-\begin{aligned}
-\sqrt n\,\widehat{\mathbf z}_{d,n}
-&=O_{\mathcal P}(1),
-\\[2ex]
-\frac{
-\left\|\boldsymbol\Delta_{d,n}\right\|
-}{\sigma_{d,n}^{\mathrm{reg}}}
-&=o_{\mathcal P}(1).
-\end{aligned}
-$$
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+=
+\frac{\check\sigma_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+\frac{\widetilde\sigma_n^{\mathrm{reg}}}
+{\check\sigma_n^{\mathrm{reg}}}
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+.
+$$ {#eq-regression-remainder-scale-factorization}
 
-(-@eq-regression-arm-standardized-covariate-mean) and
+Applying @prp-continuous-mapping(i) to
+(-@eq-regression-full-oracle-feasible-variance-consistency) gives
+
+$$
+\frac{\check\sigma_n^{\mathrm{reg}}}
+{\widehat\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$ {#eq-regression-oracle-feasible-standard-deviation-consistency}
+
+The
+[treatment-group-means variance-consistency result](../treatment-group-means/#eq-variance-ratio-consistency){.quarto-xref},
+applied to the corresponding residual arrays, gives
+
+$$
+\frac{\check\sigma_n^{2,\mathrm{reg}}}
+{\widetilde\sigma_n^{2,\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$ {#eq-regression-oracle-conservative-variance-consistency}
+
+Therefore @prp-continuous-mapping(i), applied with the reciprocal square-root
+map, gives
+
+$$
+\frac{\widetilde\sigma_n^{\mathrm{reg}}}
+{\check\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$ {#eq-regression-conservative-oracle-standard-deviation-consistency}
+
+By (-@eq-regression-remainder-scale-factorization),
+(-@eq-regression-oracle-feasible-standard-deviation-consistency),
+(-@eq-regression-conservative-oracle-standard-deviation-consistency), and
+@prp-stochastic-order(iii), (-@eq-regression-remainder-negligibility) follow if we show
+
+$$
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}0.
+$$
+Equations (-@eq-regression-arm-standardized-covariate-mean) and
 (-@eq-regression-standardized-slope-error) imply
 
 $$
@@ -2695,44 +2722,95 @@ $$
 =
 \widehat{\mathbf z}_{d,n}'
 \boldsymbol\Delta_{d,n}.
-$$
+$$ {#eq-regression-remainder-standardized-arm-inner-product}
 
-The remainder definition therefore yields
+Substituting (-@eq-regression-remainder-standardized-arm-inner-product) into
+(-@eq-regression-full-remainder-definition) gives the decomposition
+
+$$
+\begin{aligned}
+\frac{\sqrt n\,R_n^{\mathrm{reg}}}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+&=
+-b_{0,n}^{\mathrm{reg}}
+\left(\sqrt n\,\widehat{\mathbf z}_{0,n}\right)'
+\frac{\boldsymbol\Delta_{0,n}}
+{\sigma_{0,n}^{\mathrm{reg}}} -
+b_{1,n}^{\mathrm{reg}}
+\left(\sqrt n\,\widehat{\mathbf z}_{1,n}\right)'
+\frac{\boldsymbol\Delta_{1,n}}
+{\sigma_{1,n}^{\mathrm{reg}}},
+\end{aligned}
+$$ {#eq-regression-remainder-standardized-decomposition}
+where
+
+$$
+b_{d,n}^{\mathrm{reg}}
+=
+\frac{a_{d,n}\sigma_{d,n}^{\mathrm{reg}}}
+{\widetilde\sigma_n^{\mathrm{reg}}},
+\qquad
+d\in\{0,1\}.
+$$ {#eq-regression-remainder-standardized-arm-coefficients}
+
+The triangle and Cauchy--Schwarz inequalities therefore imply
+
+$$
+\begin{aligned}
+\frac{\sqrt n\,|R_n^{\mathrm{reg}}|}
+{\widetilde\sigma_n^{\mathrm{reg}}}
+&\leq
+\left|b_{0,n}^{\mathrm{reg}}\right|
+\left\|\sqrt n\,\widehat{\mathbf z}_{0,n}\right\|
+\frac{\left\|\boldsymbol\Delta_{0,n}\right\|}
+{\sigma_{0,n}^{\mathrm{reg}}} +
+\left|b_{1,n}^{\mathrm{reg}}\right|
+\left\|\sqrt n\,\widehat{\mathbf z}_{1,n}\right\|
+\frac{\left\|\boldsymbol\Delta_{1,n}\right\|}
+{\sigma_{1,n}^{\mathrm{reg}}}.
+\end{aligned}
+$$ {#eq-regression-remainder-conservative-scale-bound}
+
+By (-@eq-regression-arm-standardized-covariate-mean-order),
+$\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}=O_{\mathcal P}(1)$.
+Since $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$ and
+$p_d\geq\underline p$, @prp-joint-convergence(i) and
+@prp-continuous-mapping(i) imply, for each $d\in\{0,1\}$,
+
+$$
+\sqrt n\,\widehat{\mathbf z}_{d,n}
+=
+\frac{1}{\overline D_{d,n}}
+\left(
+\sqrt n\,\overline D_{d,n}\widehat{\mathbf z}_{d,n}
+\right)
+=O_{\mathcal P}(1).
+$$ {#eq-regression-remainder-standardized-covariate-mean-order}
+
+Similarly,
+(-@eq-regression-arm-standardized-slope-error-negligibility) and
+(-@eq-regression-arm-asymptotic-variances), together with Assumption 1, imply
+that, for each $d\in\{0,1\}$,
+
+$$
+\frac{
+\left\|\boldsymbol\Delta_{d,n}\right\|
+}{\sigma_{d,n}^{\mathrm{reg}}}
+=
+\frac{\left\|\boldsymbol\Delta_{d,n}\right\|}{v_{d,n}}
+\sqrt{\frac{p_d}{1-p_d}}
+=o_{\mathcal P}(1).
+$$ {#eq-regression-remainder-standardized-slope-error-order}
+
+By
+(-@eq-regression-conservative-variance-and-oracle-estimator), each
+$|b_{d,n}^{\mathrm{reg}}|$ is at most one. It therefore follows from
+(-@eq-regression-remainder-conservative-scale-bound),
+(-@eq-regression-remainder-standardized-covariate-mean-order), and
+(-@eq-regression-remainder-standardized-slope-error-order) that
 
 $$
 \frac{\sqrt n\,|R_n^{\mathrm{reg}}|}
 {\widetilde\sigma_n^{\mathrm{reg}}}
-\leq
-\sum_{d\in\{0,1\}}
-\frac{|a_{d,n}|\sigma_{d,n}^{\mathrm{reg}}}
-{\widetilde\sigma_n^{\mathrm{reg}}}
-\left\|\sqrt n\,\widehat{\mathbf z}_{d,n}\right\|
-\frac{
-\left\|\boldsymbol\Delta_{d,n}\right\|
-}{\sigma_{d,n}^{\mathrm{reg}}}
 =o_{\mathcal P}(1).
-$$
-
-In the sum, the two nonnegative coefficients add to one. The
-[treatment-group-means variance-consistency result](../treatment-group-means/#eq-variance-ratio-consistency){.quarto-xref},
-applied to the corresponding residual arrays, and the fitted-residual variance
-equivalence proved above imply
-
-$$
-\frac{\widetilde\sigma_n^{\mathrm{reg}}}
-{\widehat\sigma_n^{\mathrm{reg}}}
-\stackrel{\mathcal P}{\to}1.
-$$
-
-It follows that
-
-$$
-\frac{\sqrt n\,R_n^{\mathrm{reg}}}
-{\widehat\sigma_n^{\mathrm{reg}}}
-=
-\frac{\sqrt n\,R_n^{\mathrm{reg}}}
-{\widetilde\sigma_n^{\mathrm{reg}}}
-\frac{\widetilde\sigma_n^{\mathrm{reg}}}
-{\widehat\sigma_n^{\mathrm{reg}}}
-\stackrel{\mathcal P}{\to}0.
-$$
+$$ {#eq-regression-remainder-conservative-scale-negligibility}

@@ -12,7 +12,6 @@ language:
 book:
   title: "Experiment Inference Notes"
   site-url: https://dmalison.github.io/experiment-inference-notes/
-  reader-mode: true
   sidebar:
     pinned: true
     footer: "[GitHub](https://github.com/dmalison/experiment-inference-notes) | [Report an issue](https://github.com/dmalison/experiment-inference-notes/issues/new)"

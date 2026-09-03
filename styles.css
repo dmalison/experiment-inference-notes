@@ -131,17 +131,79 @@ table td {
 }
 
 @media (min-width: 992px) {
-  body:has(.quarto-reader-toggle.reader) #quarto-sidebar,
-  body:has(.quarto-reader-toggle.reader) #quarto-margin-sidebar {
-    visibility: hidden;
+  #quarto-header {
+    position: fixed !important;
+    top: 0;
   }
 
-  body:has(.quarto-reader-toggle.reader) #quarto-sidebarnav-toggle,
-  body:has(.quarto-reader-toggle.reader) #quarto-toc-toggle {
-    visibility: visible;
+  .quarto-secondary-nav {
+    display: block;
+    min-height: 2.5rem;
+    background: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
   }
 
-  body:has(.quarto-reader-toggle.reader) #quarto-content main.content {
+  .quarto-secondary-nav button.quarto-btn-toggle {
+    margin-left: -0.75rem;
+    margin-right: 0.15rem;
+  }
+
+  .quarto-secondary-nav button.quarto-search-button {
+    padding-right: 0;
+    padding-left: 2rem;
+  }
+
+  .quarto-secondary-nav nav.quarto-page-breadcrumbs {
+    display: flex;
+    align-items: center;
+    padding-right: 1rem;
+    margin-left: -0.25rem;
+  }
+
+  .quarto-secondary-nav nav.quarto-page-breadcrumbs a {
+    text-decoration: none;
+  }
+
+  .quarto-secondary-nav nav.quarto-page-breadcrumbs ol.breadcrumb {
+    margin-bottom: 0;
+  }
+
+  #quarto-sidebar.collapse:not(.show):not(.collapsing) {
+    display: none;
+  }
+
+  #quarto-content.page-columns #quarto-sidebar.show,
+  #quarto-content.page-columns #quarto-sidebar.collapsing {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 2.5rem;
+    bottom: 0;
+    left: 0;
+    width: 320px;
+    height: auto;
+    min-height: 0;
+    padding-left: 1.5rem;
+    z-index: 1055;
+    background: var(--bs-body-bg);
+  }
+
+  #quarto-sidebar-glass.show {
+    display: block;
+    position: fixed;
+    top: 2.5rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  #quarto-margin-sidebar {
+    display: none;
+  }
+
+  #quarto-content main.content {
     grid-column: screen-start / screen-end;
     justify-self: center;
     width: min(1000px, calc(100vw - 3rem));

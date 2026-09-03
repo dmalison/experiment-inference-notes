@@ -12,9 +12,6 @@ language:
 book:
   title: "Experiment Inference Notes"
   site-url: https://dmalison.github.io/experiment-inference-notes/
-  repo-url: https://github.com/dmalison/experiment-inference-notes
-  repo-actions: [source, issue]
-  reader-mode: true
   chapters:
     - index.qmd
     - href: treatment-group-means/index.qmd

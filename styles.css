@@ -13,6 +13,100 @@ span.math.inline {
   vertical-align: middle;
 }
 
+h1.title {
+  font-size: 2.75rem;
+  text-align: center;
+}
+
+.quarto-title-meta {
+  display: flex !important;
+  justify-content: center;
+  gap: 5rem;
+  text-align: center;
+}
+
+table td {
+  vertical-align: middle;
+}
+
+.assumption,
+.theorem,
+.lemma {
+  margin: 0.75em 0 0.75em 1.5em;
+  padding: 0.25em 0.75em;
+  border-left: 3px solid #ccc;
+}
+
+.proof-block {
+  margin: 0.75em 0 0.75em 1.5em;
+  padding: 0.25em 0.75em;
+  border-left: 2px solid #ddd;
+}
+
+.intro {
+  margin: 1.75rem auto 0;
+  color: #333;
+}
+
+.notes ul {
+  list-style: none;
+  padding: 0;
+  margin: 2.5rem 0;
+}
+
+.notes li {
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  transition: background 0.15s ease;
+}
+
+.notes li:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.notes a {
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.notes a:hover {
+  text-decoration: underline;
+}
+
+.coverage-table tbody tr:nth-child(5),
+.coverage-table tbody tr:nth-child(6) {
+  background: #fdecea;
+}
+
+.coverage-table tbody tr:nth-child(1),
+.coverage-table tbody tr:nth-child(7) {
+  background: #fff8e1;
+}
+
+.coverage-table tbody tr:nth-child(2),
+.coverage-table tbody tr:nth-child(3),
+.coverage-table tbody tr:nth-child(4),
+.coverage-table tbody tr:nth-child(8) {
+  background: #e8f5e9;
+}
+
+@media (prefers-color-scheme: dark) {
+  .intro {
+    color: #d0d0d0;
+  }
+
+  .notes li {
+    border-color: #333;
+  }
+
+  .notes li:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
 #quarto-sidebar .sidebar-menu-container > ul > li.sidebar-item:first-child {
   display: none;
 }

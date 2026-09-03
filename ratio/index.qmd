@@ -1,30 +1,8 @@
 ---
 title: "Uniform Inference on Ratio Metrics"
-author: "David Malison"
-date: last-modified
-language:
-  title-block-published: "Last modified"
 format:
   html:
-    number-sections: false
     link-external-newwindow: true
-    include-in-header:
-      text: |
-        <style>
-          table td { vertical-align: middle; }
-          h1.title { font-size: 2.75rem; text-align: center; }
-          .quarto-title-meta {
-            display: flex !important;
-            justify-content: center;
-            gap: 5rem;
-            text-align: center;
-          }
-          .assumption {
-            margin: 0.75em 0 0.75em 1.5em;
-            padding: 0.25em 0.75em;
-            border-left: 3px solid #ccc;
-          }
-        </style>
 ---
 
 This note develops inference procedures for ratio metrics in randomized experiments.
@@ -107,9 +85,7 @@ We replace Assumption 3 with the following multivariate regularity condition:
 ::: {.assumption #asm-nondegenerate}
 **Assumption 3' (Ratio regularity)**
 
-[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $n_0$ for which
-$\mathbf S_{dd,n}$ is positive definite for all $n\geq n_0$, $d\in\{0,1\}$,
-and $\boldsymbol\theta\in\Theta$.
+[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $n_0$ for which $\mathbf S_{dd,n}$ is positive definite for all $n\geq n_0$, $d\in\{0,1\}$, and $\boldsymbol\theta\in\Theta$.
 
 [**(ii)**]{.part-label} **(Maximum variance share)** For each $d\in\{0,1\}$,
 
@@ -141,7 +117,8 @@ $$ {#eq-ratio-def}
 We construct an asymptotically valid confidence interval for $r_n$ in three steps.
 First, we use Fieller's method to obtain a difference interval that remains valid even when either denominator is statistically close to zero, although it can be conservative when both are well separated from zero.
 Second, we derive a delta-method interval that is tighter when the denominators are sufficiently strong but can undercover when either denominator is weak.
-Finally, we use a denominator-strength screen to select between the two intervals. The resulting hybrid interval is uniformly asymptotically valid: it defaults to the Fieller difference interval unless the screen certifies both denominators as strong, in which case it uses the tighter delta-method interval.
+Finally, we use a denominator-strength screen to select between the two intervals.
+The resulting hybrid interval is uniformly asymptotically valid: it defaults to the Fieller difference interval unless the screen certifies both denominators as strong, in which case it uses the tighter delta-method interval.
 
 ## Fieller difference confidence interval
 
@@ -239,7 +216,7 @@ $$
 \end{aligned}
 $$ {#eq-single-treatment-group-residual-variance}
 
-For fixed $r\in\mathbb R$, the [treatment group means note](../treatment-group-means/#eq-wald-ci) shows that the confidence set
+For fixed $r\in\mathbb R$, the [treatment group means note](../treatment-group-means/#eq-treatment-group-wald-ci) shows that the confidence set
 $$
 C_{1-\alpha/2,d,n}(r)
 =\left\{
@@ -425,7 +402,9 @@ We set $p=1/2$ and reuse the same 20,000 treatment assignments at each value of 
 When the treatment denominator is not separated by many standard errors from zero, the interval frequently equals $\mathbb R$, and its non-coverage rate is well below nominal.
 As the number of standard errors separating the denominator from zero grows, non-coverage stabilizes around $2.5\%$.
 
-The simulation suggests that the Fieller difference interval is conservative. This is because the Bonferroni argument controls the larger event that at least one treatment-group-specific Fieller set misses its target rather than the smaller event that the Fieller difference interval misses $r_n$. Sharpening the bound requires controlling the joint behavior of the two random sets, which leads to a difficult Gaussian interval-overlap problem.
+The simulation suggests that the Fieller difference interval is conservative.
+This is because the Bonferroni argument controls the larger event that at least one treatment-group-specific Fieller set misses its target rather than the smaller event that the Fieller difference interval misses $r_n$.
+Sharpening the bound requires controlling the joint behavior of the two random sets, which leads to a difficult Gaussian interval-overlap problem.
 
 ## Delta method interval
 
@@ -601,9 +580,7 @@ $$
 \stackrel{\mathcal P}{\to}1.
 $$ {#eq-ratio-reciprocal-scale-consistency}
 Since $\omega_n^2\leq1$, $Z_n=O_{\mathcal P}(1)$.
-Thus (-@eq-ratio-oracle-normal-approximation),
-(-@eq-ratio-reciprocal-scale-consistency), and
-@prp-asymptotic-equivalence-slutsky imply
+Thus (-@eq-ratio-oracle-normal-approximation), (-@eq-ratio-reciprocal-scale-consistency), and @prp-asymptotic-equivalence-slutsky imply
 $$
 \frac{1}{\sqrt n\,\widehat{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
@@ -615,8 +592,7 @@ $$
 \qquad
 \frac{U_n}{\widehat{\sigma}_{r,n}}=o_{\mathcal P}(1).
 $$ {#eq-ratio-feasible-remainder-bounds}
-Using (-@eq-ratio-score-decomposition) and
-(-@eq-ratio-feasible-remainder-bounds), we can therefore write
+Using (-@eq-ratio-score-decomposition) and (-@eq-ratio-feasible-remainder-bounds), we can therefore write
 $$
 \begin{aligned}
 \frac{\sqrt n(\widehat r_n-r_n)}{\widehat{\sigma}_{r,n}}
@@ -626,8 +602,7 @@ $$
 +o_{\mathcal P}(1).
 \end{aligned}
 $$ {#eq-ratio-feasible-normal-approximation}
-Together with (-@eq-ratio-feasible-leading-normal-approximation),
-@prp-asymptotic-equivalence-perturbation implies
+Together with (-@eq-ratio-feasible-leading-normal-approximation), @prp-asymptotic-equivalence-perturbation implies
 $$
 \frac{\sqrt n(\widehat r_n-r_n)}{\widehat{\sigma}_{r,n}}
 \stackrel{\mathcal P}{\approx}Z_n.
@@ -696,9 +671,7 @@ q_k
 \mathbb P_{\boldsymbol\theta_k}
 \left(T_{n_k}^z\geq\tau_{n_k}\right).
 $$
-Because $[0,1]$ is compact, there exist a strictly increasing sequence
-$\{k_j\}_{j\geq1}$ and $q\in[0,1]$ such that
-$q_{k_j}\to q$.
+Because $[0,1]$ is compact, there exist a strictly increasing sequence $\{k_j\}_{j\geq1}$ and $q\in[0,1]$ such that $q_{k_j}\to q$.
 We will show that
 $$
 \limsup_{j\to\infty}
@@ -1011,9 +984,7 @@ $$
 \end{aligned}
 $$
 where convergence follows from Assumption 3'(ii).
-The argument in @prp-uniform-moment-bounds(i), applied along the sequence
-$\boldsymbol\theta_n$ with the Frobenius norm, and the bound
-$\|\mathbf A\|\leq\|\mathbf A\|_{\mathrm F}$ therefore give
+The argument in @prp-uniform-moment-bounds(i), applied along the sequence $\boldsymbol\theta_n$ with the Frobenius norm, and the bound $\|\mathbf A\|\leq\|\mathbf A\|_{\mathrm F}$ therefore give
 $$
 \left\|
 \frac{1}{n}\sum_{i=1}^n
@@ -1033,8 +1004,7 @@ $$
 \frac{2p_dp_{1-d}}{n}
 \leq\frac{1}{2n} \to 0.
 $$ {#eq-whitened-mean-second-moment}
-The argument in @prp-uniform-moment-bounds(i), again applied along
-$\boldsymbol\theta_n$, gives
+The argument in @prp-uniform-moment-bounds(i), again applied along $\boldsymbol\theta_n$, gives
 
 $$
 \frac{1}{n}\sum_{i=1}^n
@@ -1430,7 +1400,7 @@ $$
 \boldsymbol u_{i,d,n}.
 $$
 Thus Assumption 3'(ii) implies the scalar no-dominant-unit condition for both oracle score sequences.
-The [normal approximation for treatment group means](../treatment-group-means/#eq-infeasible-scalar-normal-approximation), applied to their difference, therefore gives
+The [normal approximation for treatment group means](../treatment-group-means/#eq-treatment-group-infeasible-scalar-normal-approximation), applied to their difference, therefore gives
 $$
 \frac{1}{\sqrt n\,\widetilde{\sigma}_{r,n}}
 \sum_{i=1}^n X_{i,n}
@@ -1449,8 +1419,7 @@ U_{d,n}
 \sum_{i=1}^n
 (D_{i,d}-p_d)\ell_{i,d,n}.
 $$
-Since $\sum_{i=1}^n\ell_{i,d,n}=0$ and
-$D_{i,d}Y_i=D_{i,d}y_{i,d}$ and $D_{i,d}Z_i=D_{i,d}z_{i,d}$, the term for treatment group $d$ in (-@eq-ratio-linearization) is exactly
+Since $\sum_{i=1}^n\ell_{i,d,n}=0$ and $D_{i,d}Y_i=D_{i,d}y_{i,d}$ and $D_{i,d}Z_i=D_{i,d}z_{i,d}$, the term for treatment group $d$ in (-@eq-ratio-linearization) is exactly
 $$
 \frac{1}{\sqrt n\,\overline D_{d,n}}
 \sum_{i=1}^nD_{i,d}\ell_{i,d,n}

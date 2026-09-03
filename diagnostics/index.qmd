@@ -1,30 +1,8 @@
 ---
 title: "Regularity Diagnostics"
-author: "David Malison"
-date: last-modified
-language:
-  title-block-published: "Last modified"
 format:
   html:
-    number-sections: false
     link-external-newwindow: true
-    include-in-header:
-      text: |
-        <style>
-          table td { vertical-align: middle; }
-          h1.title { font-size: 2.75rem; text-align: center; }
-          .quarto-title-meta {
-            display: flex !important;
-            justify-content: center;
-            gap: 5rem;
-            text-align: center;
-          }
-          .assumption {
-            margin: 0.75em 0 0.75em 1.5em;
-            padding: 0.25em 0.75em;
-            border-left: 3px solid #ccc;
-          }
-        </style>
 ---
 
 In our note on [treatment group means](../treatment-group-means/), we constructed confidence intervals that are uniformly valid under a regularity condition that rules out dominant units.
@@ -67,7 +45,8 @@ For $d\in\{0,1\}$, let
 $$
 N_{d,n}=n\overline{D}_{d,n}
 $$
-denote the number of units assigned to treatment $d$. Define
+denote the number of units assigned to treatment $d$.
+Define
 $$
 \widehat\kappa_{d,n}
 =
@@ -219,7 +198,9 @@ We generate the first population by taking $1{,}000$ draws from a log-normal dis
 
 ![Potential outcomes in the log-normal case.](log_normal_potential_outcomes.png){#fig-log-normal-population}
 
-@fig-log-normal-sampling-distribution shows the density (upper panel) and CDF (lower panel) of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$. Both closely match their standard normal counterparts, even though the potential outcomes are right-skewed. For this population, $\kappa_n=0.030$, which is below the calibrated tolerance in (-@eq-calibrated-kappa-tolerance).
+@fig-log-normal-sampling-distribution shows the density (upper panel) and CDF (lower panel) of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$.
+Both closely match their standard normal counterparts, even though the potential outcomes are right-skewed.
+For this population, $\kappa_n=0.030$, which is below the calibrated tolerance in (-@eq-calibrated-kappa-tolerance).
 
 ![Density and CDF of $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ in the log-normal case.](log_normal_sampling_distribution.png){#fig-log-normal-sampling-distribution}
 

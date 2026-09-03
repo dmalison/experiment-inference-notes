@@ -1,0 +1,922 @@
+---
+title: "Regression Adjustment for Relative and Ratio Effects"
+format:
+  html:
+    link-external-newwindow: true
+---
+
+This note combines regression adjustment with the uniformly valid procedures developed for relative treatment effects and ratio metrics.
+We use the regression-adjusted treatment-group means and confidence intervals from the [variance reduction via regression note](../regression/) in place of their unadjusted counterparts.
+Unless stated otherwise, we retain that note's model, notation, and assumptions.
+
+# Relative treatment effects {#sec-regression-relative-treatment-effects}
+
+The [relative treatment effects note](../lift/) constructs uniformly asymptotically valid confidence intervals for the ATE scaled by the absolute value of the control mean.
+In this section, we adapt the construction for regression adjustment by replacing the treatment-group means with their regression-adjusted counterparts.
+
+For this section, restrict $\Theta$ so that $\overline y_{0,n}\neq0$ for every $n$.
+Define
+
+$$
+\psi_n^{\mathrm{ATE}}
+=
+\overline y_{1,n}-\overline y_{0,n},
+\qquad
+\rho_n
+=
+\frac{\psi_n^{\mathrm{ATE}}}{|\overline y_{0,n}|}.
+$$ {#eq-regression-relative-treatment-effect}
+
+The regression-adjusted ATE and relative-treatment-effect estimators are
+
+$$
+\widehat\psi_n^{\mathrm{ATE,reg}}
+=
+\widehat y_{1,n}^{\mathrm{reg}}
+-\widehat y_{0,n}^{\mathrm{reg}},
+\qquad
+\widehat\rho_n^{\mathrm{reg}}
+=
+\frac{\widehat\psi_n^{\mathrm{ATE,reg}}}
+{|\widehat y_{0,n}^{\mathrm{reg}}|},
+$$ {#eq-regression-relative-treatment-effect-estimator}
+
+where $\widehat\rho_n^{\mathrm{reg}}$ is defined whenever $\widehat y_{0,n}^{\mathrm{reg}}\neq0$.
+
+## Regression-adjusted Fieller sets
+
+Let $m^+=1$ and $m^-=-1$, and define
+
+$$
+\rho_n^s
+=
+m^s\frac{\psi_n^{\mathrm{ATE}}}{\overline y_{0,n}},
+\qquad
+s\in\{+,-\}.
+$$ {#eq-regression-sign-specific-relative-treatment-effects}
+
+At the true value of $\rho_n^s$,
+
+$$
+\left(\rho_n^s+m^s\right)\overline y_{0,n}
+-m^s\overline y_{1,n}
+=
+\rho_n^s\overline y_{0,n}
+-m^s\psi_n^{\mathrm{ATE}}
+=0.
+$$ {#eq-regression-sign-specific-zero-contrast}
+
+For a candidate value $r$, replacing the treatment-group means in this contrast with the regression-adjusted treatment-group means gives
+
+$$
+r\widehat y_{0,n}^{\mathrm{reg}}
+-m^s\widehat\psi_n^{\mathrm{ATE,reg}}.
+$$
+
+The corresponding coefficient vector is $(r+m^s,-m^s)'$.
+Since $|r+m^s|=|1+m^sr|$, its feasible conservative standard deviation is
+
+$$
+\left|1+m^sr\right|\widehat\sigma_{0,n}^{\mathrm{reg}}
++\widehat\sigma_{1,n}^{\mathrm{reg}}.
+$$
+
+We therefore define the sign-specific regression-adjusted Fieller set by
+
+$$
+\begin{aligned}
+C_{1-\alpha,n}^{\mathrm{reg},s}
+=
+\Bigg\{r\in\mathbb R:{}&
+\left|
+r\widehat y_{0,n}^{\mathrm{reg}}
+-m^s\widehat\psi_n^{\mathrm{ATE,reg}}
+\right|
+\\
+&\leq
+\frac{z_{1-\alpha/2}}{\sqrt n}
+\left(
+\left|1+m^sr\right|\widehat\sigma_{0,n}^{\mathrm{reg}}
++\widehat\sigma_{1,n}^{\mathrm{reg}}
+\right)
+\Bigg\}.
+\end{aligned}
+$$ {#eq-regression-sign-specific-fieller-set}
+
+Equivalently, squaring both sides and collecting terms gives the piecewise-quadratic form
+
+$$
+\begin{aligned}
+C_{1-\alpha,n}^{\mathrm{reg},s}
+=
+\Bigg\{r\in\mathbb R:{}&
+\left[
+\left(\widehat y_{0,n}^{\mathrm{reg}}\right)^2
+-\frac{z_{1-\alpha/2}^2}{n}
+\left(\widehat\sigma_{0,n}^{\mathrm{reg}}\right)^2
+\right]r^2
+\\
+&\quad-
+2m^s\left[
+\widehat y_{0,n}^{\mathrm{reg}}
+\widehat\psi_n^{\mathrm{ATE,reg}}
++\frac{z_{1-\alpha/2}^2}{n}
+\left(\widehat\sigma_{0,n}^{\mathrm{reg}}\right)^2
+\right]r
+\\
+&\quad-
+\frac{2z_{1-\alpha/2}^2}{n}
+\widehat\sigma_{0,n}^{\mathrm{reg}}
+\widehat\sigma_{1,n}^{\mathrm{reg}}
+\left(\left|1+m^sr\right|-1\right)
+\\
+&\quad+
+\left(\widehat\psi_n^{\mathrm{ATE,reg}}\right)^2
+-\frac{z_{1-\alpha/2}^2}{n}
+\left(
+\widehat\sigma_{0,n}^{\mathrm{reg}}
++\widehat\sigma_{1,n}^{\mathrm{reg}}
+\right)^2
+\leq0
+\Bigg\}.
+\end{aligned}
+$$ {#eq-regression-sign-specific-fieller-set-piecewise-quadratic}
+
+At $r=\rho_n^s$, this set inverts the regression confidence interval for the contrast in (-@eq-regression-sign-specific-zero-contrast).
+Therefore the [regression confidence-interval coverage result](../regression/#eq-regression-confidence-interval-coverage) implies
+
+$$
+\liminf_{n\to\infty}
+\inf_{\boldsymbol\theta\in\Theta}
+\mathbb P_{\boldsymbol\theta}
+\left(
+\rho_n^s\in C_{1-\alpha,n}^{\mathrm{reg},s}
+\right)
+\geq
+1-\alpha,
+\qquad s\in\{+,-\}.
+$$ {#eq-regression-sign-specific-fieller-coverage}
+
+## Connected confidence intervals
+
+$C_{1-\alpha,n}^{\mathrm{reg},s}$ is a bounded interval if and only if the adjusted control mean is statistically distinguishable from zero at level $\alpha$.
+To state this condition and the corresponding ATE sign test, define
+
+$$
+T_{0,n}^{\mathrm{reg}}
+=
+\frac{\sqrt n\,\widehat y_{0,n}^{\mathrm{reg}}}
+{\widehat\sigma_{0,n}^{\mathrm{reg}}},
+\qquad
+T_{\mathrm{ATE},n}^{\mathrm{reg}}
+=
+\frac{\sqrt n\,\widehat\psi_n^{\mathrm{ATE,reg}}}
+{\widehat\sigma_{0,n}^{\mathrm{reg}}
++\widehat\sigma_{1,n}^{\mathrm{reg}}}.
+$$ {#eq-regression-relative-treatment-effect-statistics}
+
+Then
+
+$$
+C_{1-\alpha,n}^{\mathrm{reg},s}
+\text{ is bounded}
+\iff
+\left|T_{0,n}^{\mathrm{reg}}\right|>z_{1-\alpha/2}.
+$$ {#eq-regression-fieller-boundedness}
+
+First suppose the sign of $\overline y_{0,n}$ is known.
+Then $m^s=\operatorname{sgn}(\overline y_{0,n})$ and $\rho_n=\rho_n^s$.
+Choose $\alpha^{\mathrm{Fieller}},\alpha^{\mathrm{ATE}}>0$ such that
+
+$$
+\alpha^{\mathrm{Fieller}}+\alpha^{\mathrm{ATE}}=\alpha,
+\qquad
+\alpha^{\mathrm{ATE}}\leq\alpha^{\mathrm{Fieller}}.
+$$
+
+Define
+
+$$
+I_{1-\alpha,n}^{\mathrm{reg},s}
+=
+\begin{cases}
+C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{reg},s},
+& |T_{0,n}^{\mathrm{reg}}|>z_{1-\alpha^{\mathrm{Fieller}}/2}, \\[3ex]
+C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{reg},s}\cap[0,\infty),
+& |T_{0,n}^{\mathrm{reg}}|\leq z_{1-\alpha^{\mathrm{Fieller}}/2},
+\quad T_{\mathrm{ATE},n}^{\mathrm{reg}}>z_{1-\alpha^{\mathrm{ATE}}/2}, \\[3ex]
+C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{reg},s}\cap(-\infty,0],
+& |T_{0,n}^{\mathrm{reg}}|\leq z_{1-\alpha^{\mathrm{Fieller}}/2},
+\quad T_{\mathrm{ATE},n}^{\mathrm{reg}}<-z_{1-\alpha^{\mathrm{ATE}}/2}, \\[3ex]
+\mathbb R,
+& |T_{0,n}^{\mathrm{reg}}|\leq z_{1-\alpha^{\mathrm{Fieller}}/2},
+\quad |T_{\mathrm{ATE},n}^{\mathrm{reg}}|\leq z_{1-\alpha^{\mathrm{ATE}}/2}.
+\end{cases}
+$$ {#eq-regression-known-sign-relative-treatment-effect-interval}
+
+This is the regression analogue of the [known-sign interval](../lift/#known-baseline-sign).
+If the sign-specific Fieller set covers $\rho_n$, truncation can exclude $\rho_n$ only when the ATE sign test selects the wrong sign.
+Applying the [regression confidence-interval coverage result](../regression/#eq-regression-confidence-interval-coverage) to the coefficient vectors $(\rho_n^s+m^s,-m^s)'$ and $(-1,1)'$ therefore gives
+
+$$
+\liminf_{n\to\infty}
+\inf_{\boldsymbol\theta\in\Theta}
+\mathbb P_{\boldsymbol\theta}
+\left(
+\rho_n\in I_{1-\alpha,n}^{\mathrm{reg},s}
+\right)
+\geq
+1-\alpha.
+$$ {#eq-regression-known-sign-relative-treatment-effect-coverage}
+
+Now suppose the sign of $\overline y_{0,n}$ is unknown.
+Choose $\alpha^{\mathrm{Fieller}},\alpha_0>0$ such that
+
+$$
+\alpha^{\mathrm{Fieller}}+\alpha_0=\alpha,
+\qquad
+\alpha_0\leq\alpha^{\mathrm{Fieller}},
+$$
+
+and define
+
+$$
+I_{1-\alpha,n}^{\mathrm{reg}}
+=
+\begin{cases}
+C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{reg},+},
+& T_{0,n}^{\mathrm{reg}}>z_{1-\alpha_0/2}, \\[1ex]
+C_{1-\alpha^{\mathrm{Fieller}},n}^{\mathrm{reg},-},
+& T_{0,n}^{\mathrm{reg}}<-z_{1-\alpha_0/2}, \\[1ex]
+\mathbb R,
+& |T_{0,n}^{\mathrm{reg}}|\leq z_{1-\alpha_0/2}.
+\end{cases}
+$$ {#eq-regression-unknown-sign-relative-treatment-effect-interval}
+
+The condition $\alpha_0\leq\alpha^{\mathrm{Fieller}}$ and (-@eq-regression-fieller-boundedness) ensure that either selected sign-specific set is bounded.
+An incorrect sign selection is contained in the failure event for the regression confidence interval for $\overline y_{0,n}$, which uses coefficient vector $(1,0)'$.
+On the event that the correct sign is selected, noncoverage requires the corresponding sign-specific Fieller set to miss.
+Consequently, the [regression confidence-interval coverage result](../regression/#eq-regression-confidence-interval-coverage) and (-@eq-regression-sign-specific-fieller-coverage) give
+
+$$
+\liminf_{n\to\infty}
+\inf_{\boldsymbol\theta\in\Theta}
+\mathbb P_{\boldsymbol\theta}
+\left(
+\rho_n\in I_{1-\alpha,n}^{\mathrm{reg}}
+\right)
+\geq
+1-\alpha.
+$$ {#eq-regression-unknown-sign-relative-treatment-effect-coverage}
+
+Thus the regression-adjusted construction preserves the uniform coverage of the original Fieller procedure while replacing the unadjusted arm variances with weakly smaller projection-residual variances.
+
+# Ratio metrics {#sec-regression-ratio-metrics}
+
+The [ratio metrics note](../ratio/) studies differences between treatment-group ratios using Fieller, delta-method, and hybrid confidence intervals.
+To combine those methods with regression adjustment, we first extend the regression setup to a pair of outcomes.
+
+## Bivariate regression setup
+
+Suppose that each unit has observed numerator and denominator outcomes $(Y_i,Z_i)$, with potential outcomes $(y_{i,d},z_{i,d})$ under treatment group $d\in\{0,1\}$.
+Both outcomes satisfy the observation equation in [Assumption 2'](../ratio/#asm-sutva).
+Apply [the regression projection](../regression/#eq-regression-projection-residuals) separately to the numerator and denominator potential outcomes, and denote the resulting coefficients and residuals by
+
+$$
+\begin{aligned}
+u_{i,d,n}^{y,\mathrm{reg}}
+&=
+y_{i,d}-\overline y_{d,n}
+-\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
+\boldsymbol\beta_{d,n}^y,
+\\[1ex]
+u_{i,d,n}^{z,\mathrm{reg}}
+&=
+z_{i,d}-\overline z_{d,n}
+-\left(\boldsymbol w_i-\overline{\boldsymbol w}_n\right)'
+\boldsymbol\beta_{d,n}^z.
+\end{aligned}
+$$ {#eq-regression-ratio-projection-residuals}
+
+Collect the two residuals and define their within-treatment-group covariance matrix by
+
+$$
+\boldsymbol u_{i,d,n}^{\mathrm{reg}}
+=
+\begin{pmatrix}
+u_{i,d,n}^{y,\mathrm{reg}} \\
+u_{i,d,n}^{z,\mathrm{reg}}
+\end{pmatrix},
+\qquad
+\mathbf V_{dd,n}^{\mathrm{reg}}
+=
+\frac{1}{n}\sum_{i=1}^n
+\boldsymbol u_{i,d,n}^{\mathrm{reg}}
+\left(\boldsymbol u_{i,d,n}^{\mathrm{reg}}\right)'.
+$$ {#eq-regression-ratio-residual-covariance}
+
+Throughout this section, redefine the parameter configuration as
+
+$$
+\boldsymbol\theta
+=
+\left(
+p,
+\{y_{i,0},z_{i,0}\}_{i=1}^\infty,
+\{y_{i,1},z_{i,1}\}_{i=1}^\infty,
+\{\boldsymbol w_i\}_{i=1}^\infty
+\right),
+$$ {#eq-regression-ratio-parameter}
+
+and let $\Theta$ denote the corresponding parameter space.
+
+For this section, replace parts (i) and (ii) of [Assumption 3''](../regression/#asm-regression-covariates) with their multivariate counterparts: $\mathbf V_{dd,n}^{\mathrm{reg}}$ is positive definite for every $d\in\{0,1\}$, $\boldsymbol\theta\in\Theta$, and all sufficiently large $n$, and
+
+$$
+\lim_{n\to\infty}
+\sup_{\boldsymbol\theta\in\Theta}
+\max_{1\leq i\leq n}
+\frac{
+\left(\boldsymbol u_{i,d,n}^{\mathrm{reg}}\right)'
+\left(\mathbf V_{dd,n}^{\mathrm{reg}}\right)^{-1}
+\boldsymbol u_{i,d,n}^{\mathrm{reg}}
+}{n}
+=0,
+\qquad d\in\{0,1\}.
+$$ {#eq-regression-ratio-maximum-variance-share}
+
+Part (iii), the maximum-leverage condition, remains unchanged.
+
+Apply the fully interacted regression separately to $Y_i$ and $Z_i$.
+Denote the resulting treatment-group intercepts by $\widehat y_{d,n}^{\mathrm{reg}}$ and $\widehat z_{d,n}^{\mathrm{reg}}$, and collect the corresponding fitted residuals as
+
+$$
+\widehat{\boldsymbol U}_{i,n}^{\mathrm{reg}}
+=
+\begin{pmatrix}
+\widehat U_{i,n}^{y,\mathrm{reg}} \\
+\widehat U_{i,n}^{z,\mathrm{reg}}
+\end{pmatrix}.
+$$
+
+Define the within-treatment-group fitted-residual covariance matrix by
+
+$$
+\widehat{\mathbf V}_{dd,n}^{\mathrm{reg}}
+=
+\frac{1}{N_{d,n}}
+\sum_{i=1}^n
+D_{i,d}
+\widehat{\boldsymbol U}_{i,n}^{\mathrm{reg}}
+\left(\widehat{\boldsymbol U}_{i,n}^{\mathrm{reg}}\right)'.
+$$ {#eq-regression-ratio-fitted-residual-covariance}
+
+For a candidate ratio $r\in\mathbb R$, define the population projected mean, its regression estimator, and its fitted-residual standard deviation by
+
+$$
+\begin{aligned}
+\overline v_{d,n}(r)
+&=
+\overline y_{d,n}-r\overline z_{d,n},
+\\[1ex]
+\widehat v_{d,n}^{\mathrm{reg}}(r)
+&=
+\widehat y_{d,n}^{\mathrm{reg}}
+-r\widehat z_{d,n}^{\mathrm{reg}},
+\\[1ex]
+\left\{\widehat\sigma_{v,d,n}^{\mathrm{reg}}(r)\right\}^2
+&=
+\frac{\overline D_{1-d,n}}{\overline D_{d,n}}
+\begin{pmatrix}1&-r\end{pmatrix}
+\widehat{\mathbf V}_{dd,n}^{\mathrm{reg}}
+\begin{pmatrix}1\\-r\end{pmatrix}.
+\end{aligned}
+$$ {#eq-regression-ratio-projected-quantities}
+
+Linearity of least squares implies that $\widehat v_{d,n}^{\mathrm{reg}}(r)$ and $\widehat U_{i,n}^{y,\mathrm{reg}}-r\widehat U_{i,n}^{z,\mathrm{reg}}$ are exactly the intercept and fitted residual obtained by regressing $Y_i-rZ_i$ on the fully interacted design.
+Moreover, the Rayleigh-quotient inequality gives
+
+$$
+\frac{
+\left(u_{i,d,n}^{y,\mathrm{reg}}-r u_{i,d,n}^{z,\mathrm{reg}}\right)^2
+}{
+n
+\begin{pmatrix}1&-r\end{pmatrix}
+\mathbf V_{dd,n}^{\mathrm{reg}}
+\begin{pmatrix}1\\-r\end{pmatrix}
+}
+\leq
+\frac{
+\left(\boldsymbol u_{i,d,n}^{\mathrm{reg}}\right)'
+\left(\mathbf V_{dd,n}^{\mathrm{reg}}\right)^{-1}
+\boldsymbol u_{i,d,n}^{\mathrm{reg}}
+}{n}.
+$$ {#eq-regression-ratio-rayleigh-bound}
+
+Thus (-@eq-regression-ratio-maximum-variance-share) supplies the scalar maximum-variance-share condition uniformly over $r$.
+Applying the [regression coverage argument](../regression/#eq-regression-confidence-interval-coverage) along arbitrary sequences of parameters and candidate ratios and then arguing by contradiction gives
+
+$$
+\begin{aligned}
+\liminf_{n\to\infty}
+\inf_{\boldsymbol\theta\in\Theta}
+\inf_{r\in\mathbb R}
+\mathbb P_{\boldsymbol\theta}
+\Bigg(
+\left|
+\widehat v_{d,n}^{\mathrm{reg}}(r)
+-\overline v_{d,n}(r)
+\right|
+&\leq
+\frac{z_{1-\alpha/2}}{\sqrt n}
+\widehat\sigma_{v,d,n}^{\mathrm{reg}}(r)
+\Bigg)
+\geq
+1-\alpha,
+\end{aligned}
+$$ {#eq-regression-ratio-uniform-projected-coverage}
+
+for each $d\in\{0,1\}$.
+This is the regression analogue of the [uniform projected-outcome coverage result](../ratio/#eq-uniform-projected-coverage){.quarto-xref}.
+
+On an outcome for which a required treatment-group regression or standard deviation is undefined, interpret every confidence set in this section as $\mathbb R$.
+This convention can only increase coverage and avoids assigning values to intermediate ratios on exceptional outcomes.
+
+## Fieller difference confidence interval
+
+Assume $\overline z_{d,n}\neq0$ for every $n$ and $d\in\{0,1\}$, and define
+
+$$
+r_{d,n}
+=
+\frac{\overline y_{d,n}}{\overline z_{d,n}},
+\qquad
+r_n
+=
+r_{1,n}-r_{0,n}.
+$$ {#eq-regression-ratio-treatment-effect}
+
+Because $\overline v_{d,n}(r_{d,n})=0$, substituting $\alpha/2$ for $\alpha$ in (-@eq-regression-ratio-uniform-projected-coverage) and inverting at zero gives the treatment-group-specific Fieller set
+
+$$
+C_{1-\alpha/2,d,n}^{\mathrm{F,reg}}
+=
+\left\{
+r\in\mathbb R:
+\left|
+\widehat y_{d,n}^{\mathrm{reg}}
+-r\widehat z_{d,n}^{\mathrm{reg}}
+\right|
+\leq
+\frac{z_{1-\alpha/4}}{\sqrt n}
+\widehat\sigma_{v,d,n}^{\mathrm{reg}}(r)
+\right\}.
+$$ {#eq-regression-ratio-treatment-group-fieller-set}
+
+Define the fitted-residual denominator standard deviations and denominator strength statistics by
+
+$$
+\begin{aligned}
+\left(\widehat\sigma_{z,d,n}^{\mathrm{reg}}\right)^2
+&=
+\frac{\overline D_{1-d,n}}{\overline D_{d,n}}
+\left[\widehat{\mathbf V}_{dd,n}^{\mathrm{reg}}\right]_{22},
+\\[1ex]
+T_{d,n}^{z,\mathrm{reg}}
+&=
+\frac{
+\sqrt n\,|\widehat z_{d,n}^{\mathrm{reg}}|
+}{
+\widehat\sigma_{z,d,n}^{\mathrm{reg}}
+},
+\qquad
+T_n^{z,\mathrm{reg}}
+=
+\min\left\{
+T_{0,n}^{z,\mathrm{reg}},
+T_{1,n}^{z,\mathrm{reg}}
+\right\}.
+\end{aligned}
+$$ {#eq-regression-ratio-denominator-strength}
+
+As in the unadjusted construction, the set in (-@eq-regression-ratio-treatment-group-fieller-set) is a bounded interval if and only if $T_{d,n}^{z,\mathrm{reg}}>z_{1-\alpha/4}$.
+Define the regression-adjusted Fieller difference interval by
+
+$$
+C_{1-\alpha,n}^{\mathrm{F,reg}}
+=
+\begin{cases}
+\mathbb R,
+& T_n^{z,\mathrm{reg}}\leq z_{1-\alpha/4},
+\\[3ex]
+\left[
+\inf C_{1-\alpha/2,1,n}^{\mathrm{F,reg}}
+-\sup C_{1-\alpha/2,0,n}^{\mathrm{F,reg}},
+\quad
+\sup C_{1-\alpha/2,1,n}^{\mathrm{F,reg}}
+-\inf C_{1-\alpha/2,0,n}^{\mathrm{F,reg}}
+\right],
+& T_n^{z,\mathrm{reg}}>z_{1-\alpha/4}.
+\end{cases}
+$$ {#eq-regression-ratio-fieller-difference-interval}
+
+If an arm-specific regression or displayed standard deviation is undefined, set $C_{1-\alpha,n}^{\mathrm{F,reg}}=\mathbb R$.
+Otherwise, simultaneous coverage of the two treatment-group-specific Fieller sets implies coverage of $r_n$.
+Equation (-@eq-regression-ratio-uniform-projected-coverage) and Bonferroni's inequality therefore give
+
+$$
+\liminf_{n\to\infty}
+\inf_{\boldsymbol\theta\in\Theta}
+\mathbb P_{\boldsymbol\theta}
+\left(
+r_n\in C_{1-\alpha,n}^{\mathrm{F,reg}}
+\right)
+\geq
+1-\alpha.
+$$ {#eq-regression-ratio-fieller-difference-coverage}
+
+## Delta-method interval
+
+To construct the regression-adjusted delta-method interval, first define the population projected-outcome standard deviation by
+
+$$
+\left\{\sigma_{v,d,n}^{\mathrm{reg}}(r)\right\}^2
+=
+\frac{p_{1-d}}{p_d}
+\begin{pmatrix}1&-r\end{pmatrix}
+\mathbf V_{dd,n}^{\mathrm{reg}}
+\begin{pmatrix}1\\-r\end{pmatrix}.
+$$ {#eq-regression-ratio-population-projected-scale}
+
+To obtain the corresponding matrix consistency result, premultiply $\boldsymbol u_{i,d,n}^{\mathrm{reg}}$ by $\left(\mathbf V_{dd,n}^{\mathrm{reg}}\right)^{-1/2}$.
+The two coordinates of the resulting vector have identity covariance.
+Apply the [armwise scalar variance-consistency proof](../regression/#sec-regression-oracle-feasible-arm-variance) to these two coordinates and their sum.
+Linearity of least squares gives the same transformations of the fitted residuals, polarization gives the off-diagonal entry, and fixed dimension converts entrywise convergence into operator-norm convergence.
+Hence
+
+$$
+\left\|
+\left(\mathbf V_{dd,n}^{\mathrm{reg}}\right)^{-1/2}
+\widehat{\mathbf V}_{dd,n}^{\mathrm{reg}}
+\left(\mathbf V_{dd,n}^{\mathrm{reg}}\right)^{-1/2}
+-\mathbf I_2
+\right\|
+=o_{\mathcal P}(1).
+$$ {#eq-regression-ratio-relative-residual-covariance-consistency}
+
+Together with $\overline D_{d,n}\stackrel{\mathcal P}{\to}p_d$, the Rayleigh-quotient inequality therefore gives
+
+$$
+\sup_{r\in\mathbb R}
+\left|
+\frac{
+\left\{\widehat\sigma_{v,d,n}^{\mathrm{reg}}(r)\right\}^2
+}{
+\left\{\sigma_{v,d,n}^{\mathrm{reg}}(r)\right\}^2
+}
+-1
+\right|
+=o_{\mathcal P}(1).
+$$ {#eq-regression-ratio-uniform-projected-scale-consistency}
+
+Define the regression-adjusted treatment-group ratio estimators and their difference by
+
+$$
+\widehat r_{d,n}^{\mathrm{reg}}
+=
+\frac{\widehat y_{d,n}^{\mathrm{reg}}}
+{\widehat z_{d,n}^{\mathrm{reg}}},
+\qquad
+\widehat r_n^{\mathrm{reg}}
+=
+\widehat r_{1,n}^{\mathrm{reg}}
+-\widehat r_{0,n}^{\mathrm{reg}}.
+$$ {#eq-regression-ratio-estimator}
+
+These estimators are defined whenever both adjusted denominator estimates are nonzero.
+Define the population score arrays and the population and feasible treatment-group-specific score standard deviations by
+
+$$
+\begin{aligned}
+\ell_{i,d,n}^{\mathrm{reg}}
+&=
+\frac{
+u_{i,d,n}^{y,\mathrm{reg}}-r_{d,n}u_{i,d,n}^{z,\mathrm{reg}}
+}{\overline z_{d,n}},
+\\[1ex]
+\left(\sigma_{\ell,d,n}^{\mathrm{reg}}\right)^2
+&=
+\frac{p_{1-d}}{p_d}
+\frac{1}{n}\sum_{i=1}^n
+\left(\ell_{i,d,n}^{\mathrm{reg}}\right)^2
+\\
+&=
+\frac{
+\left\{\sigma_{v,d,n}^{\mathrm{reg}}(r_{d,n})\right\}^2
+}{\overline z_{d,n}^2},
+\\[2ex]
+\widehat\sigma_{\ell,d,n}^{\mathrm{reg}}
+&=
+\frac{
+\widehat\sigma_{v,d,n}^{\mathrm{reg}}
+\left(\widehat r_{d,n}^{\mathrm{reg}}\right)
+}{
+\left|\widehat z_{d,n}^{\mathrm{reg}}\right|
+}.
+\end{aligned}
+$$ {#eq-regression-ratio-score-scales}
+
+The conservative population and feasible standard deviations for the ratio difference are
+
+$$
+\widetilde\sigma_{r,n}^{\mathrm{reg}}
+=
+\sigma_{\ell,0,n}^{\mathrm{reg}}
++\sigma_{\ell,1,n}^{\mathrm{reg}},
+\qquad
+\widehat\sigma_{r,n}^{\mathrm{reg}}
+=
+\widehat\sigma_{\ell,0,n}^{\mathrm{reg}}
++\widehat\sigma_{\ell,1,n}^{\mathrm{reg}}.
+$$ {#eq-regression-ratio-conservative-scales}
+
+Also define the between-treatment-group score covariance and the relative variance by
+
+$$
+\begin{aligned}
+s_{\ell,01,n}^{\mathrm{reg}}
+&=
+\frac{1}{n}\sum_{i=1}^n
+\ell_{i,0,n}^{\mathrm{reg}}
+\ell_{i,1,n}^{\mathrm{reg}},
+\\[1ex]
+\left(\omega_n^{\mathrm{reg}}\right)^2
+&=
+\frac{
+\left(\sigma_{\ell,0,n}^{\mathrm{reg}}\right)^2
++\left(\sigma_{\ell,1,n}^{\mathrm{reg}}\right)^2
++2s_{\ell,01,n}^{\mathrm{reg}}
+}{
+\left(\widetilde\sigma_{r,n}^{\mathrm{reg}}\right)^2
+}
+\leq1,
+\end{aligned}
+$$ {#eq-regression-ratio-relative-variance}
+
+where the inequality follows from Cauchy--Schwarz.
+
+The regression-adjusted delta-method interval is
+
+$$
+C_{1-\alpha,n}^{\mathrm{DM,reg}}
+=
+\left[
+\widehat r_n^{\mathrm{reg}}
+-z_{1-\alpha/2}
+\frac{\widehat\sigma_{r,n}^{\mathrm{reg}}}{\sqrt n},
+\widehat r_n^{\mathrm{reg}}
++z_{1-\alpha/2}
+\frac{\widehat\sigma_{r,n}^{\mathrm{reg}}}{\sqrt n}
+\right].
+$$ {#eq-regression-ratio-delta-method-interval}
+
+As in the unadjusted case, this interval requires regular denominators.
+Define the population denominator standard deviations by
+
+$$
+\left(\sigma_{z,d,n}^{\mathrm{reg}}\right)^2
+=
+\frac{p_{1-d}}{p_d}
+\left[\mathbf V_{dd,n}^{\mathrm{reg}}\right]_{22},
+\qquad d\in\{0,1\},
+$$
+
+and consider an arbitrary sequence $\boldsymbol\theta_n\in\Theta$ satisfying
+
+$$
+\min_{d\in\{0,1\}}
+\frac{
+\sqrt n\,|\overline z_{d,n}|
+}{
+\sigma_{z,d,n}^{\mathrm{reg}}
+}
+\to\infty.
+$$ {#eq-regression-ratio-regular-denominator-condition}
+
+Define
+
+$$
+L_{d,n}^{\mathrm{reg}}
+=
+\frac{
+\widehat v_{d,n}^{\mathrm{reg}}(r_{d,n})
+}{\overline z_{d,n}},
+\qquad
+E_{z,d,n}^{\mathrm{reg}}
+=
+\frac{
+\widehat z_{d,n}^{\mathrm{reg}}-\overline z_{d,n}
+}{\overline z_{d,n}}.
+$$
+
+Then the regression analogue of the [exact ratio decomposition](../ratio/#sec-ratio-exact-decomposition) is
+
+$$
+\begin{aligned}
+\widehat r_{d,n}^{\mathrm{reg}}-r_{d,n}
+&=
+\frac{L_{d,n}^{\mathrm{reg}}}
+{1+E_{z,d,n}^{\mathrm{reg}}}
+\\
+&=
+L_{d,n}^{\mathrm{reg}}
+-L_{d,n}^{\mathrm{reg}}
+\frac{E_{z,d,n}^{\mathrm{reg}}}
+{1+E_{z,d,n}^{\mathrm{reg}}}.
+\end{aligned}
+$$ {#eq-regression-ratio-exact-decomposition}
+
+For each treatment group, $L_{d,n}^{\mathrm{reg}}$ is the regression intercept for the scalar potential outcome $(y_{i,d}-r_{d,n}z_{i,d})/\overline z_{d,n}$, whose projection residual is $\ell_{i,d,n}^{\mathrm{reg}}$.
+The [coefficient-uniform regression normal approximation](../regression/#eq-regression-feasible-normal-approximation), applied to the difference between these two intercepts, therefore gives
+
+$$
+\frac{
+\sqrt n
+\left(
+L_{1,n}^{\mathrm{reg}}-L_{0,n}^{\mathrm{reg}}
+\right)
+}{\widetilde\sigma_{r,n}^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\approx}
+Z_n^{\mathrm{ratio,reg}},
+\qquad
+Z_n^{\mathrm{ratio,reg}}
+\sim
+N\left(0,\left(\omega_n^{\mathrm{reg}}\right)^2\right).
+$$ {#eq-regression-ratio-true-score-normal-approximation}
+
+The same result applied to each arm separately implies
+
+$$
+\sqrt n
+\frac{|L_{d,n}^{\mathrm{reg}}|}
+{\sigma_{\ell,d,n}^{\mathrm{reg}}}
+=O_{\mathcal P}(1),
+\qquad d\in\{0,1\}.
+$$ {#eq-regression-ratio-true-score-order}
+
+Applying the [regression normal approximation](../regression/#eq-regression-feasible-normal-approximation) to the denominator outcome and using (-@eq-regression-ratio-regular-denominator-condition) gives
+
+$$
+\max_{d\in\{0,1\}}
+\left|E_{z,d,n}^{\mathrm{reg}}\right|
+=o_{\mathcal P}(1).
+$$ {#eq-regression-ratio-relative-denominator-error}
+
+Since $\sigma_{\ell,d,n}^{\mathrm{reg}}/ \widetilde\sigma_{r,n}^{\mathrm{reg}}\leq1$, equations (-@eq-regression-ratio-exact-decomposition), (-@eq-regression-ratio-true-score-order), and (-@eq-regression-ratio-relative-denominator-error) imply
+
+$$
+\frac{\sqrt n}{\widetilde\sigma_{r,n}^{\mathrm{reg}}}
+\left|
+\left(\widehat r_n^{\mathrm{reg}}-r_n\right)
+-
+\left(L_{1,n}^{\mathrm{reg}}-L_{0,n}^{\mathrm{reg}}\right)
+\right|
+=o_{\mathcal P}(1).
+$$ {#eq-regression-ratio-remainder-negligibility}
+
+It remains to replace the population score scale with its feasible analogue.
+The reverse triangle inequality for the covariance-induced standard deviation gives
+
+$$
+\left|
+\sigma_{v,d,n}^{\mathrm{reg}}
+\left(\widehat r_{d,n}^{\mathrm{reg}}\right)
+-\sigma_{v,d,n}^{\mathrm{reg}}(r_{d,n})
+\right|
+\leq
+\left|\widehat r_{d,n}^{\mathrm{reg}}-r_{d,n}\right|
+\sigma_{z,d,n}^{\mathrm{reg}}.
+$$
+
+Equations (-@eq-regression-ratio-exact-decomposition), (-@eq-regression-ratio-true-score-order), and (-@eq-regression-ratio-relative-denominator-error), together with (-@eq-regression-ratio-regular-denominator-condition), therefore show that the right-hand side is $o_{\mathcal P}\!\left( \sigma_{v,d,n}^{\mathrm{reg}}(r_{d,n}) \right)$.
+Combining this fact with (-@eq-regression-ratio-uniform-projected-scale-consistency) and (-@eq-regression-ratio-relative-denominator-error) gives
+
+$$
+\max_{d\in\{0,1\}}
+\left|
+\frac{\widehat\sigma_{\ell,d,n}^{\mathrm{reg}}}
+{\sigma_{\ell,d,n}^{\mathrm{reg}}}
+-1
+\right|
+=o_{\mathcal P}(1),
+\qquad
+\frac{\widehat\sigma_{r,n}^{\mathrm{reg}}}
+{\widetilde\sigma_{r,n}^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\to}1.
+$$ {#eq-regression-ratio-score-scale-consistency}
+
+Combining (-@eq-regression-ratio-true-score-normal-approximation), (-@eq-regression-ratio-remainder-negligibility), and (-@eq-regression-ratio-score-scale-consistency), and applying the [asymptotic-equivalence perturbation](../uniform-asymptotics/#prp-asymptotic-equivalence-perturbation) and [Slutsky](../uniform-asymptotics/#prp-asymptotic-equivalence-slutsky) results yields
+
+$$
+\frac{
+\sqrt n\left(\widehat r_n^{\mathrm{reg}}-r_n\right)
+}{\widehat\sigma_{r,n}^{\mathrm{reg}}}
+\stackrel{\mathcal P}{\approx}
+Z_n^{\mathrm{ratio,reg}}.
+$$ {#eq-regression-ratio-feasible-normal-approximation}
+
+Because $\left(\omega_n^{\mathrm{reg}}\right)^2\leq1$, the usual coverage argument gives, along every sequence satisfying (-@eq-regression-ratio-regular-denominator-condition),
+
+$$
+\liminf_{n\to\infty}
+\mathbb P_{\boldsymbol\theta_n}
+\left(
+r_n\in C_{1-\alpha,n}^{\mathrm{DM,reg}}
+\right)
+\geq
+1-\alpha.
+$$ {#eq-regression-ratio-regular-delta-coverage}
+
+## Hybrid interval
+
+The Fieller difference interval is uniformly valid when either denominator is weak, whereas the delta-method interval is tighter when both denominators are strong.
+As in the [ratio metrics note](../ratio/#hybrid-interval), choose a deterministic sequence $\tau_n$ satisfying
+
+$$
+\tau_n\to\infty,
+\qquad
+\frac{\tau_n}{\sqrt n}\to0,
+$$
+
+and define
+
+$$
+C_{1-\alpha,n}^{\mathrm{H,reg}}
+=
+\begin{cases}
+C_{1-\alpha,n}^{\mathrm{DM,reg}},
+& T_n^{z,\mathrm{reg}}\geq\tau_n,
+\\[2ex]
+C_{1-\alpha,n}^{\mathrm{F,reg}},
+& T_n^{z,\mathrm{reg}}<\tau_n.
+\end{cases}
+$$ {#eq-regression-ratio-hybrid-interval}
+
+The hybrid proof requires the same three ingredients as the unadjusted proof.
+First, the [regression normal approximation](../regression/#eq-regression-feasible-normal-approximation) for the denominator outcome and (-@eq-regression-ratio-relative-residual-covariance-consistency) give
+
+$$
+\max_{d\in\{0,1\}}
+\frac{
+\sqrt n\,
+\left|\widehat z_{d,n}^{\mathrm{reg}}-\overline z_{d,n}\right|
+}{\sigma_{z,d,n}^{\mathrm{reg}}}
+=O_{\mathcal P}(1),
+\qquad
+\max_{d\in\{0,1\}}
+\left|
+\frac{\widehat\sigma_{z,d,n}^{\mathrm{reg}}}
+{\sigma_{z,d,n}^{\mathrm{reg}}}
+-1
+\right|
+=o_{\mathcal P}(1).
+$$ {#eq-regression-ratio-denominator-orders}
+
+The triangle inequality and (-@eq-regression-ratio-denominator-orders) imply that the screen can select the delta-method interval with nonvanishing probability only along a sequence satisfying (-@eq-regression-ratio-regular-denominator-condition), exactly as in the [unadjusted screening argument](../ratio/#sec-screening-implies-regularity).
+Second, the reverse triangle inequality for the covariance norm gives the same deterministic nesting threshold
+
+$$
+k_\alpha
+=
+\frac{
+z_{1-\alpha/2}z_{1-\alpha/4}
+}{
+z_{1-\alpha/4}-z_{1-\alpha/2}
+},
+$$
+
+and hence
+
+$$
+T_n^{z,\mathrm{reg}}\geq k_\alpha
+\quad\Longrightarrow\quad
+C_{1-\alpha,n}^{\mathrm{DM,reg}}
+\subseteq
+C_{1-\alpha,n}^{\mathrm{F,reg}}.
+$$ {#eq-regression-ratio-delta-fieller-nesting}
+
+Third, (-@eq-regression-ratio-regular-delta-coverage) controls the delta-method interval whenever the screen selects it with nonvanishing probability.
+The subsequence argument used to prove the [unadjusted hybrid coverage result](../ratio/#eq-hybrid-coverage){.quarto-xref} therefore gives
+
+$$
+\liminf_{n\to\infty}
+\inf_{\boldsymbol\theta\in\Theta}
+\mathbb P_{\boldsymbol\theta}
+\left(
+r_n\in C_{1-\alpha,n}^{\mathrm{H,reg}}
+\right)
+\geq
+1-\alpha.
+$$ {#eq-regression-ratio-hybrid-coverage}
+
+Finally, because a linear projection weakly reduces the finite-population variance of every scalar combination $y_{i,d}-rz_{i,d}$, regression adjustment weakly reduces the population conservative scale for every fixed candidate Fieller contrast and every population delta-method score relative to the unadjusted construction.

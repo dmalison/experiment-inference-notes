@@ -1,38 +1,10 @@
 ---
 title: "Uniform Inference on Treatment Group Means"
-author: "David Malison"
-date: last-modified
-from: markdown-fancy_lists
-language:
-  title-block-published: "Last modified"
-format:
-  html:
-    number-sections: false
-    include-in-header:
-      text: |
-        <style>
-          table td { vertical-align: middle; }
-          h1.title { font-size: 2.75rem; text-align: center; }
-          .quarto-title-meta {
-            display: flex !important;
-            justify-content: center;
-            gap: 5rem;
-            text-align: center;
-          }
-          .assumption, .theorem, .lemma {
-            margin: 0.75em 0 0.75em 1.5em;
-            padding: 0.25em 0.75em;
-            border-left: 3px solid #ccc;
-          }
-          .proof-block {
-            margin: 0.75em 0 0.75em 1.5em;
-            padding: 0.25em 0.75em;
-            border-left: 2px solid #ddd;
-          }
-        </style>
 ---
 
-This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment. We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property. We also illustrate the confidence intervals' finite-sample behavior using a Monte Carlo simulation.
+This note derives confidence intervals for linear combinations of treatment group means using data from a randomized experiment.
+We model the data using a fixed potential outcomes framework and show that the confidence intervals satisfy a uniform coverage property.
+We also illustrate the confidence intervals' finite-sample behavior using a Monte Carlo simulation.
 
 # Model
 
@@ -50,7 +22,8 @@ $D_1, D_2, \ldots$ are independent Bernoulli random variables with common treatm
 Assumption 1 excludes stratified designs that exactly assign a predetermined fraction of units to each treatment group.
 These designs are less common in online experiments, where treatment assignments are typically made sequentially as units enter the experiment.
 Assumption 1 also requires the treatment assignment probability $p$ to be bounded away from zero and one.
-In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets that are divided between the two treatment groups. In this case, Assumption 1 holds with $\underline p$ equal to the reciprocal of the total number of buckets.
+In online experiments, randomization is typically performed by hashing unit identifiers into a finite number of buckets that are divided between the two treatment groups.
+In this case, Assumption 1 holds with $\underline p$ equal to the reciprocal of the total number of buckets.
 
 In addition to $D_i$, we observe an outcome of interest $Y_i$ that we model using potential outcomes.
 We treat the potential outcomes as fixed, so treatment assignment is the only source of randomness.
@@ -66,10 +39,12 @@ We assume $Y_i$ is generated according to the following rule:
 
 The observed outcome $Y_i$ satisfies
 
-$$Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}.$$ {#eq-observed-outcome}
+$$Y_i = D_i y_{i, 1} + (1 - D_i) y_{i, 0}.$$ {#eq-treatment-group-observed-outcome}
 :::
 
-Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units. This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Stable_unit_treatment_value_assumption) and can be restrictive in some settings. For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing the outcomes observed in subsequent sessions.
+Assumption 2 requires unit $i$'s observed outcome to depend only on unit $i$'s treatment assignment and not on the treatment assignments of other units.
+This is a form of the [stable unit treatment value assumption (SUTVA)](https://en.wikipedia.org/wiki/Rubin_causal_model#Stable_unit_treatment_value_assumption_(SUTVA)) and can be restrictive in some settings.
+For example, if $i$ indexes user sessions, then Assumption 2 rules out treatment in one session changing the outcomes observed in subsequent sessions.
 Such spillovers can often be handled by randomizing at a coarser level, but doing so lowers the number of units and usually reduces the experiment's statistical power.
 
 For $d\in\{0,1\}$, define the potential outcome mean and centered potential outcome by
@@ -83,15 +58,8 @@ u_{i,d,n}
 y_{i,d}-\overline y_{d,n}.
 $$
 
-Collect the means and centered potential outcomes into the vectors
+Collect the centered potential outcomes into the vector
 $$
-\overline{\boldsymbol y}_n
-=
-\begin{pmatrix}
-\overline y_{0,n} \\
-\overline y_{1,n}
-\end{pmatrix},
-\qquad
 \boldsymbol u_{i,n}
 =
 \begin{pmatrix}
@@ -99,14 +67,19 @@ u_{i,0,n} \\
 u_{i,1,n}
 \end{pmatrix},
 $$
-and define the covariance matrix
+and define the finite-population covariance matrix
 
 $$
-\mathbf{S}_n = \begin{pmatrix}
+\mathbf S_n
+=
+\frac{1}{n}\sum_{i=1}^n
+\boldsymbol u_{i,n}\boldsymbol u_{i,n}'
+=
+\begin{pmatrix}
 s_{00,n}^2 & s_{01,n} \\
 s_{01,n} & s_{11,n}^2
-\end{pmatrix} =  \frac{1}{n}\sum_{i=1}^n \boldsymbol{u}_{i,n} \boldsymbol{u}_{i,n}'.
-$$ {#eq-Sn-def}
+\end{pmatrix}.
+$$ {#eq-treatment-group-Sn-def}
 
 Also collect the model primitives into the parameter vector
 
@@ -117,14 +90,13 @@ p,\{y_{i,0}\}_{i=1}^\infty,\{y_{i,1}\}_{i=1}^\infty
 \right)
 $$
 
-and let $\Theta \subseteq (\underline{p}, 1-\underline{p}) \times \mathbb{R}^\mathbb{N} \times \mathbb{R}^\mathbb{N}$ denote the set of parameters under consideration.
+and let $\Theta \subseteq [\underline p,1-\underline p] \times \mathbb R^\mathbb N \times \mathbb R^\mathbb N$ denote the set of parameters under consideration.
 We impose the following regularity conditions on the potential outcome sequences in $\Theta$:
 
 ::: {.assumption #asm-nondegenerate}
 **Assumption 3 (Regularity)**
 
-[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $n_0$ for which
-$s_{dd,n}^2>0$ for all $n\geq n_0$ and $d\in\{0,1\}$.
+[**(i)**]{.part-label} **(Non-degeneracy)** There exists an index $n_0$ for which $s_{dd,n}^2>0$ for all $n\geq n_0$, $\boldsymbol{\theta} \in \Theta$, and $d\in\{0,1\}$.
 
 [**(ii)**]{.part-label} **(Maximum variance share)** For each $d\in\{0,1\}$,
 
@@ -132,7 +104,7 @@ $$
 \lim_{n\to\infty}
 \sup_{\boldsymbol\theta\in\Theta}
 \max_{1\leq i\leq n}
-\frac{|y_{i,d}-\overline y_{d,n}|}{\sqrt n\,s_{dd,n}}
+\frac{|u_{i,d,n}|}{\sqrt n\,s_{dd,n}}
 =0.
 $$
 :::
@@ -149,20 +121,26 @@ Let $\mathcal{P} = \{\mathbb{P}_{\boldsymbol\theta}: \boldsymbol\theta \in \Thet
 
 ## Estimand
 
-In this note, we are interested in performing inference on a linear combination of the potential outcome means. Define
+In this note, we are interested in performing inference on a linear combination of the potential outcome means.
+Define
 
-$$\psi_n = \boldsymbol{a}_n' \overline{\boldsymbol{y}}_n$$
+$$
+\psi_n
+=
+a_{0,n}\overline y_{0,n}
++a_{1,n}\overline y_{1,n}.
+$$
 
-for a nonzero, nonrandom coefficient vector $\boldsymbol{a}_n = (a_{0,n}, a_{1,n})'$.
+where $a_{0,n}$ and $a_{1,n}$ are nonrandom coefficients satisfying $(a_{0,n},a_{1,n})\neq(0,0)$.
 We allow the coefficients to vary with $n$ to accommodate subsequent applications (see the [sign-specific contrasts in the relative treatment effects note](../lift/#splitting-by-the-control-mean-sign) for an example).
-Setting $\boldsymbol{a}_n = (1, 0)'$ or $\boldsymbol{a}_n = (0, 1)'$ yields the mean under control or treatment, respectively, while setting $\boldsymbol{a}_n = (-1, 1)'$ yields the average treatment effect (ATE).
+Setting $(a_{0,n},a_{1,n})=(1,0)$ or $(a_{0,n},a_{1,n})=(0,1)$ yields the mean under control or treatment, respectively, while setting $(a_{0,n},a_{1,n})=(-1,1)$ yields the average treatment effect (ATE).
 We explore these special cases in more detail in the [common estimands section](#sec-common-estimands).
 
 ## Validity criterion
 
 For $\alpha \in (0, 1)$, let
 
-$$C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n)$$ {#eq-ci-form}
+$$C_{1-\alpha,n} = C_{1-\alpha,n}(D_1, \ldots, D_n, Y_1, \ldots, Y_n)$$ {#eq-treatment-group-ci-form}
 
 denote a confidence set for $\psi_n$ with nominal coverage level $1-\alpha$.
 The sequence $\{C_{1-\alpha,n}\}_{n \geq 1}$ is **uniformly asymptotically valid** for $\{\psi_n\}_{n\geq 1}$ over $\Theta$ if
@@ -172,10 +150,11 @@ $$
 \inf_{\boldsymbol\theta\in\Theta}
 \mathbb{P}_{\boldsymbol\theta}\left(\psi_n \in C_{1-\alpha,n}\right)
 \geq 1 - \alpha.
-$$ {#eq-asymptotic-p}
+$$ {#eq-treatment-group-asymptotic-p}
 
 If the sequence is not uniformly valid, there are parameter configurations at arbitrarily large sample sizes for which coverage falls below the nominal level by at least some fixed amount.
-Such persistent undercoverage is problematic for experimentation platforms, which apply the same inference procedure across many different parameter configurations. We therefore seek procedures which ensure the worst-case coverage shortfall vanishes as the sample size grows.
+Such persistent undercoverage is problematic for experimentation platforms, which apply the same inference procedure across many different parameter configurations.
+We therefore seek procedures which ensure the worst-case coverage shortfall vanishes as the sample size grows.
 
 ## Estimator
 
@@ -194,19 +173,16 @@ $$
 =
 \frac{1}{N_{d,n}}
 \sum_{i=1}^nD_{i,d}Y_i,
-\qquad
-\widehat{\boldsymbol y}_n
-=
-\begin{pmatrix}
-\widehat y_{0,n} \\
-\widehat y_{1,n}
-\end{pmatrix}
-$$ {#eq-estimators}
+\qquad d\in\{0,1\}.
+$$ {#eq-treatment-group-estimators}
 
 and set
 
 $$
-\widehat{\psi}_n = \boldsymbol{a}_n'\widehat{\boldsymbol{y}}_n.
+\widehat{\psi}_n
+=
+a_{0,n}\widehat y_{0,n}
++a_{1,n}\widehat y_{1,n}.
 $$
 
 ## Normal approximation
@@ -215,7 +191,7 @@ To describe the sampling behavior of $\widehat\psi_n$, define
 
 $$
 \begin{gathered}
-U_{d,n}
+A_{d,n}
 =
 \frac{1}{n}\sum_{i=1}^n (D_i-p_1)u_{i,d,n},
 \qquad d\in\{0,1\}, \\[2ex]
@@ -235,7 +211,7 @@ The scaled estimation error then admits the decomposition
 $$
 \sqrt{n}\left(\widehat{\psi}_n-\psi_n\right)
 = \sum_{i=1}^n X_{i,n} + R_n,
-$$ {#eq-exact-decomposition}
+$$ {#eq-treatment-group-exact-decomposition}
 
 where
 
@@ -243,9 +219,9 @@ $$
 R_n
 = -\sqrt{n}\left(\overline D_{1,n}-p_1\right)
 \left[
-\frac{a_{0,n}}{\overline D_{0,n}p_0}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}p_0}A_{0,n}
 +
-\frac{a_{1,n}}{\overline D_{1,n}p_1}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p_1}A_{1,n}
 \right].
 $$
 
@@ -270,7 +246,7 @@ a_{0,n}^2\frac{1 - p_0}{p_0}s_{00,n}^2
 a_{1,n}^2\frac{1 - p_1}{p_1}s_{11,n}^2
 -2a_{0,n}a_{1,n}s_{01,n}.
 \end{aligned}
-$$ {#eq-sigma}
+$$ {#eq-treatment-group-sigma}
 
 Because the covariance term $s_{01,n}$ is not identified, we cannot estimate $\sigma_n^2$ directly.
 However, we can bound its absolute value using the within-treatment-group variances.
@@ -288,7 +264,7 @@ $$
 &\leq
 s_{00,n}s_{11,n} =\sigma_{0,n}\sigma_{1,n}.
 \end{aligned}
-$$ {#eq-covariance-bound}
+$$ {#eq-treatment-group-covariance-bound}
 
 We therefore define the conservative variance
 $$
@@ -299,8 +275,8 @@ $$
 +
 |a_{1,n}|\sigma_{1,n}
 \right)^2.
-$$ {#eq-sigma-tilde}
-Equations (-@eq-sigma) and (-@eq-covariance-bound) imply
+$$ {#eq-treatment-group-sigma-tilde}
+Equations (-@eq-treatment-group-sigma) and (-@eq-treatment-group-covariance-bound) imply
 $$
 \begin{aligned}
 \sigma_n^2
@@ -316,7 +292,7 @@ a_{1,n}^2\sigma_{1,n}^2
 + 2|a_{0,n}a_{1,n}|\sigma_{0,n}\sigma_{1,n} \\
 &=\widetilde{\sigma}_n^2.
 \end{aligned}
-$$ {#eq-conservative-variance}
+$$ {#eq-treatment-group-conservative-variance}
 
 To estimate $\widetilde{\sigma}_n^2$, define the observed within-treatment-group variances
 
@@ -326,7 +302,7 @@ $$
 \frac{1}{N_{d,n}}
 \sum_{i=1}^nD_{i,d}\left(Y_i-\widehat y_{d,n}\right)^2,
 \qquad d\in\{0,1\},
-$$ {#eq-S-hat}
+$$ {#eq-treatment-group-S-hat}
 and the treatment-group-specific variance estimator
 
 $$
@@ -347,42 +323,39 @@ $$
 +
 |a_{1,n}|\widehat{\sigma}_{1,n}
 \right)^2.
-$$ {#eq-sigma-hat}
+$$ {#eq-treatment-group-sigma-hat}
 
-In the [Appendix](#sec-estimator-asymptotics), we show^[Assumption 3(i) gives an $n_0$ such that $s_{dd,n}^2>0$ for both $d\in\{0,1\}$ and all $n\geq n_0$. Since $0<p_d<1$, (-@eq-treatment-group-variance) then implies $\sigma_{d,n}>0$ for $n \geq n_0$. Because $\boldsymbol a_n\neq\boldsymbol 0$, (-@eq-sigma-tilde) gives $\widetilde{\sigma}_n^2>0$ for all $n\geq n_0$. Thus division by $\widetilde{\sigma}_n$ is well-defined for all sufficiently large $n$.]
+In the [Appendix](#sec-estimator-asymptotics), we show^[Assumption 3(i) gives an $n_0$ such that $s_{dd,n}^2>0$ for both $d\in\{0,1\}$ and all $n\geq n_0$. Since $0<p_d<1$, (-@eq-treatment-group-variance) then implies $\sigma_{d,n}>0$ for $n \geq n_0$. Because $(a_{0,n},a_{1,n})\neq(0,0)$, (-@eq-treatment-group-sigma-tilde) gives $\widetilde{\sigma}_n^2>0$ for all $n\geq n_0$. Thus division by $\widetilde{\sigma}_n$ is well-defined for all sufficiently large $n$.]
 $$
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2} \stackrel{\mathcal{P}}{\to} 1.
-$$ {#eq-variance-ratio-consistency}
+$$ {#eq-treatment-group-variance-ratio-consistency}
 
 Now define $\omega_n$ by
 $$
 \omega_n^2
 =
 \frac{\sigma_n^2}{\widetilde{\sigma}_n^2}
-$$ {#eq-relative-variance}
+$$ {#eq-treatment-group-relative-variance}
 and let $Z_n$ have distribution $N(0,\omega_n^2)$.
-The [Appendix](#sec-scalar-normal-approximation) establishes the asymptotic equivalence^[We evaluate quantities normalized by $\widehat{\sigma}_n$ only on the event $\{\widehat{\sigma}_n>0\}$. For all sufficiently large $n$, $\widetilde{\sigma}_n^2>0$ for every $\boldsymbol\theta\in\Theta$ so that
-$\{\widehat{\sigma}_n=0\}\subseteq\{|\widehat{\sigma}_n^2/\widetilde{\sigma}_n^2-1|\geq1\}$.
-(-@eq-variance-ratio-consistency) then implies
-$\lim_{n\to\infty}\sup_{\boldsymbol\theta\in\Theta}\mathbb P_{\boldsymbol\theta}(\widehat{\sigma}_n=0)=0$.]
+The [Appendix](#sec-scalar-normal-approximation) establishes the asymptotic equivalence^[We evaluate quantities normalized by $\widehat{\sigma}_n$ only on the event $\{\widehat{\sigma}_n>0\}$. For all sufficiently large $n$, $\widetilde{\sigma}_n^2>0$ for every $\boldsymbol\theta\in\Theta$ so that $\{\widehat{\sigma}_n=0\}\subseteq\{|\widehat{\sigma}_n^2/\widetilde{\sigma}_n^2-1|\geq1\}$. (-@eq-treatment-group-variance-ratio-consistency) then implies $\lim_{n\to\infty}\sup_{\boldsymbol\theta\in\Theta}\mathbb P_{\boldsymbol\theta}(\widehat{\sigma}_n=0)=0$.]
 $$
 \frac{\sum_{i=1}^n X_{i,n}}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\approx}
 Z_n.
-$$ {#eq-scalar-normal-approximation}
+$$ {#eq-treatment-group-scalar-normal-approximation}
 The [Appendix](#sec-residual-appendix) also shows that the remainder is asymptotically negligible relative to $\widehat\sigma_n$:
 $$
 R_n
 = o_{\mathcal{P}}(\widehat\sigma_n).
-$$ {#eq-remainder-negligibility}
+$$ {#eq-treatment-group-remainder-negligibility}
 
-Equations (-@eq-exact-decomposition), (-@eq-scalar-normal-approximation), and (-@eq-remainder-negligibility), together with @prp-asymptotic-equivalence-perturbation from the uniform asymptotics note, imply
+Equations (-@eq-treatment-group-exact-decomposition), (-@eq-treatment-group-scalar-normal-approximation), and (-@eq-treatment-group-remainder-negligibility), together with @prp-asymptotic-equivalence-perturbation from the uniform asymptotics note, imply
 
 $$
 \sqrt{n}\left(\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right)
 \stackrel{\mathcal{P}}{\approx}
 Z_n.
-$$ {#eq-feasible-normal-approximation}
+$$ {#eq-treatment-group-feasible-normal-approximation}
 
 ## Confidence interval
 
@@ -395,20 +368,22 @@ C_{1-\alpha,n}
 \widehat{\psi}_n - z_{1-\alpha/2}\sqrt{\frac{\widehat{\sigma}_n^2}{n}},
 \widehat{\psi}_n + z_{1-\alpha/2}\sqrt{\frac{\widehat{\sigma}_n^2}{n}}
 \right]
-$$ {#eq-wald-ci}
+$$ {#eq-treatment-group-wald-ci}
 
 where $z_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution.
 This interval covers $\psi_n$ if and only if
 
 $$
 \sqrt{n}\left|\frac{\widehat{\psi}_n-\psi_n}{\widehat{\sigma}_n}\right|\leq z_{1-\alpha/2}.
-$$ {#eq-wald-ci-coverage-event}
+$$ {#eq-treatment-group-wald-ci-coverage-event}
 
-We now show that $\{C_{1-\alpha,n}\}_{n \geq 1}$ is uniformly asymptotically valid. Suppose, toward a contradiction, that it is not. Then there exist an $\epsilon>0$ and sequences $n_k\to\infty$ and $\boldsymbol\theta_k\in\Theta$ such that
+We now show that $\{C_{1-\alpha,n}\}_{n \geq 1}$ is uniformly asymptotically valid.
+Suppose, toward a contradiction, that it is not.
+Then there exist an $\epsilon>0$ and sequences $n_k\to\infty$ and $\boldsymbol\theta_k\in\Theta$ such that
 $$
 \mathbb{P}_{\boldsymbol\theta_k}\left(\psi_{n_k} \in C_{1-\alpha,n_k}\right)
 \leq 1-\alpha-\epsilon
-$$ {#eq-contradictory-coverage-bound}
+$$ {#eq-treatment-group-contradictory-coverage-bound}
 for every $k$.
 Since $\omega_{n_k}^2\in[0,1]$, there is a further subsequence $n_{k_j}$ along which $\omega_{n_{k_j}}^2\to\omega^2$ for some $\omega^2\in[0,1]$.
 If $\omega>0$, then $\omega_{n_{k_j}}>0$ for all sufficiently large $j$, and
@@ -439,7 +414,7 @@ $$
 =0
 $$
 for every $t\neq0$.
-Part (i) of @prp-asymptotic-equivalence-cdf-limit and (-@eq-feasible-normal-approximation) therefore imply
+Part (i) of @prp-asymptotic-equivalence-cdf-limit and (-@eq-treatment-group-feasible-normal-approximation) therefore imply
 $$
 \lim_{j\to\infty}
 \mathbb P_{\boldsymbol\theta_{k_j}}\left(
@@ -453,9 +428,9 @@ $$
 \Phi(t/\omega), & \omega>0, \\[1ex]
 \mathbb 1\{t>0\}, & \omega=0,
 \end{cases}
-$$ {#eq-studentized-subsequence-cdf-convergence}
+$$ {#eq-treatment-group-studentized-subsequence-cdf-convergence}
 for every $t\in\mathbb R$ when $\omega>0$ and every $t\neq0$ when $\omega=0$.
-Evaluating (-@eq-studentized-subsequence-cdf-convergence) at $-z_{1-\alpha/2}$ and $z_{1-\alpha/2}$ and writing $Z\sim N(0,1)$ gives
+Evaluating (-@eq-treatment-group-studentized-subsequence-cdf-convergence) at $-z_{1-\alpha/2}$ and $z_{1-\alpha/2}$ and writing $Z\sim N(0,1)$ gives
 $$
 \begin{aligned}
 &\lim_{j\to\infty}
@@ -473,8 +448,8 @@ $$
 \mathbb{P}\left(|Z|\leq z_{1-\alpha/2}\right)
 =1-\alpha.
 \end{aligned}
-$$ {#eq-subsequence-coverage-limit}
-Equations (-@eq-wald-ci-coverage-event) and (-@eq-subsequence-coverage-limit) imply
+$$ {#eq-treatment-group-subsequence-coverage-limit}
+Equations (-@eq-treatment-group-wald-ci-coverage-event) and (-@eq-treatment-group-subsequence-coverage-limit) imply
 $$
 \lim_{j\to\infty}
 \mathbb{P}_{\boldsymbol\theta_{k_j}}\left(
@@ -482,15 +457,15 @@ $$
 \right)
 \geq 1-\alpha.
 $$
-This contradicts (-@eq-contradictory-coverage-bound), which also holds along the subsequence $\{n_{k_j}\}$.
+This contradicts (-@eq-treatment-group-contradictory-coverage-bound), which also holds along the subsequence $\{n_{k_j}\}$.
 
-## Common estimands
+## Common estimands {#sec-common-estimands}
 
-In this section, we further examine the variance estimator in (-@eq-sigma-hat) for two common estimands.
+In this section, we further examine the variance estimator in (-@eq-treatment-group-sigma-hat) for two common estimands.
 
 ### Single treatment group mean
 
-When $\psi_n=\overline y_{d,n}$, we set $a_{d,n}=1$ and $a_{1-d,n}=0$ so that (-@eq-sigma-hat) gives $\widehat\sigma_n^2=\widehat\sigma_{d,n}^2$.
+When $\psi_n=\overline y_{d,n}$, we set $a_{d,n}=1$ and $a_{1-d,n}=0$ so that (-@eq-treatment-group-sigma-hat) gives $\widehat\sigma_n^2=\widehat\sigma_{d,n}^2$.
 Using (-@eq-treatment-group-variance-estimator) and $N_{d,n}=n\overline D_{d,n}$, we obtain
 $$
 \frac{\widehat\sigma_n^2}{n}
@@ -504,11 +479,13 @@ $$
 \frac{s_{dd,n}^2}{N_{d,n}}.
 $$
 Thus $\widehat\sigma_n^2/n$ has the usual sampling-without-replacement form, with the finite-population variance $\frac{n}{n-1}s_{dd,n}^2$ replaced by the observed within-treatment-group variance $\widehat s_{dd,n}^2$.
-The $\left(1-\frac{N_{d,n}}{n}\right)$ correction represents the share of treatment group $d$'s potential outcomes that remain unobserved. If every unit were assigned to treatment group $d$, its mean would be observed exactly and the randomization variance would be zero.
+The $\left(1-\frac{N_{d,n}}{n}\right)$ correction represents the share of treatment group $d$'s potential outcomes that remain unobserved.
+If every unit were assigned to treatment group $d$, its mean would be observed exactly and the randomization variance would be zero.
 
 ### Average treatment effect
 
-When $\psi_n=\overline y_{1,n}-\overline y_{0,n}$, we set $a_{0,n}=-1$ and $a_{1,n}=1$. Equation (-@eq-sigma-hat) then gives
+When $\psi_n=\overline y_{1,n}-\overline y_{0,n}$, we set $a_{0,n}=-1$ and $a_{1,n}=1$.
+Equation (-@eq-treatment-group-sigma-hat) then gives
 $$
 \widehat\sigma_n^2
 =
@@ -550,7 +527,7 @@ $$
 -
 \frac{\left(\widehat s_{11,n}-\widehat s_{00,n}\right)^2}{n}.
 \end{aligned}
-$$ {#eq-ate-variance-estimator}
+$$ {#eq-treatment-group-ate-variance-estimator}
 
 To compare with [Neyman's classical variance estimator](https://doi.org/10.1214/ss/1177012031), define the unit-level treatment effect and its variance by
 $$
@@ -572,8 +549,9 @@ $$
 -
 \frac{s_{\tau\tau,n}^2}{n}
 \right).
-$$ {#eq-ate-exact-conditional-variance}
-Because $\tau_i$ is never observed, $s_{\tau\tau,n}^2$ is not identified. Replacing it by zero gives the conservative upper bound
+$$ {#eq-treatment-group-ate-exact-conditional-variance}
+Because $\tau_i$ is never observed, $s_{\tau\tau,n}^2$ is not identified.
+Replacing it by zero gives the conservative upper bound
 $$
 \frac{n}{n-1}
 \left(
@@ -581,10 +559,11 @@ $$
 +
 \frac{s_{11,n}^2}{N_{1,n}}
 \right).
-$$ {#eq-ate-neyman-upper-bound}
+$$ {#eq-treatment-group-ate-neyman-upper-bound}
 The conventional Neyman estimator replaces the finite-population variances in this bound with their within-group sample analogues.
 
-A sharper bound follows from the Cauchy--Schwarz inequality. Since $\tau_i-\overline\tau_n=u_{i,1,n}-u_{i,0,n}$, (-@eq-covariance-bound) gives
+A sharper bound follows from the Cauchy--Schwarz inequality.
+Since $\tau_i-\overline\tau_n=u_{i,1,n}-u_{i,0,n}$, (-@eq-treatment-group-covariance-bound) gives
 $$
 \begin{aligned}
 s_{\tau\tau,n}^2
@@ -599,7 +578,7 @@ s_{11,n}^2+s_{00,n}^2-2s_{11,n}s_{00,n} \\
 (s_{11,n}-s_{00,n})^2.
 \end{aligned}
 $$
-Substituting this lower bound into (-@eq-ate-exact-conditional-variance) yields
+Substituting this lower bound into (-@eq-treatment-group-ate-exact-conditional-variance) yields
 $$
 \frac{n}{n-1}
 \left(
@@ -610,7 +589,7 @@ $$
 \frac{(s_{11,n}-s_{00,n})^2}{n}
 \right).
 $$
-Plugging sample analogues into this sharper bound yields (-@eq-ate-variance-estimator).
+Plugging sample analogues into this sharper bound yields (-@eq-treatment-group-ate-variance-estimator).
 The Cauchy--Schwarz bound is exact when the centered potential outcomes are perfectly positively correlated.
 The two upper bounds coincide when $s_{00,n}=s_{11,n}$.
 
@@ -619,18 +598,18 @@ The two upper bounds coincide when $s_{00,n}=s_{11,n}$.
 The first illustration animates repeated treatment assignments for a fixed population of $n=1{,}000$ units with $y_{i,1}=y_{i,0}+1$.
 In each frame, the left panel shows the fixed potential outcomes and realized data for the first 20 units, while the top-right panel shows the ATE estimator and its $95\%$ confidence interval, colored green when it covers $\psi_n$ and red otherwise.
 The bottom panel compares a histogram of the studentized estimator $\sqrt{n}(\widehat\psi_n-\psi_n)/\widehat\sigma_n$ across 50,000 assignment draws with the standard normal density.
-Because the conservative bound in (-@eq-conservative-variance) equals the true variance in this case, the studentized estimator closely tracks the standard normal and empirical coverage is close to $95\%$.
+Because the conservative bound in (-@eq-treatment-group-conservative-variance) equals the true variance in this case, the studentized estimator closely tracks the standard normal and empirical coverage is close to $95\%$.
 
 ![Coverage of the confidence interval under homogeneous treatment effects.](homogeneous_coverage_animation.gif){#fig-homogeneous-coverage}
 
 The second illustration shows a histogram of the studentized estimator when $y_{i,1} = -y_{i,0} + 1$.
-Here the two potential outcome sequences are negatively correlated, making the variance bound in (-@eq-conservative-variance) loose.
+Here the two potential outcome sequences are negatively correlated, making the variance bound in (-@eq-treatment-group-conservative-variance) loose.
 The studentized estimator is therefore under-dispersed relative to the standard normal, and the interval covers $\psi_n$ more often than the nominal level.
 
 ![Histogram of the studentized ATE estimator under negatively correlated potential outcomes.](heterogeneous_studentized_histogram.png){#fig-heterogeneous-coverage}
 
 The final illustration keeps the same fixed control potential outcomes and Bernoulli assignment draws but sets $y_{i,1}=3y_{i,0}$.
-In this case, the Cauchy--Schwarz bound is exact but the Neyman bound in (-@eq-ate-neyman-upper-bound) is loose.
+In this case, the Cauchy--Schwarz bound is exact but the Neyman bound in (-@eq-treatment-group-ate-neyman-upper-bound) is loose.
 The figure compares histograms of the ATE estimator studentized by the two variance estimators.
 The Cauchy--Schwarz-studentized histogram closely tracks the standard normal density, whereas the Neyman-studentized histogram is under-dispersed.
 
@@ -770,9 +749,9 @@ $$
 \max_{1\leq i\leq n}
 \left|Y_{i,d}-\overline Y_{d,n}\right|
 =0
-$$ {#eq-centered-maximum-convergence}
+$$ {#eq-treatment-group-centered-maximum-convergence}
 $Q$-almost surely for every $Q\in\mathcal Q$ and $d\in\{0,1\}$.
-The convergence event in (-@eq-centered-maximum-convergence) is measurable and has $Q$-probability one for every $Q\in\mathcal Q$.
+The convergence event in (-@eq-treatment-group-centered-maximum-convergence) is measurable and has $Q$-probability one for every $Q\in\mathcal Q$.
 It therefore has probability one under the mixture law $\mathbb P_{\boldsymbol Y}$ for each $d\in\{0,1\}$.
 
 We next show that, under the mixture law, each empirical variance converges almost surely to a strictly positive, measurable function of the potential outcome path.
@@ -813,7 +792,7 @@ $$
 \frac{1}{n}\sum_{i=1}^n
 \left(Y_{i,d}-\overline Y_{d,n}\right)^2
  =v_d(\boldsymbol Y)>0
-$$ {#eq-mixture-pathwise-convergences}
+$$ {#eq-treatment-group-mixture-pathwise-convergences}
 $\mathbb P_{\boldsymbol Y}$-almost surely for each $d\in\{0,1\}$.
 
 Now fix $\epsilon>0$ and let $\underline v(\boldsymbol y)=\min\{v_0(\boldsymbol y),v_1(\boldsymbol y)\}$.
@@ -822,9 +801,9 @@ Since $\underline v(\boldsymbol Y)>0$ $\mathbb P_{\boldsymbol Y}$-almost surely,
 $$
 \mathbb{P}_{\boldsymbol Y}\left(\underline v(\boldsymbol Y)\geq c\right)
 >1-\frac{\epsilon}{2}.
-$$ {#eq-positive-pathwise-variance-event}
+$$ {#eq-treatment-group-positive-pathwise-variance-event}
 
-Applying [Egorov's theorem](https://en.wikipedia.org/wiki/Egorov%27s_theorem) to the convergences in (-@eq-centered-maximum-convergence) and (-@eq-mixture-pathwise-convergences), simultaneously for $d=0,1$, gives a measurable set $E'$ with
+Applying [Egorov's theorem](https://en.wikipedia.org/wiki/Egorov%27s_theorem) to the convergences in (-@eq-treatment-group-centered-maximum-convergence) and (-@eq-treatment-group-mixture-pathwise-convergences), simultaneously for $d=0,1$, gives a measurable set $E'$ with
 
 $$
 \mathbb P_{\boldsymbol Y}(E')>1-\frac{\epsilon}{2}
@@ -840,7 +819,7 @@ E'\cap
 \left\{\boldsymbol y:\underline v(\boldsymbol y)\geq c\right\}.
 $$
 
-By (-@eq-positive-pathwise-variance-event) and the union bound,
+By (-@eq-treatment-group-positive-pathwise-variance-event) and the union bound,
 
 $$
 \mathbb P_{\boldsymbol Y}(E)
@@ -871,10 +850,10 @@ $$
 \left|y_{i,d}-\overline y_{d,n}\right|
 &=0.
 \end{aligned}
-$$ {#eq-uniform-pathwise-convergences}
+$$ {#eq-treatment-group-uniform-pathwise-convergences}
 
 Let $\Theta$ be the set of parameters whose treatment probability satisfies Assumption 1 and whose potential outcome path lies in $E$.
-The first convergence in (-@eq-uniform-pathwise-convergences) implies that, for all sufficiently large $n$,
+The first convergence in (-@eq-treatment-group-uniform-pathwise-convergences) implies that, for all sufficiently large $n$,
 
 $$
 \inf_{\boldsymbol\theta\in\Theta}s_{dd,n}^2
@@ -900,7 +879,7 @@ $$
 \end{aligned}
 $$
 
-The second convergence in (-@eq-uniform-pathwise-convergences) therefore gives
+The second convergence in (-@eq-treatment-group-uniform-pathwise-convergences) therefore gives
 
 $$
 \lim_{n\to\infty}
@@ -939,7 +918,9 @@ $$
 :::
 
 ::: {.proof-block}
-*Proof.* Under Assumption 1, $D_{1,d},\ldots,D_{n,d}$ are independent Bernoulli random variables with probability $p_d$. Hence
+*Proof.*
+Under Assumption 1, $D_{1,d},\ldots,D_{n,d}$ are independent Bernoulli random variables with probability $p_d$.
+Hence
 
 $$
 \mathbb{E}_{\boldsymbol\theta}(\overline D_{d,n})=p_d,
@@ -947,14 +928,12 @@ $$
 \mathbb{V}_{\boldsymbol\theta}(\overline D_{d,n})=\frac{p_dp_{1-d}}{n}.
 $$
 
-Since $p_dp_{1-d}\leq1/4$, @prp-uniform-moment-bounds(i) gives
-$\overline D_{d,n}-p_d=o_{\mathcal P}(1)$, while
-@prp-uniform-moment-bounds(ii) gives
-$\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal P}(1)$. $\square$
+Since $p_dp_{1-d}\leq1/4$, @prp-uniform-moment-bounds(i) gives $\overline D_{d,n}-p_d=o_{\mathcal P}(1)$, while @prp-uniform-moment-bounds(ii) gives $\sqrt n(\overline D_{d,n}-p_d)=O_{\mathcal P}(1)$.
+$\square$
 :::
 
-We will also use the following treatment-group-mean bound. Because
-$\sum_{i=1}^n u_{i,d,n}=0$,
+We will also use the following treatment-group-mean bound.
+Because $\sum_{i=1}^n u_{i,d,n}=0$,
 
 $$
 \mathbb E_{\boldsymbol\theta}
@@ -970,8 +949,7 @@ p_d(1-p_d)
 \frac14.
 $$
 
-Hence @prp-uniform-moment-bounds(ii), the preceding lemma, and
-@prp-continuous-mapping(i) give
+Hence @prp-uniform-moment-bounds(ii), the preceding lemma, and @prp-continuous-mapping(i) give
 
 $$
 \sqrt n\,
@@ -980,14 +958,14 @@ $$
 \qquad d\in\{0,1\}.
 $$ {#eq-treatment-group-mean-stochastic-order}
 
-### Derivation of (-@eq-variance-ratio-consistency) {#sec-variance-ratio-consistency}
+### Derivation of (-@eq-treatment-group-variance-ratio-consistency) {#sec-variance-ratio-consistency}
 
 We first show that, for $d\in\{0,1\}$,
 
 $$
 \frac{\widehat{s}_{dd,n}^2}{s_{dd,n}^2}
 \stackrel{\mathcal{P}}{\to}1.
-$$ {#eq-Shat-consistency}
+$$ {#eq-treatment-group-Shat-consistency}
 Observe that
 
 $$
@@ -1000,19 +978,19 @@ $$
 + \frac{p_d\,s_{dd,n}^2}{\overline D_{d,n}}
 - \left(\frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{\overline D_{d,n}}\right)^2.
 \end{aligned}
-$$ {#eq-Shat-decomposition}
+$$ {#eq-treatment-group-Shat-decomposition}
 
 By Assumption 3(i), there exists an index $n_0$ for which $s_{dd,n}^2>0$ for all $n\geq n_0$, $d\in\{0,1\}$, and $\boldsymbol\theta\in\Theta$.
-Together with Lemma 1, @prp-continuous-mapping, and @prp-joint-convergence, (-@eq-Shat-consistency) will follow from (-@eq-Shat-decomposition) if we can show
+Together with Lemma 1, @prp-continuous-mapping, and @prp-joint-convergence, (-@eq-treatment-group-Shat-consistency) will follow from (-@eq-treatment-group-Shat-decomposition) if we can show
 $$
 \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}^2 - p_d s_{dd,n}^2}{s_{dd,n}^2}
 \stackrel{\mathcal{P}}{\to} 0,
 \qquad
 \frac{n^{-1}\sum_{i=1}^nD_{i,d}u_{i,d,n}}{s_{dd,n}}
 \stackrel{\mathcal{P}}{\to} 0.
-$$ {#eq-Shat-remainder-bounds}
+$$ {#eq-treatment-group-Shat-remainder-bounds}
 
-The first term in (-@eq-Shat-remainder-bounds) has mean zero and variance
+The first term in (-@eq-treatment-group-Shat-remainder-bounds) has mean zero and variance
 
 $$
 \frac{p_dp_{1-d}}{n^2 s_{dd,n}^4}\sum_{i=1}^n u_{i,d,n}^4
@@ -1032,20 +1010,18 @@ p_dp_{1-d}
 \left(\frac{\max_{1 \leq i \leq n} |u_{i,d,n}|}{\sqrt{n} s_{dd,n}}\right)^2.
 $$
 
-Assumption 3(ii) and @prp-uniform-moment-bounds(i) therefore imply that the
-first term in (-@eq-Shat-remainder-bounds) converges in $\mathcal P$ to zero.
-The second term has mean zero and variance $p_dp_{1-d}/n\leq1/(4n)$, so
-@prp-uniform-moment-bounds(i) gives the same conclusion for that term.
-This proves (-@eq-Shat-consistency).
+Assumption 3(ii) and @prp-uniform-moment-bounds(i) therefore imply that the first term in (-@eq-treatment-group-Shat-remainder-bounds) converges in $\mathcal P$ to zero.
+The second term has mean zero and variance $p_dp_{1-d}/n\leq1/(4n)$, so @prp-uniform-moment-bounds(i) gives the same conclusion for that term.
+This proves (-@eq-treatment-group-Shat-consistency).
 
 Since $\widehat{s}_{dd,n}$ and $s_{dd,n}$ are nonnegative, @prp-continuous-mapping also gives
 
 $$
 \frac{\widehat{s}_{dd,n}}{s_{dd,n}}
 \stackrel{\mathcal{P}}{\to}1.
-$$ {#eq-Shat-root-consistency}
+$$ {#eq-treatment-group-Shat-root-consistency}
 
-Now by (-@eq-sigma-tilde) and (-@eq-sigma-hat), we have
+Now by (-@eq-treatment-group-sigma-tilde) and (-@eq-treatment-group-sigma-hat), we have
 $$
 \frac{\widehat{\sigma}_n^2}{\widetilde{\sigma}_n^2}
 =
@@ -1061,7 +1037,7 @@ $$
 \frac{|a_{1,n}|s_{11,n}}{p_1}
 }
 \right]^2.
-$$ {#eq-sigma-ratio-expansion}
+$$ {#eq-treatment-group-sigma-ratio-expansion}
 
 The unbracketed term converges to one in $\mathcal{P}$ by Lemma 1 and @prp-continuous-mapping.
 It therefore suffices to show that the bracketed ratio also converges to one.
@@ -1137,13 +1113,13 @@ $$
 \end{aligned}
 $$
 
-The two probabilities on the right-hand side tend to zero by (-@eq-Shat-root-consistency), Lemma 1, @prp-continuous-mapping, and @prp-joint-convergence.
-Therefore the bracketed ratio in (-@eq-sigma-ratio-expansion) converges to one in $\mathcal{P}$.
-Combining this with the convergence of the unbracketed term proves (-@eq-variance-ratio-consistency) by @prp-continuous-mapping and @prp-joint-convergence.
+The two probabilities on the right-hand side tend to zero by (-@eq-treatment-group-Shat-root-consistency), Lemma 1, @prp-continuous-mapping, and @prp-joint-convergence.
+Therefore the bracketed ratio in (-@eq-treatment-group-sigma-ratio-expansion) converges to one in $\mathcal{P}$.
+Combining this with the convergence of the unbracketed term proves (-@eq-treatment-group-variance-ratio-consistency) by @prp-continuous-mapping and @prp-joint-convergence.
 
-## Derivation of (-@eq-scalar-normal-approximation) {#sec-scalar-normal-approximation}
+## Derivation of (-@eq-treatment-group-scalar-normal-approximation) {#sec-scalar-normal-approximation}
 
-The bound in (-@eq-conservative-variance) gives $0\leq\omega_n^2\leq1$.
+The bound in (-@eq-treatment-group-conservative-variance) gives $0\leq\omega_n^2\leq1$.
 Moreover, $|D_i-p_1|\leq1$ and the definition of $\widetilde{\sigma}_n$ imply
 $$
 \begin{aligned}
@@ -1166,7 +1142,7 @@ $$
 \max_{d\in\{0,1\}}
 \frac{|u_{i,d,n}|}{\sqrt n\,s_{dd,n}}.
 \end{aligned}
-$$ {#eq-conservative-max-summand}
+$$ {#eq-treatment-group-conservative-max-summand}
 Define the uniform envelope
 $$
 \eta_n
@@ -1181,7 +1157,7 @@ Then $|X_{i,n}|/\widetilde\sigma_n\leq\eta_n$ almost surely for every $i$ and $\
 $$
 \lim_{n\to\infty}
 \eta_n=0.
-$$ {#eq-conservative-max-summand-vanishing}
+$$ {#eq-treatment-group-conservative-max-summand-vanishing}
 
 Now consider arbitrary sequences $n_k\to\infty$ and $\boldsymbol\theta_k\in\Theta$.
 Since $\omega_{n_k}^2\in[0,1]$, there is a further subsequence $n_{k_j}$ along which $\omega_{n_{k_j}}^2\to\omega^2$ for some $\omega^2\in[0,1]$.
@@ -1212,7 +1188,7 @@ $$
 \frac{X_{i,n_{k_j}}}{\widetilde\sigma_{n_{k_j}}}
 \right|^3
 =0.
-$$ {#eq-lyapunov-condition}
+$$ {#eq-treatment-group-lyapunov-condition}
 The Lyapunov central limit theorem applied after normalization by $\sigma_{n_{k_j}}=\omega_{n_{k_j}}\widetilde\sigma_{n_{k_j}}$, followed by $\omega_{n_{k_j}}\to\omega$, therefore gives
 $$
 \frac{\sum_{i=1}^{n_{k_j}}X_{i,n_{k_j}}}{\widetilde\sigma_{n_{k_j}}}
@@ -1251,22 +1227,21 @@ $$
 \frac{\sum_{i=1}^nX_{i,n}}{\widetilde\sigma_n}
 \stackrel{\mathcal{P}}{\approx}
 Z_n
-$$ {#eq-infeasible-scalar-normal-approximation}
+$$ {#eq-treatment-group-infeasible-scalar-normal-approximation}
 failed, some sequences $n_k\to\infty$ and $\boldsymbol\theta_k\in\Theta$ would keep this distance bounded away from zero, contradicting the existence of the further subsequence just constructed.
 
-By (-@eq-variance-ratio-consistency) and @prp-continuous-mapping(i),
+By (-@eq-treatment-group-variance-ratio-consistency) and @prp-continuous-mapping(i),
 $$
 \frac{\widetilde\sigma_n}{\widehat\sigma_n}
 \stackrel{\mathcal{P}}{\to}1.
 $$
-Since $\omega_n^2\leq1$, $Z_n=O_{\mathcal P}(1)$. Therefore
-(-@eq-infeasible-scalar-normal-approximation) and
-@prp-asymptotic-equivalence-slutsky give
-(-@eq-scalar-normal-approximation).
+Since $\omega_n^2\leq1$, $Z_n=O_{\mathcal P}(1)$.
+Therefore (-@eq-treatment-group-infeasible-scalar-normal-approximation) and @prp-asymptotic-equivalence-slutsky give (-@eq-treatment-group-scalar-normal-approximation).
 
-## Derivation of (-@eq-remainder-negligibility) {#sec-residual-appendix}
+## Derivation of (-@eq-treatment-group-remainder-negligibility) {#sec-residual-appendix}
 
-To prove (-@eq-remainder-negligibility), first note that (-@eq-variance-ratio-consistency) and @prp-continuous-mapping give $\widetilde\sigma_n/\widehat\sigma_n\stackrel{\mathcal{P}}{\to}1$. By @prp-stochastic-order, it therefore suffices to prove $R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0$.
+To prove (-@eq-treatment-group-remainder-negligibility), first note that (-@eq-treatment-group-variance-ratio-consistency) and @prp-continuous-mapping give $\widetilde\sigma_n/\widehat\sigma_n\stackrel{\mathcal{P}}{\to}1$.
+By @prp-stochastic-order, it therefore suffices to prove $R_n/\widetilde{\sigma}_n \stackrel{\mathcal{P}}{\to} 0$.
 
 Toward this end, observe that
 $$
@@ -1275,20 +1250,20 @@ $$
 &=
 \frac{\left|\sqrt n(\overline D_{1,n}-p_1)\right|}{\sqrt{p_0p_1}\ell_n}
 \left|
-\frac{a_{0,n}}{\overline D_{0,n}p_0}U_{0,n}
+\frac{a_{0,n}}{\overline D_{0,n}p_0}A_{0,n}
 +
-\frac{a_{1,n}}{\overline D_{1,n}p_1}U_{1,n}
+\frac{a_{1,n}}{\overline D_{1,n}p_1}A_{1,n}
 \right| \\[2ex]
 &\leq
 \frac{\left|\sqrt n(\overline D_{1,n}-p_1)\right|}{\sqrt{p_0p_1}}
 \left[
 \frac{\ell_{0,n}}{\ell_n}
 \frac{1}{\overline D_{0,n}}
-\left|\frac{U_{0,n}}{s_{00,n}}\right|
+\left|\frac{A_{0,n}}{s_{00,n}}\right|
 +
 \frac{\ell_{1,n}}{\ell_n}
 \frac{1}{\overline D_{1,n}}
-\left|\frac{U_{1,n}}{s_{11,n}}\right|
+\left|\frac{A_{1,n}}{s_{11,n}}\right|
 \right].
 \end{aligned}
 $$
@@ -1301,13 +1276,13 @@ $$
 c_{\underline p}\left|\sqrt n(\overline D_{1,n}-p_1)\right|
 \left[
 \frac{\ell_{0,n}}{\ell_n}
-\left|\frac{U_{0,n}}{s_{00,n}}\right|
+\left|\frac{A_{0,n}}{s_{00,n}}\right|
 +
 \frac{\ell_{1,n}}{\ell_n}
-\left|\frac{U_{1,n}}{s_{11,n}}\right|
+\left|\frac{A_{1,n}}{s_{11,n}}\right|
 \right],
 \end{aligned}
-$$ {#eq-Rn-bound}
+$$ {#eq-treatment-group-Rn-bound}
 
 where
 
@@ -1329,10 +1304,10 @@ $$
 c_{\underline p}\left|\sqrt n(\overline D_{1,n}-p_1)\right|
 \left[
 \frac{\ell_{0,n}}{\ell_n}
-\left|\frac{U_{0,n}}{s_{00,n}}\right|
+\left|\frac{A_{0,n}}{s_{00,n}}\right|
 +
 \frac{\ell_{1,n}}{\ell_n}
-\left|\frac{U_{1,n}}{s_{11,n}}\right|
+\left|\frac{A_{1,n}}{s_{11,n}}\right|
 \right]
 > \epsilon
 \right) \\
@@ -1345,16 +1320,15 @@ The second term on the right-hand side converges to zero by Lemma 1.
 For the first term, observe that for each $d \in \{0,1\}$,
 
 $$
-\mathbb{E}_{\boldsymbol\theta}\left[\frac{U_{d,n}}{s_{dd,n}}\right]=0,
+\mathbb{E}_{\boldsymbol\theta}\left[\frac{A_{d,n}}{s_{dd,n}}\right]=0,
 \qquad
-\mathbb{V}_{\boldsymbol\theta}\left(\frac{U_{d,n}}{s_{dd,n}}\right)
+\mathbb{V}_{\boldsymbol\theta}\left(\frac{A_{d,n}}{s_{dd,n}}\right)
 =
 \frac{p_0p_1}{n}.
 $$
 
-Thus @prp-uniform-moment-bounds(i) gives
-$U_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)$.
-The weights $\ell_{0,n}/\ell_n$ and $\ell_{1,n}/\ell_n$ lie in $[0,1]$, so the bracketed term in (-@eq-Rn-bound) is also $o_{\mathcal{P}}(1)$.
+Thus @prp-uniform-moment-bounds(i) gives $A_{d,n}/s_{dd,n}=o_{\mathcal{P}}(1)$.
+The weights $\ell_{0,n}/\ell_n$ and $\ell_{1,n}/\ell_n$ lie in $[0,1]$, so the bracketed term in (-@eq-treatment-group-Rn-bound) is also $o_{\mathcal{P}}(1)$.
 By Lemma 1, $\sqrt n(\overline D_{1,n}-p_1)=O_{\mathcal{P}}(1)$.
 Therefore, by @prp-stochastic-order, the product inside the first probability on the right-hand side is $o_{\mathcal{P}}(1)$.
 Thus
@@ -1374,4 +1348,4 @@ $$
 o_{\mathcal{P}}(1)
 $$
 
-by @prp-stochastic-order, proving (-@eq-remainder-negligibility).
+by @prp-stochastic-order, proving (-@eq-treatment-group-remainder-negligibility).

@@ -1,43 +1,16 @@
 ---
 title: "Uniform Inference on Relative Treatment Effects"
-author: "David Malison"
-date: last-modified
-language:
-  title-block-published: "Last modified"
 format:
   html:
-    number-sections: false
     link-external-newwindow: true
-    include-in-header:
-      text: |
-        <style>
-          table td { vertical-align: middle; }
-          h1.title { font-size: 2.75rem; text-align: center; }
-          .quarto-title-meta {
-            display: flex !important;
-            justify-content: center;
-            gap: 5rem;
-            text-align: center;
-          }
-          .assumption {
-            margin: 0.75em 0 0.75em 1.5em;
-            padding: 0.25em 0.75em;
-            border-left: 3px solid #ccc;
-          }
-          /* Coverage table: shade rows by the baseline statistic
-             sqrt(n) ybar0 / sigma_{0,n}: <3 (low), 3-10 (mid), >=10 (high). */
-          .coverage-table tbody tr:nth-child(5),
-          .coverage-table tbody tr:nth-child(6) { background: #fdecea; }      /* <3  */
-          .coverage-table tbody tr:nth-child(1),
-          .coverage-table tbody tr:nth-child(7) { background: #fff8e1; }      /* 3-10 */
-          .coverage-table tbody tr:nth-child(2),
-          .coverage-table tbody tr:nth-child(3),
-          .coverage-table tbody tr:nth-child(4),
-          .coverage-table tbody tr:nth-child(8) { background: #e8f5e9; }      /* >=10 */
-        </style>
 ---
 
-Average treatment effects (ATEs) are often reported relative to a baseline mean. This note studies robust statistical inference for that ratio. We first show why scaling the confidence interval for the ATE or applying the delta method can yield confidence intervals with unreliable coverage. We then construct uniformly-valid confidence intervals by combining Fieller's method with sign tests. We also show how to adapt the construction when effects are reported relative to a full-population baseline. ^[I thank Sergey Gitlin for proposing many of the ideas developed here.]
+Average treatment effects (ATEs) are often reported relative to a baseline mean.
+This note studies robust statistical inference for that ratio.
+We first show why scaling the confidence interval for the ATE or applying the delta method can yield confidence intervals with unreliable coverage.
+We then construct uniformly-valid confidence intervals by combining Fieller's method with sign tests.
+We also show how to adapt the construction when effects are reported relative to a full-population baseline.
+^[I thank Sergey Gitlin for proposing many of the ideas developed here.]
 
 # Relative treatment effect
 
@@ -106,9 +79,9 @@ The bottom panel plots the empirical non-coverage as a function of $\rho_n$, wit
 
 ![Top: sampling distribution of the studentized scaled-ATE statistic. Bottom: empirical non-coverage of the nominal $95\%$ scaled-ATE interval.](lift_scaled_ate_noncoverage.png){#fig-scaled-ate-noncoverage}
 
-At $\rho_n=1\%$, the studentized statistic is close to $N(0,1)$;
-at $\rho_n=100\%$, however, it is visibly over-dispersed.
-The bottom panel shows that non-coverage matches the nominal level only when $\rho_n=0$. For positive lifts, the interval is too narrow; for negative lifts, the interval is too wide.
+At $\rho_n=1\%$, the studentized statistic is close to $N(0,1)$; at $\rho_n=100\%$, however, it is visibly over-dispersed.
+The bottom panel shows that non-coverage matches the nominal level only when $\rho_n=0$.
+For positive lifts, the interval is too narrow; for negative lifts, the interval is too wide.
 
 ## Delta method
 
@@ -160,7 +133,7 @@ Although the delta method addresses the coverage problem in @fig-scaled-ate-nonc
 As a result, coverage can still be poor along sequences in which the denominator approaches zero.
 
 @fig-lift-skewness illustrates this behavior.
-To generate the data for this figure, we set the potential outcomes for each unit according to 
+To generate the data for this figure, we set the potential outcomes for each unit according to
 $$
 \begin{aligned}
 y_{i, 0} &= \overline{y}_{0,n} + \epsilon_i, \\[1ex]
@@ -199,7 +172,8 @@ $$
 \psi_n^- = \overline{y}_{1,n} - (1-\rho_n^-)\,\overline{y}_{0,n},
 $$
 with sample analogues $\widehat{\psi}_n^+$ and $\widehat{\psi}_n^-$.
-Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment group means, we can apply the results from the treatment group means note. The associated coefficient vector is
+Because $\psi_n^+$ and $\psi_n^-$ are linear combinations of the treatment group means, we can apply the results from the treatment group means note.
+The associated coefficient vector is
 $$
 \boldsymbol a_n^s
 =
@@ -269,7 +243,8 @@ $$
 $$ {#eq-sign-specific-fieller-coverage}
 
 
-The expression on the left-hand side of the inequality in (-@eq-fieller-sets) is piecewise quadratic. Each piece has leading coefficient
+The expression on the left-hand side of the inequality in (-@eq-fieller-sets) is piecewise quadratic.
+Each piece has leading coefficient
 
 $$
 \widehat{y}_{0,n}^2 - \frac{z_{1-\alpha/2}^2}{n}\,\widehat{\sigma}_{0,n}^2.
@@ -310,11 +285,14 @@ However, they need not be the midpoints of their confidence sets.
 @fig-fieller-confidence-set-bounded and @fig-fieller-confidence-set-unbounded illustrate the confidence sets in (-@eq-fieller-sets).
 In each panel, the shaded region marks the values of $\rho_n^s$ for which the corresponding Fieller inequality value in (-@eq-fieller-sets) is below zero.
 
-@fig-fieller-confidence-set-bounded displays the bounded case. The value of the Fieller inequality is positive in both tails, so each sign-specific confidence set is an interval around the corresponding point estimate. Note that the point estimate is not the midpoint of the interval.
+@fig-fieller-confidence-set-bounded displays the bounded case.
+The value of the Fieller inequality is positive in both tails, so each sign-specific confidence set is an interval around the corresponding point estimate.
+Note that the point estimate is not the midpoint of the interval.
 
 ![Bounded sign-specific confidence sets. Top: left-hand side of the inequality defining $C_{1-\alpha,n}^{+}$. Bottom: left-hand side of the inequality defining $C_{1-\alpha,n}^{-}$. Shaded regions mark the corresponding confidence sets.](lift_fieller_confidence_sets_bounded.png){#fig-fieller-confidence-set-bounded}
 
-@fig-fieller-confidence-set-unbounded displays the unbounded case. The value of the Fieller inequality is negative in the tails, so the confidence set contains arbitrarily large positive or negative lifts.
+@fig-fieller-confidence-set-unbounded displays the unbounded case.
+The value of the Fieller inequality is negative in the tails, so the confidence set contains arbitrarily large positive or negative lifts.
 
 ![Unbounded sign-specific confidence sets. Top: left-hand side of the inequality defining $C_{1-\alpha,n}^{+}$. Bottom: left-hand side of the inequality defining $C_{1-\alpha,n}^{-}$. Shaded regions mark the corresponding confidence sets.](lift_fieller_confidence_sets_unbounded.png){#fig-fieller-confidence-set-unbounded}
 
@@ -381,7 +359,8 @@ $$
 \frac{2\left|T_{0,n}\right|/z_{1-\alpha/2}}
 {\left(\left|T_{0,n}\right|/z_{1-\alpha/2}\right)^2-1}
 $$
-where $\lambda$ denotes Lebesgue measure and $\triangle$ denotes the symmetric difference between sets. When $|T_{0,n}|$ is large, the right-hand side is close to zero and the two sets are approximately equal.
+where $\lambda$ denotes Lebesgue measure and $\triangle$ denotes the symmetric difference between sets.
+When $|T_{0,n}|$ is large, the right-hand side is close to zero and the two sets are approximately equal.
 
 ## Confidence interval for $\rho_n$
 
@@ -390,8 +369,7 @@ where $\lambda$ denotes Lebesgue measure and $\triangle$ denotes the symmetric d
 We now use the sign-specific confidence sets to construct a confidence interval for $\rho_n$.
 First suppose the sign of $\overline{y}_{0,n}$ is known to be $s\in\{+,-\}$.
 For example, many outcomes are known to take only nonnegative values.
-Then $\rho_n=\rho_n^s$,
-so the sign-specific confidence set $C_{1-\alpha,n}^{s}$ is asymptotically valid for $\rho_n$ by (-@eq-sign-specific-fieller-coverage).
+Then $\rho_n=\rho_n^s$, so the sign-specific confidence set $C_{1-\alpha,n}^{s}$ is asymptotically valid for $\rho_n$ by (-@eq-sign-specific-fieller-coverage).
 However, as illustrated in @fig-fieller-confidence-set-unbounded, this set may not be an interval when the denominator is not statistically distinguishable from zero.
 To construct a connected set, we choose $\alpha^{\mathrm{Fieller}},\alpha^{\mathrm{ATE}}>0$ with $\alpha^{\mathrm{Fieller}}+\alpha^{\mathrm{ATE}}=\alpha$ and $\alpha^{\mathrm{ATE}}\leq\alpha^{\mathrm{Fieller}}$.
 Let $C_{1-\alpha^{\mathrm{Fieller}},n}^{s}$ denote the corresponding sign-specific confidence set and define the ATE sign statistic
@@ -428,8 +406,7 @@ If the ATE is significantly positive, we truncate the sign-specific confidence s
 If the ATE sign test is inconclusive, we return the real line.
 The condition $\alpha^{\mathrm{ATE}}\leq\alpha^{\mathrm{Fieller}}$ ensures that, when truncation occurs, the resulting set is a ray rather than two disjoint pieces.
 
-To see why $I_{1-\alpha,n}^{s}$ is uniformly valid,
-define the inclusion event
+To see why $I_{1-\alpha,n}^{s}$ is uniformly valid, define the inclusion event
 $$
 E^{\mathrm{Fieller},s}
 =
@@ -675,7 +652,8 @@ Therefore $\{I_{1-\alpha,n}\}_{n \geq 1}$ is asymptotically valid for $\{\rho_n\
 
 ### Illustration
 
-@fig-uniform-noncoverage recreates the bottom panels of @fig-scaled-ate-noncoverage and @fig-lift-skewness, but reports non-coverage for the uniformly-valid confidence interval in (-@eq-final-confidence-set). In the top panel, the lift varies while the baseline is fixed at $\overline{y}_{0,n}=1$.
+@fig-uniform-noncoverage recreates the bottom panels of @fig-scaled-ate-noncoverage and @fig-lift-skewness, but reports non-coverage for the uniformly-valid confidence interval in (-@eq-final-confidence-set).
+In the top panel, the lift varies while the baseline is fixed at $\overline{y}_{0,n}=1$.
 Like the delta-method interval, the uniformly-valid confidence interval maintains nominal coverage across the range of lifts.
 In the bottom panel, the baseline varies while the lift is fixed at $\rho_n=10\%$.
 This panel also reports non-coverage for the known-sign intervals $I_{1-\alpha,n}^{+}$ and $I_{1-\alpha,n}^{-}$.

@@ -129,3 +129,21 @@ table td {
     min-height: 0;
   }
 }
+
+@media (min-width: 992px) {
+  body:has(.quarto-reader-toggle.reader) #quarto-sidebar,
+  body:has(.quarto-reader-toggle.reader) #quarto-margin-sidebar {
+    visibility: hidden;
+  }
+
+  body:has(.quarto-reader-toggle.reader) #quarto-sidebarnav-toggle,
+  body:has(.quarto-reader-toggle.reader) #quarto-toc-toggle {
+    visibility: visible;
+  }
+
+  body:has(.quarto-reader-toggle.reader) #quarto-content main.content {
+    grid-column: screen-start / screen-end;
+    justify-self: center;
+    width: min(1000px, calc(100vw - 3rem));
+  }
+}

@@ -110,3 +110,22 @@ table td {
 #quarto-sidebar .sidebar-menu-container > ul > li.sidebar-item:first-child {
   display: none;
 }
+
+#quarto-sidebar .quarto-sidebar-footer {
+  margin-top: auto;
+  color: var(--bs-secondary-color);
+}
+
+#quarto-sidebar .quarto-sidebar-footer a {
+  text-decoration: none;
+}
+
+@media (max-width: 991.98px) {
+  #quarto-sidebar.show {
+    display: flex;
+    flex-direction: column;
+    bottom: 0;
+    height: auto;
+    min-height: 0;
+  }
+}
